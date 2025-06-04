@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -88,7 +89,7 @@ namespace popus_pizzeria.Model
             }
         }
 
-        private void AddItems(string id, string name, string cat, string price, Image pimage)
+        private void AddItems(string id,string proID, string name, string cat, string price, Image pimage)
         {
             bool found = false;
             var w = new ucProduct()
@@ -97,7 +98,7 @@ namespace popus_pizzeria.Model
                 PPrice = price,
                 PCategory = cat,
                 PImage = pimage,
-                id = Convert.ToInt32(id),
+                id = Convert.ToInt32(proID),
                 Width = itemWidth,
                 Height = itemHeight
             };
@@ -117,7 +118,7 @@ namespace popus_pizzeria.Model
 
                 foreach (DataGridViewRow item in guna2DataGridView1.Rows)
                 {
-                    if (Convert.ToInt32(item.Cells["dgvid"].Value) == wdg.id)
+                    if (Convert.ToInt32(item.Cells["dgvProID"].Value) == wdg.id)
                     {
                         found = true;
                         item.Cells["dgvQty"].Value = int.Parse(item.Cells["dgvQty"].Value.ToString()) + 1;
@@ -129,7 +130,7 @@ namespace popus_pizzeria.Model
                 }
                 if (!found)
                 {
-                    guna2DataGridView1.Rows.Add(new object[] { 0, wdg.id, wdg.PName, 1, wdg.PPrice, wdg.PPrice });
+                    guna2DataGridView1.Rows.Add(new object[] { 0,  0, wdg.id, wdg.PName, 1, wdg.PPrice, wdg.PPrice });
                 }
 
                 GetTotal();
@@ -152,7 +153,7 @@ namespace popus_pizzeria.Model
                 Byte[] imagearry = (byte[])item["pImage"];
                 Byte[] imagebytearray = imagearry;
 
-                AddItems(item["pID"].ToString(), item["pName"].ToString(), item["catName"].ToString(), 
+                AddItems("0",item["pID"].ToString(), item["pName"].ToString(), item["catName"].ToString(), 
                     item["pPrice"].ToString(), Image.FromStream(new MemoryStream(imagearry)));
             }
         }
@@ -194,7 +195,10 @@ namespace popus_pizzeria.Model
 
         private void btnNew_Click(object sender, EventArgs e)
         {
-            
+            lblTable.Text = "";
+            lblWaiter.Text = "";
+            lblTable.Visible = false;
+            lblWaiter.Visible = false;
             guna2DataGridView1.Rows.Clear();
             MainId = 0;
             lblTotal.Text = "00";
@@ -202,16 +206,25 @@ namespace popus_pizzeria.Model
 
         private void btnDelivery_Click(object sender, EventArgs e)
         {
+            lblTable.Text = "";
+            lblWaiter.Text = "";
+            lblTable.Visible = false;
+            lblWaiter.Visible = false;
             OrderType = "Delivery";
         }
 
         private void btnTake_Click(object sender, EventArgs e)
         {
+            lblTable.Text = "";
+            lblWaiter.Text = "";
+            lblTable.Visible = false;
+            lblWaiter.Visible = false;
             OrderType = "Mostrador";
         }
 
         private void btnDin_Click(object sender, EventArgs e)
         {
+            OrderType = "Din In";
             // Mostrar formulario de selección de mesa
             frmTableSelect frm = new frmTableSelect();
             if (frm.ShowDialog() == DialogResult.OK)
@@ -247,6 +260,86 @@ namespace popus_pizzeria.Model
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
+
+        private void btnKot_Click(object sender, EventArgs e)
+        {
+            //guardar los datos en la base de datos
+            //crear tablas en base
+
+            string qry1 = ""; //Main table
+            string qry2 = ""; //Detail table
+
+            int detailID = 0;
+
+            if (MainId == 0) // insert
+            {
+                qry1 = @"insert into tblMain values (@aDate, @aTime, @TableName, @WaiterName, @status, @orderType, @total, @received, @change);
+                                             Select SCOPE_IDENTITY()";
+            }
+            else //update
+            {
+                qry1 = @"update tblMain set status = @status, total = @total, 
+                                                     received = @received, change = @change where MainID = @ID ";
+            }
+
+            
+            
+
+            SqlCommand cmd = new SqlCommand(qry1, MainClass.con);
+            cmd.Parameters.AddWithValue("@ID", MainId);
+            cmd.Parameters.AddWithValue("@aDate", Convert.ToDateTime(DateTime.Now.Date));
+            cmd.Parameters.AddWithValue("@aTime",   DateTime.Now.ToShortTimeString());
+            cmd.Parameters.AddWithValue("@TableName", lblTable.Text);
+            cmd.Parameters.AddWithValue("@WaiterName", lblWaiter.Text);
+            cmd.Parameters.AddWithValue("@status", "Pendiente");
+            cmd.Parameters.AddWithValue("@orderType", OrderType);
+            cmd.Parameters.AddWithValue("@total", Convert.ToDouble(lblTotal.Text));
+            cmd.Parameters.AddWithValue("@received", Convert.ToDouble(0));
+            cmd.Parameters.AddWithValue("@change", Convert.ToDouble(0));
+
+            if(MainClass.con.State == ConnectionState.Closed) { MainClass.con.Open(); }
+            if (MainId == 0) {MainId = Convert.ToInt32 (cmd.ExecuteScalar()); } else { cmd.ExecuteNonQuery(); }
+            if (MainClass.con.State == ConnectionState.Open) { MainClass.con.Close(); }
+
+            foreach (DataGridViewRow row in guna2DataGridView1.Rows)
+            {
+                detailID = Convert.ToInt32(row.Cells["dgvid"].Value);
+
+                if (detailID == 0) //insert
+                {
+                    qry2 = @"insert into tblDetails values (@MainID, @ProdID, @qty, @price, @amount)";
+                }
+                else //update
+                {
+                    qry2 = @"update tblDetails set prodID = @ProdID, qty = @qty, price = @price, amount = @amount
+                                                where DetailID  = @ID";
+                }
+
+                SqlCommand cmd2 = new SqlCommand(qry2, MainClass.con);
+                cmd2.Parameters.AddWithValue("@ID", detailID);
+                cmd2.Parameters.AddWithValue("@MainID", MainId);
+                cmd2.Parameters.AddWithValue("@ProdID", Convert.ToInt32(row.Cells["dgvProID"].Value));
+                cmd2.Parameters.AddWithValue("@qty", Convert.ToInt32(row.Cells["dgvQty"].Value));
+                cmd2.Parameters.AddWithValue("@price", Convert.ToDouble(row.Cells["dgvPrice"].Value));
+                cmd2.Parameters.AddWithValue("@amount", Convert.ToDouble(row.Cells["dgvAmount"].Value));
+
+                if (MainClass.con.State == ConnectionState.Closed) { MainClass.con.Open(); }
+                cmd2.ExecuteNonQuery(); 
+                if (MainClass.con.State == ConnectionState.Open) { MainClass.con.Close(); }
+
+                guna2MessageDialog1.Show("Guardado Correctamente");
+                MainId = 0;
+                detailID = 0;
+                guna2DataGridView1.Rows.Clear();
+                lblTable.Text = "";
+                lblWaiter.Text = "";
+                lblTable.Visible = false;
+                lblWaiter.Visible = false;
+                lblTotal.Text = "00";
+            }
+        }
+
+        
     }
 
 }
