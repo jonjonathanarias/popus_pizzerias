@@ -78,16 +78,42 @@ namespace popus_pizzeria.Model
             }
         }
 
-        private void _Click(object sender, EventArgs e)
+        private void ReorganizeProducts()
         {
+            int currentX = 0;
+            int currentY = 0;
 
-            Guna.UI2.WinForms.Guna2Button b = (Guna.UI2.WinForms.Guna2Button)sender;
-            foreach (var item in ProductPanel.Controls)
+            foreach (Control ctrl in ProductPanel.Controls)
             {
-                var pro = (ucProduct)item;
-                pro.Visible = pro.PCategory.ToLower().Contains(b.Text.Trim().ToLower());
+                if (ctrl is ucProduct pro && pro.Visible)
+                {
+                    pro.Location = new Point(currentX, currentY);
+
+                    currentX += itemWidth + itemSpacing;
+                    if (currentX + itemWidth > ProductPanel.Width)
+                    {
+                        currentX = 0;
+                        currentY += itemHeight + itemSpacing;
+                    }
+                }
             }
         }
+
+        private void _Click(object sender, EventArgs e)
+        {
+            Guna.UI2.WinForms.Guna2Button b = (Guna.UI2.WinForms.Guna2Button)sender;
+
+            foreach (Control item in ProductPanel.Controls)
+            {
+                if (item is ucProduct pro)
+                {
+                    pro.Visible = pro.PCategory.ToLower().Contains(b.Text.Trim().ToLower());
+                }
+            }
+
+            ReorganizeProducts(); // reorganiza los visibles
+        }
+
 
         private void AddItems(string id,string proID, string name, string cat, string price, Image pimage)
         {
@@ -160,12 +186,17 @@ namespace popus_pizzeria.Model
 
         private void txtBuscar_TextChanged(object sender, EventArgs e)
         {
-            foreach (var item in ProductPanel.Controls)
+            foreach (Control item in ProductPanel.Controls)
             {
-                var pro = (ucProduct)item;
-                pro.Visible = pro.PName.ToLower().Contains(txtBuscar.Text.Trim().ToLower());
+                if (item is ucProduct pro)
+                {
+                    pro.Visible = pro.PName.ToLower().Contains(txtBuscar.Text.Trim().ToLower());
+                }
             }
+
+            ReorganizeProducts(); // reorganiza los visibles
         }
+
 
         private void guna2DataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
