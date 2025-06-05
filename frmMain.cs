@@ -78,5 +78,10 @@ namespace popus_pizzeria
             frmPOS frm = new frmPOS();
             frm.Show();
         }
+
+        private void btnCocina_Click(object sender, EventArgs e)
+        {
+            agregarControles(new frmKitchenView());
+        }
     }
 }

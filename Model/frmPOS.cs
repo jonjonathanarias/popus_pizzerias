@@ -303,6 +303,8 @@ namespace popus_pizzeria.Model
 
             foreach (DataGridViewRow row in guna2DataGridView1.Rows)
             {
+                if (row.IsNewRow) continue; // evita fila vacía
+
                 detailID = Convert.ToInt32(row.Cells["dgvid"].Value);
 
                 if (detailID == 0) //insert
@@ -312,34 +314,36 @@ namespace popus_pizzeria.Model
                 else //update
                 {
                     qry2 = @"update tblDetails set prodID = @ProdID, qty = @qty, price = @price, amount = @amount
-                                                where DetailID  = @ID";
+                                        where DetailID  = @ID";
                 }
 
                 SqlCommand cmd2 = new SqlCommand(qry2, MainClass.con);
                 cmd2.Parameters.AddWithValue("@ID", detailID);
                 cmd2.Parameters.AddWithValue("@MainID", MainId);
-                cmd2.Parameters.AddWithValue("@ProdID", Convert.ToInt32(row.Cells["dgvProID"].Value));
+                cmd2.Parameters.AddWithValue("@ProdID", Convert.ToInt32(row.Cells["dgvProID"].Value)); // ✅ aquí está correcto
                 cmd2.Parameters.AddWithValue("@qty", Convert.ToInt32(row.Cells["dgvQty"].Value));
                 cmd2.Parameters.AddWithValue("@price", Convert.ToDouble(row.Cells["dgvPrice"].Value));
                 cmd2.Parameters.AddWithValue("@amount", Convert.ToDouble(row.Cells["dgvAmount"].Value));
 
                 if (MainClass.con.State == ConnectionState.Closed) { MainClass.con.Open(); }
-                cmd2.ExecuteNonQuery(); 
+                cmd2.ExecuteNonQuery();
                 if (MainClass.con.State == ConnectionState.Open) { MainClass.con.Close(); }
-
-                guna2MessageDialog1.Show("Guardado Correctamente");
-                MainId = 0;
-                detailID = 0;
-                guna2DataGridView1.Rows.Clear();
-                lblTable.Text = "";
-                lblWaiter.Text = "";
-                lblTable.Visible = false;
-                lblWaiter.Visible = false;
-                lblTotal.Text = "00";
             }
+
+            // ✅ Mensaje de éxito y limpieza — solo una vez
+            guna2MessageDialog1.Show("Guardado Correctamente");
+            MainId = 0;
+            detailID = 0;
+            guna2DataGridView1.Rows.Clear();
+            lblTable.Text = "";
+            lblWaiter.Text = "";
+            lblTable.Visible = false;
+            lblWaiter.Visible = false;
+            lblTotal.Text = "00";
+
         }
 
-        
+
     }
 
 }
