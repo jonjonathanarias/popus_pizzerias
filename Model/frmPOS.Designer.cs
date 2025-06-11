@@ -45,6 +45,7 @@
             this.btnExit = new Guna.UI2.WinForms.Guna2PictureBox();
             this.guna2PictureBox1 = new Guna.UI2.WinForms.Guna2PictureBox();
             this.guna2Panel2 = new Guna.UI2.WinForms.Guna2Panel();
+            this.btnCheckout = new Guna.UI2.WinForms.Guna2Button();
             this.lblTotal = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.CategoryPanel = new Guna.UI2.WinForms.Guna2Panel();
@@ -59,6 +60,8 @@
             this.dgvQty = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgvPrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgvAmount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvObs = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvDelete = new System.Windows.Forms.DataGridViewButtonColumn();
             this.guna2Panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.btnExit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.guna2PictureBox1)).BeginInit();
@@ -185,6 +188,7 @@
             this.btnBill.Size = new System.Drawing.Size(78, 78);
             this.btnBill.TabIndex = 2;
             this.btnBill.Text = "Lista de Facturas";
+            this.btnBill.Click += new System.EventHandler(this.btnBill_Click);
             // 
             // btnHold
             // 
@@ -293,6 +297,7 @@
             // 
             // guna2Panel2
             // 
+            this.guna2Panel2.Controls.Add(this.btnCheckout);
             this.guna2Panel2.Controls.Add(this.lblTotal);
             this.guna2Panel2.Controls.Add(this.label2);
             this.guna2Panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -301,6 +306,26 @@
             this.guna2Panel2.Name = "guna2Panel2";
             this.guna2Panel2.Size = new System.Drawing.Size(1562, 100);
             this.guna2Panel2.TabIndex = 0;
+            // 
+            // btnCheckout
+            // 
+            this.btnCheckout.AutoRoundedCorners = true;
+            this.btnCheckout.BackColor = System.Drawing.Color.Transparent;
+            this.btnCheckout.BorderRadius = 21;
+            this.btnCheckout.CustomizableEdges.TopRight = false;
+            this.btnCheckout.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnCheckout.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btnCheckout.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btnCheckout.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btnCheckout.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(194)))), ((int)(((byte)(96)))));
+            this.btnCheckout.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.btnCheckout.ForeColor = System.Drawing.Color.White;
+            this.btnCheckout.Location = new System.Drawing.Point(1130, 30);
+            this.btnCheckout.Name = "btnCheckout";
+            this.btnCheckout.Size = new System.Drawing.Size(160, 45);
+            this.btnCheckout.TabIndex = 3;
+            this.btnCheckout.Text = "Cobrar";
+            this.btnCheckout.Click += new System.EventHandler(this.btnCheckout_Click);
             // 
             // lblTotal
             // 
@@ -332,7 +357,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.CategoryPanel.Location = new System.Drawing.Point(12, 168);
             this.CategoryPanel.Name = "CategoryPanel";
-            this.CategoryPanel.Size = new System.Drawing.Size(250, 552);
+            this.CategoryPanel.Size = new System.Drawing.Size(201, 552);
             this.CategoryPanel.TabIndex = 1;
             // 
             // guna2DataGridView1
@@ -360,7 +385,9 @@
             this.dgvName,
             this.dgvQty,
             this.dgvPrice,
-            this.dgvAmount});
+            this.dgvAmount,
+            this.dgvObs,
+            this.dgvDelete});
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.Color.White;
             dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -370,13 +397,13 @@
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.guna2DataGridView1.DefaultCellStyle = dataGridViewCellStyle3;
             this.guna2DataGridView1.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.guna2DataGridView1.Location = new System.Drawing.Point(1130, 168);
+            this.guna2DataGridView1.Location = new System.Drawing.Point(1107, 168);
             this.guna2DataGridView1.Name = "guna2DataGridView1";
             this.guna2DataGridView1.ReadOnly = true;
             this.guna2DataGridView1.RowHeadersVisible = false;
             this.guna2DataGridView1.RowHeadersWidth = 51;
             this.guna2DataGridView1.RowTemplate.Height = 24;
-            this.guna2DataGridView1.Size = new System.Drawing.Size(420, 552);
+            this.guna2DataGridView1.Size = new System.Drawing.Size(443, 552);
             this.guna2DataGridView1.TabIndex = 7;
             this.guna2DataGridView1.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.White;
             this.guna2DataGridView1.ThemeStyle.AlternatingRowsStyle.Font = null;
@@ -399,6 +426,8 @@
             this.guna2DataGridView1.ThemeStyle.RowsStyle.Height = 24;
             this.guna2DataGridView1.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
             this.guna2DataGridView1.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            this.guna2DataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.guna2DataGridView1_CellClick);
+            this.guna2DataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.guna2DataGridView1_CellContentClick);
             this.guna2DataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.guna2DataGridView1_CellFormatting);
             // 
             // ProductPanel
@@ -407,9 +436,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ProductPanel.AutoScroll = true;
-            this.ProductPanel.Location = new System.Drawing.Point(268, 168);
+            this.ProductPanel.Location = new System.Drawing.Point(219, 168);
             this.ProductPanel.Name = "ProductPanel";
-            this.ProductPanel.Size = new System.Drawing.Size(856, 552);
+            this.ProductPanel.Size = new System.Drawing.Size(882, 552);
             this.ProductPanel.TabIndex = 1;
             // 
             // txtBuscar
@@ -512,6 +541,23 @@
             this.dgvAmount.ReadOnly = true;
             this.dgvAmount.Width = 60;
             // 
+            // dgvObs
+            // 
+            this.dgvObs.HeaderText = "Observacion";
+            this.dgvObs.MinimumWidth = 6;
+            this.dgvObs.Name = "dgvObs";
+            this.dgvObs.ReadOnly = true;
+            // 
+            // dgvDelete
+            // 
+            this.dgvDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.dgvDelete.HeaderText = "eliminar";
+            this.dgvDelete.MinimumWidth = 6;
+            this.dgvDelete.Name = "dgvDelete";
+            this.dgvDelete.ReadOnly = true;
+            this.dgvDelete.Text = "Eliminar";
+            this.dgvDelete.UseColumnTextForButtonValue = true;
+            // 
             // frmPOS
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -563,6 +609,7 @@
         private System.Windows.Forms.Label lblWaiter;
         private System.Windows.Forms.Label lblTable;
         private Guna.UI2.WinForms.Guna2MessageDialog guna2MessageDialog1;
+        protected Guna.UI2.WinForms.Guna2Button btnCheckout;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvSno;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvid;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvProID;
@@ -570,5 +617,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvQty;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvPrice;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvAmount;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgvObs;
+        private System.Windows.Forms.DataGridViewButtonColumn dgvDelete;
     }
 }

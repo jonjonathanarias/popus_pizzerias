@@ -55,7 +55,7 @@
             // 
             this.guna2PictureBox1.AutoRoundedCorners = true;
             this.guna2PictureBox1.BackColor = System.Drawing.Color.Transparent;
-            this.guna2PictureBox1.BorderRadius = 45;
+            this.guna2PictureBox1.BorderRadius = 37;
             this.guna2PictureBox1.Image = global::popus_pizzeria.Properties.Resources.popus;
             this.guna2PictureBox1.ImageRotate = 0F;
             this.guna2PictureBox1.Location = new System.Drawing.Point(31, 12);
@@ -161,10 +161,10 @@
 
         public Guna.UI2.WinForms.Guna2Panel guna2Panel1;
         public Guna.UI2.WinForms.Guna2Panel guna2Panel2;
-        public Guna.UI2.WinForms.Guna2Button btnGuardar;
         public System.Windows.Forms.Label label1;
-        public Guna.UI2.WinForms.Guna2Button btnCerrar;
         public Guna.UI2.WinForms.Guna2MessageDialog guna2MessageDialog1;
-        public Guna.UI2.WinForms.Guna2PictureBox guna2PictureBox1;
+        protected internal Guna.UI2.WinForms.Guna2PictureBox guna2PictureBox1;
+        protected Guna.UI2.WinForms.Guna2Button btnGuardar;
+        protected Guna.UI2.WinForms.Guna2Button btnCerrar;
     }
 }

@@ -185,11 +185,29 @@
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
     <Compile Include="MainClass.cs" />
+    <Compile Include="Model\frmBillList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Model\frmBillList.Designer.cs">
+      <DependentUpon>frmBillList.cs</DependentUpon>
+    </Compile>
     <Compile Include="Model\frmCategoriaAdd.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Model\frmCategoriaAdd.Designer.cs">
       <DependentUpon>frmCategoriaAdd.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Model\frmCheout.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Model\frmCheout.Designer.cs">
+      <DependentUpon>frmCheout.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Model\frmObservation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Model\frmObservation.Designer.cs">
+      <DependentUpon>frmObservation.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\frmPOS.cs">
       <SubType>Form</SubType>
@@ -286,8 +304,17 @@
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Model\frmBillList.resx">
+      <DependentUpon>frmBillList.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Model\frmCategoriaAdd.resx">
       <DependentUpon>frmCategoriaAdd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Model\frmCheout.resx">
+      <DependentUpon>frmCheout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Model\frmObservation.resx">
+      <DependentUpon>frmObservation.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Model\frmPOS.resx">
       <DependentUpon>frmPOS.cs</DependentUpon>

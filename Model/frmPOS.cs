@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace popus_pizzeria.Model
 {
@@ -196,8 +197,63 @@ namespace popus_pizzeria.Model
 
             ReorganizeProducts(); // reorganiza los visibles
         }
+        
 
+        //Metodo para agregar y quitar productos del dataGreid
+        private void AddDeleteButtonColumn()
+        {
+            DataGridViewButtonColumn dgvDeleteButton = new DataGridViewButtonColumn();
+            dgvDeleteButton.HeaderText = "Action";
+            dgvDeleteButton.Name = "dgvDelete"; 
+            dgvDeleteButton.Text = "-"; 
+            dgvDeleteButton.UseColumnTextForButtonValue = true; 
+            dgvDeleteButton.Width = 50; 
+            guna2DataGridView1.Columns.Add(dgvDeleteButton);
 
+        }
+        private void guna2DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            
+            if (e.ColumnIndex == guna2DataGridView1.Columns["dgvDelete"].Index && e.RowIndex >= 0)
+            {
+                DataGridViewRow row = guna2DataGridView1.Rows[e.RowIndex];
+                int currentQty = Convert.ToInt32(row.Cells["dgvQty"].Value);
+
+                if (currentQty > 1)
+                {
+                    
+                    row.Cells["dgvQty"].Value = currentQty - 1;
+                    
+                    row.Cells["dgvAmount"].Value = (currentQty - 1) * Convert.ToDouble(row.Cells["dgvPrice"].Value);
+                }
+                else
+                {
+                    
+                    guna2DataGridView1.Rows.RemoveAt(e.RowIndex);
+                }
+
+                
+                GetTotal();
+            }
+
+            
+            if (e.RowIndex >= 0 && guna2DataGridView1.Columns[e.ColumnIndex].Name == "dgvObs")
+            {
+                
+                string currentObservation = guna2DataGridView1.Rows[e.RowIndex].Cells["dgvObs"].Value?.ToString() ?? string.Empty;
+
+                using (frmObservation obsForm = new frmObservation(currentObservation))
+                {
+                    if (obsForm.ShowDialog() == DialogResult.OK)
+                    {
+                        guna2DataGridView1.Rows[e.RowIndex].Cells["dgvObs"].Value = obsForm.Observation;
+                    }
+                }
+            }
+        }
+        //*****************************
+        
+        
         private void guna2DataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             // por serial
@@ -340,11 +396,11 @@ namespace popus_pizzeria.Model
 
                 if (detailID == 0) //insert
                 {
-                    qry2 = @"insert into tblDetails values (@MainID, @ProdID, @qty, @price, @amount)";
+                    qry2 = @"insert into tblDetails values (@MainID, @ProdID, @qty, @price, @amount, @observation)";
                 }
                 else //update
                 {
-                    qry2 = @"update tblDetails set prodID = @ProdID, qty = @qty, price = @price, amount = @amount
+                    qry2 = @"update tblDetails set prodID = @ProdID, qty = @qty, price = @price, amount = @amount, observation = @observation
                                         where DetailID  = @ID";
                 }
 
@@ -355,11 +411,14 @@ namespace popus_pizzeria.Model
                 cmd2.Parameters.AddWithValue("@qty", Convert.ToInt32(row.Cells["dgvQty"].Value));
                 cmd2.Parameters.AddWithValue("@price", Convert.ToDouble(row.Cells["dgvPrice"].Value));
                 cmd2.Parameters.AddWithValue("@amount", Convert.ToDouble(row.Cells["dgvAmount"].Value));
+                cmd2.Parameters.AddWithValue("@observation", row.Cells["dgvObs"].Value.ToString());
 
                 if (MainClass.con.State == ConnectionState.Closed) { MainClass.con.Open(); }
                 cmd2.ExecuteNonQuery();
                 if (MainClass.con.State == ConnectionState.Open) { MainClass.con.Close(); }
             }
+
+
 
             // ✅ Mensaje de éxito y limpieza — solo una vez
             guna2MessageDialog1.Show("Guardado Correctamente");
@@ -373,8 +432,109 @@ namespace popus_pizzeria.Model
             lblTotal.Text = "00";
 
         }
+        private void guna2DataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // Check if the clicked cell is in the "dgvObs" column and not a header row
+            if (e.RowIndex >= 0 && guna2DataGridView1.Columns[e.ColumnIndex].Name == "dgvObs")
+            {
+                // Get the current observation text from the cell
+                string currentObservation = guna2DataGridView1.Rows[e.RowIndex].Cells["dgvObs"].Value?.ToString() ?? string.Empty;
+
+                // Open the observation form
+                using (frmObservation obsForm = new frmObservation(currentObservation))
+                {
+                    if (obsForm.ShowDialog() == DialogResult.OK)
+                    {
+                        // If the user clicked OK, update the DataGridView cell with the new observation
+                        guna2DataGridView1.Rows[e.RowIndex].Cells["dgvObs"].Value = obsForm.Observation;
+                    }
+                }
+            }
+        }
+
+        public int id = 0;
+        private void btnBill_Click(object sender, EventArgs e)
+        {
+            frmBillList frm = new frmBillList();
+            frm.ShowDialog();
+
+            if (frm.MainID > 0)
+            {
+                id = frm.MainID;
+                LoadEntries();
+            }
+        }
+
+        private void LoadEntries()
+        {
+            string qry = @"select * from tblMain m 
+                                        inner join tblDetails d on m.MainID = d.MainID
+                                        inner join products p on p.pID = d.ProdID
+                                        where m.MainID = "+id+"";
+
+            SqlCommand cmd2 = new SqlCommand(qry, MainClass.con);
+            DataTable dt2 = new DataTable();
+            SqlDataAdapter da2 = new SqlDataAdapter(cmd2);
+            da2.Fill(dt2);
+
+            if (dt2.Rows[0]["orderType"].ToString() == "Delivery")
+            {
+                btnDelivery.Checked = true;
+                lblWaiter.Visible = false ;
+                lblTable.Visible = false;
+            }
+            else if(dt2.Rows[0]["orderType"].ToString() == "Take away")
+            {
+                btnTake.Checked = true;
+                lblWaiter.Visible = false;
+                lblTable.Visible = false;
+            }
+            else
+            {
+                btnDin.Checked = true;
+                lblWaiter.Visible = true;
+                lblTable.Visible = true;
+            }
+
+            guna2DataGridView1.Rows.Clear();
+            
+            foreach (DataRow item in dt2.Rows)
+            {
+                lblTable.Text = item["TableName"].ToString();
+                lblWaiter.Text = item["WaiterName"].ToString();
+
+                string detailid = item["DetailID"].ToString();
+                string proName = item["pName"].ToString();
+                string proid = item["ProdID"].ToString();
+                string qty = item["qty"].ToString();
+                string price = item["price"].ToString();
+                string amount = item["amount"].ToString();
+
+                object[] obj = {0, detailid, proid, proName, qty, price, amount};
+                guna2DataGridView1.Rows.Add(obj);
+            }
+            GetTotal();
+        }
+
+        private void btnCheckout_Click(object sender, EventArgs e)
+        {
+            frmCheout frm = new frmCheout();
+            frm.MainID = id;
+            frm.amt = Convert.ToDouble( lblTotal.Text);
+            frm.ShowDialog();
+
+            guna2MessageDialog1.Show("Guardado Correctamente");
+            MainId = 0;
+            
+            guna2DataGridView1.Rows.Clear();
+            lblTable.Text = "";
+            lblWaiter.Text = "";
+            lblTable.Visible = false;
+            lblWaiter.Visible = false;
+            lblTotal.Text = "00";
 
 
+        }
     }
 
 }
