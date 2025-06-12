@@ -27,131 +27,176 @@ namespace popus_pizzeria.View
         private void GetOrders()
         {
             flowLayoutPanel1.Controls.Clear();
-            string qry1 = @"select * from tblMain where status = 'Pendiente'";
-            SqlCommand cmd1 = new SqlCommand(qry1, MainClass.con);
-            DataTable dt1 = new DataTable();
-            SqlDataAdapter da = new SqlDataAdapter(cmd1);
-            da.Fill(dt1);
+            string qryMain = @"SELECT * FROM tblMain WHERE status = 'Pendiente'";
 
-            FlowLayoutPanel p1;
-
-            for (int i = 0; i < dt1.Rows.Count; i++)
+            try
             {
-                p1 = new FlowLayoutPanel();
-                p1.AutoSize = true;
-                p1.Width = 230;
-                p1.Height = 350;
-                p1.FlowDirection = FlowDirection.TopDown;
-                p1.BorderStyle = BorderStyle.FixedSingle;
-                p1.Margin = new Padding(10, 10, 10, 10);
-
-
-                FlowLayoutPanel p2 = new FlowLayoutPanel();
-                p2 = new FlowLayoutPanel();
-                p2.BackColor = Color.FromArgb(50, 55, 89);
-                p2.AutoSize = true;
-                p2.Width = 230;
-                p2.Height = 125;
-                p2.FlowDirection = FlowDirection.TopDown;
-                p2.Margin = new Padding(0, 0, 0, 0);
-
-                Label lb1 = new Label();
-                lb1.ForeColor = Color.White;
-                lb1.Margin = new Padding(10, 10, 3, 0);
-                lb1.AutoSize = true;
-
-                Label lb2 = new Label();
-                lb2.ForeColor = Color.White;
-                lb2.Margin = new Padding(10, 10, 3, 0);
-                lb2.AutoSize = true;
-
-                Label lb3 = new Label();
-                lb3.ForeColor = Color.White;
-                lb3.Margin = new Padding(10, 10, 3, 0);
-                lb3.AutoSize = true;
-
-                Label lb4 = new Label();
-                lb4.ForeColor = Color.White;
-                lb4.Margin = new Padding(10, 5, 3, 10);
-                lb4.AutoSize = true;
-
-                lb1.Text = "Table: " + dt1.Rows[i]["TableName"].ToString();
-                lb2.Text = "Waiter Name: " + dt1.Rows[i]["WaiterName"].ToString();
-                lb3.Text = "Order Time: " + dt1.Rows[i]["aTime"].ToString();
-                lb4.Text = "Order Type: " + dt1.Rows[i]["orderType"].ToString();
-
-                p2.Controls.Add(lb1);
-                p2.Controls.Add(lb2);
-                p2.Controls.Add(lb3);
-                p2.Controls.Add(lb4);
-
-                p1.Controls.Add(p2);
-
-                //Ahora agregar productos
-
-                int mid = 0;
-                mid = Convert.ToInt32(dt1.Rows[i]["MainID"].ToString());
-
-                string qry2 = @"select * from tblMain m 
-                                        inner join tblDetails d on m.MainID = d.MainID
-                                        inner join products p on p.pID = d.ProdID
-                                        where m.MainID = "+mid+"";
-
-                SqlCommand cmd2 = new SqlCommand(qry2, MainClass.con);
-                DataTable dt2 = new DataTable();
-                SqlDataAdapter da2 = new SqlDataAdapter(cmd2);
-                da2.Fill(dt2);
-
-                for (int j = 0; j < dt2.Rows.Count; j++)
+                using (SqlCommand cmdMain = new SqlCommand(qryMain, MainClass.con))
+                using (SqlDataAdapter daMain = new SqlDataAdapter(cmdMain))
                 {
-                    Label lb5 = new Label();
-                    lb5.ForeColor = Color.Black;
-                    lb5.Margin = new Padding(10, 10, 3, 0);
-                    lb5.AutoSize = true;
-                    
+                    DataTable dtMain = new DataTable();
+                    daMain.Fill(dtMain);
 
-                    int no = j + 1;
+                    foreach (DataRow row in dtMain.Rows)
+                    {
+                        int mainId = Convert.ToInt32(row["MainID"]);
+                        FlowLayoutPanel orderPanel = CrearPanelPedido();
+                        FlowLayoutPanel headerPanel = CrearPanelEncabezado(
+                            row["TableName"].ToString(),
+                            row["WaiterName"].ToString(),
+                            row["aTime"].ToString(),
+                            row["orderType"].ToString()
+                        );
 
-                    lb5.Text = "" + no + " " + dt2.Rows[j]["pName"].ToString() + " " + dt2.Rows[j]["qty"].ToString();
+                        // Agregar encabezado del pedido
+                        orderPanel.Controls.Add(headerPanel);
 
-                    p1.Controls.Add(lb5);
+                        // Agregar info del cliente
+                        AgregarDatosCliente(orderPanel, mainId);
+
+                        // Agregar productos
+                        AgregarProductosPedido(orderPanel, mainId);
+
+                        // Botón de completado
+                        var btnCompletar = new Guna.UI2.WinForms.Guna2Button
+                        {
+                            AutoRoundedCorners = true,
+                            Size = new Size(100, 35),
+                            FillColor = Color.FromArgb(241, 85, 126),
+                            Margin = new Padding(30, 5, 3, 10),
+                            Text = "Completado",
+                            Tag = mainId.ToString()
+                        };
+                        btnCompletar.Click += new EventHandler(b_click);
+                        orderPanel.Controls.Add(btnCompletar);
+
+                        // Agregar todo al flow principal
+                        flowLayoutPanel1.Controls.Add(orderPanel);
+                    }
                 }
-
-                //agragar boton para cambiar el estado del pedido
-
-                Guna.UI2.WinForms.Guna2Button b = new Guna.UI2.WinForms.Guna2Button();
-                b.AutoRoundedCorners = true;
-                b.Size = new Size(100, 35);
-                b.FillColor = Color.FromArgb(241, 85, 126);
-                b.Margin = new Padding(30, 5, 3, 10);
-                b.Text = "Completado";
-                b.Tag = dt1.Rows[i]["MainID"].ToString();
-
-                b.Click += new EventHandler(b_click);
-                p1.Controls.Add(b);
-
-                flowLayoutPanel1.Controls.Add(p1);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al obtener pedidos: " + ex.Message);
             }
         }
 
-        private void b_click(object sender, EventArgs e)
+        private FlowLayoutPanel CrearPanelPedido()
         {
-            int id = Convert.ToInt32((sender as Guna.UI2.WinForms.Guna2Button).Tag.ToString());
-            guna2MessageDialog1.Icon = Guna.UI2.WinForms.MessageDialogIcon.Question;
-            guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.YesNo;
-            if (guna2MessageDialog1.Show("Estas seguro que desea eliminar el pedido?") == DialogResult.Yes)
+            return new FlowLayoutPanel
             {
-                string qry = @"update tblMain set status = 'Completo' where MainID = @ID";
-                Hashtable ht = new Hashtable();
-                ht.Add("@ID", id);
-
-                if (MainClass.SQl(qry, ht)>0)
-                {
-                    guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.OK;
-                    guna2MessageDialog1.Show("eliminado correctamente");
-                }
-                GetOrders();
-            }
+                AutoSize = true,
+                Width = 230,
+                Height = 350,
+                FlowDirection = FlowDirection.TopDown,
+                BorderStyle = BorderStyle.FixedSingle,
+                Margin = new Padding(10, 10, 10, 10)
+            };
         }
+
+            private FlowLayoutPanel CrearPanelEncabezado(string table, string waiter, string time, string orderType)
+            {
+                var panel = new FlowLayoutPanel
+                {
+                    BackColor = Color.FromArgb(50, 55, 89),
+        
+                    Width = 230,
+                    Height = 125,
+                    FlowDirection = FlowDirection.TopDown,
+                    Margin = new Padding(0, 0, 0, 0)
+                };
+
+                panel.Controls.Add(CrearLabel("Mesa: " + table, Color.White, new Padding(10, 10, 3, 0)));
+                panel.Controls.Add(CrearLabel("Mozo: " + waiter, Color.White, new Padding(10, 10, 3, 0)));
+                panel.Controls.Add(CrearLabel("Hora: " + time, Color.White, new Padding(10, 10, 3, 0)));
+                panel.Controls.Add(CrearLabel("Tipo: " + orderType, Color.White, new Padding(10, 5, 3, 10)));
+
+                return panel;
+            }
+
+            private Label CrearLabel(string texto, Color color, Padding margen)
+            {
+                return new Label
+                {
+                    Text = texto,
+                    ForeColor = color,
+                    Margin = margen,
+                    AutoSize = true
+                };
+            }
+
+            private void AgregarDatosCliente(FlowLayoutPanel panel, int mainId)
+            {
+                string qry = @"SELECT c.Name, c.Phone, c.Address, c.Reference 
+                               FROM tblMain m
+                               INNER JOIN tblCustomers c ON m.CustomerID = c.CustomerID 
+                               WHERE m.MainID = @mid";
+
+                using (SqlCommand cmd = new SqlCommand(qry, MainClass.con))
+                {
+                    cmd.Parameters.AddWithValue("@mid", mainId);
+                    DataTable dt = new DataTable();
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        da.Fill(dt);
+                    }
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        DataRow r = dt.Rows[0];
+                        panel.Controls.Add(CrearLabel("Cliente: " + r["Name"], Color.Black, new Padding(10, 5, 3, 0)));
+                        panel.Controls.Add(CrearLabel("Teléfono: " + r["Phone"], Color.Black, new Padding(10, 2, 3, 0)));
+                        panel.Controls.Add(CrearLabel("Dirección: " + r["Address"], Color.Black, new Padding(10, 2, 3, 0)));
+                        panel.Controls.Add(CrearLabel("Referencia: " + r["Reference"], Color.Black, new Padding(10, 2, 3, 10)));
+                    }
+                }
+            }
+
+            private void AgregarProductosPedido(FlowLayoutPanel panel, int mainId)
+            {
+                string qry = @"SELECT p.pName, d.qty, d.Observation
+                               FROM tblMain m
+                               INNER JOIN tblDetails d ON m.MainID = d.MainID
+                               INNER JOIN products p ON p.pID = d.ProdID
+                               WHERE m.MainID = @mid";
+
+                using (SqlCommand cmd = new SqlCommand(qry, MainClass.con))
+                {
+                    cmd.Parameters.AddWithValue("@mid", mainId);
+                    DataTable dt = new DataTable();
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        da.Fill(dt);
+                    }
+
+                    for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+                        string nombre = dt.Rows[i]["pName"].ToString();
+                        string cantidad = dt.Rows[i]["qty"].ToString();
+                        string detalle = dt.Rows[i]["Observation"].ToString();
+                        panel.Controls.Add(CrearLabel($"{cantidad}. {nombre}  {detalle}", Color.Black, new Padding(10, 10, 3, 0)));
+                    }
+                }
+            }
+
+            private void b_click(object sender, EventArgs e)
+            {
+                int id = Convert.ToInt32((sender as Guna.UI2.WinForms.Guna2Button).Tag.ToString());
+                guna2MessageDialog1.Icon = Guna.UI2.WinForms.MessageDialogIcon.Question;
+                guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.YesNo;
+                if (guna2MessageDialog1.Show("Estas seguro que desea eliminar el pedido?") == DialogResult.Yes)
+                {
+                    string qry = @"update tblMain set status = 'Completo' where MainID = @ID";
+                    Hashtable ht = new Hashtable();
+                    ht.Add("@ID", id);
+
+                    if (MainClass.SQl(qry, ht)>0)
+                    {
+                        guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.OK;
+                        guna2MessageDialog1.Show("eliminado correctamente");
+                    }
+                    GetOrders();
+                }
+            }
     }
 }

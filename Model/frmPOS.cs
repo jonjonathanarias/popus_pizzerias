@@ -22,7 +22,8 @@ namespace popus_pizzeria.Model
         }
 
         public int MainId = 0;
-        public string OrderType;
+        public string OrderType = "";
+        public int CustomerID = 0;
 
         private int itemSpacing = 5;
         private int itemWidth = 200; // Ajusta al ancho de tu ucProduct
@@ -298,6 +299,38 @@ namespace popus_pizzeria.Model
             lblTable.Visible = false;
             lblWaiter.Visible = false;
             OrderType = "Delivery";
+
+
+            guna2MessageDialog1.Text = "¿Es un cliente existente?";
+            guna2MessageDialog1.Caption = "Buscar cliente";
+            guna2MessageDialog1.Parent = this;
+            guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.YesNo;
+            guna2MessageDialog1.Icon = Guna.UI2.WinForms.MessageDialogIcon.Question;
+
+            DialogResult result = guna2MessageDialog1.Show();
+
+            if (result == DialogResult.Yes)
+            {
+                frmSearchCustomer frm = new frmSearchCustomer();
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    CustomerID = frm.CustomerID;
+                    lblCustomer.Visible = true;
+                    lblCustomer.Text = $"CLIENTE: {frm.CustomerName}   TELEFONO: {frm.Phone}";
+                    // Puedes mostrar sus datos si quieres
+                }
+            }
+            else
+            {
+                frmAddCustomer frm = new frmAddCustomer();
+                frm.orderType = OrderType;
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    CustomerID = frm.CustomerID;
+                    lblCustomer.Visible = true;
+                    lblCustomer.Text = $"CLIENTE: {frm.CustomerName}  TELEFONO: {frm.Phone}";
+                }
+            }
         }
 
         private void btnTake_Click(object sender, EventArgs e)
@@ -306,9 +339,43 @@ namespace popus_pizzeria.Model
             lblWaiter.Text = "";
             lblTable.Visible = false;
             lblWaiter.Visible = false;
-            OrderType = "Mostrador";
+            OrderType = "Take Away";
+
+            guna2MessageDialog1.Text = "¿Es un cliente existente?";
+            guna2MessageDialog1.Caption = "Buscar cliente";
+            guna2MessageDialog1.Parent = this;
+            guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.YesNo;
+            guna2MessageDialog1.Icon = Guna.UI2.WinForms.MessageDialogIcon.Question;
+
+            DialogResult result = guna2MessageDialog1.Show(); ;
+
+            if (result == DialogResult.Yes)
+            {
+                frmSearchCustomer frm = new frmSearchCustomer();
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    CustomerID = frm.CustomerID;
+                    lblCustomer.Visible = true;
+                    lblCustomer.Text = $"CLIENTE: {frm.CustomerName}";
+                }
+            }
+            else
+            {
+                frmAddCustomer frm = new frmAddCustomer();
+                frm.orderType = OrderType;
+                
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    CustomerID = frm.CustomerID; 
+                    lblCustomer.Visible = true;
+                    lblCustomer.Text = $"CLIENTE: {frm.CustomerName}";
+
+                }
+            }
+            
         }
 
+        
         private void btnDin_Click(object sender, EventArgs e)
         {
             OrderType = "Din In";
@@ -338,8 +405,8 @@ namespace popus_pizzeria.Model
                 lblWaiter.Visible = false;
             }
 
-            MessageBox.Show("Mesa seleccionada: " + frm.TableName);
-            MessageBox.Show("Mozo seleccionado: " + frm2.WaiterName);
+            guna2MessageDialog1.Show("Mesa seleccionada: " + frm.TableName);
+            guna2MessageDialog1.Show("Mozo seleccionado: " + frm2.WaiterName);
         }
 
         private void btnAceptar_Click(object sender, EventArgs e)
@@ -360,13 +427,14 @@ namespace popus_pizzeria.Model
 
             if (MainId == 0) // insert
             {
-                qry1 = @"insert into tblMain values (@aDate, @aTime, @TableName, @WaiterName, @status, @orderType, @total, @received, @change);
+                qry1 = @"insert into tblMain values (@aDate, @aTime, @TableName, @WaiterName, @status, @orderType, @total, @received, @change, @CustomerID);
                                              Select SCOPE_IDENTITY()";
             }
             else //update
             {
                 qry1 = @"update tblMain set status = @status, total = @total, 
-                                                     received = @received, change = @change where MainID = @ID ";
+                                                     received = @received, change = @change, CustomerID = @CustomerID
+                                                     where MainID = @ID ";
             }
 
             
@@ -383,8 +451,9 @@ namespace popus_pizzeria.Model
             cmd.Parameters.AddWithValue("@total", Convert.ToDouble(lblTotal.Text));
             cmd.Parameters.AddWithValue("@received", Convert.ToDouble(0));
             cmd.Parameters.AddWithValue("@change", Convert.ToDouble(0));
+            cmd.Parameters.AddWithValue("@CustomerID", CustomerID);
 
-            if(MainClass.con.State == ConnectionState.Closed) { MainClass.con.Open(); }
+            if (MainClass.con.State == ConnectionState.Closed) { MainClass.con.Open(); }
             if (MainId == 0) {MainId = Convert.ToInt32 (cmd.ExecuteScalar()); } else { cmd.ExecuteNonQuery(); }
             if (MainClass.con.State == ConnectionState.Open) { MainClass.con.Close(); }
 
@@ -411,7 +480,7 @@ namespace popus_pizzeria.Model
                 cmd2.Parameters.AddWithValue("@qty", Convert.ToInt32(row.Cells["dgvQty"].Value));
                 cmd2.Parameters.AddWithValue("@price", Convert.ToDouble(row.Cells["dgvPrice"].Value));
                 cmd2.Parameters.AddWithValue("@amount", Convert.ToDouble(row.Cells["dgvAmount"].Value));
-                cmd2.Parameters.AddWithValue("@observation", row.Cells["dgvObs"].Value.ToString());
+                cmd2.Parameters.AddWithValue("@observation", row.Cells["dgvObs"].Value?.ToString() ?? "");
 
                 if (MainClass.con.State == ConnectionState.Closed) { MainClass.con.Open(); }
                 cmd2.ExecuteNonQuery();
@@ -434,18 +503,18 @@ namespace popus_pizzeria.Model
         }
         private void guna2DataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            // Check if the clicked cell is in the "dgvObs" column and not a header row
+            
             if (e.RowIndex >= 0 && guna2DataGridView1.Columns[e.ColumnIndex].Name == "dgvObs")
             {
-                // Get the current observation text from the cell
+                
                 string currentObservation = guna2DataGridView1.Rows[e.RowIndex].Cells["dgvObs"].Value?.ToString() ?? string.Empty;
 
-                // Open the observation form
+                
                 using (frmObservation obsForm = new frmObservation(currentObservation))
                 {
                     if (obsForm.ShowDialog() == DialogResult.OK)
                     {
-                        // If the user clicked OK, update the DataGridView cell with the new observation
+                     
                         guna2DataGridView1.Rows[e.RowIndex].Cells["dgvObs"].Value = obsForm.Observation;
                     }
                 }
@@ -461,6 +530,7 @@ namespace popus_pizzeria.Model
             if (frm.MainID > 0)
             {
                 id = frm.MainID;
+                MainId = frm.MainID;
                 LoadEntries();
             }
         }
@@ -524,6 +594,7 @@ namespace popus_pizzeria.Model
             frm.ShowDialog();
 
             guna2MessageDialog1.Show("Guardado Correctamente");
+            guna2MessageDialog1.Parent = this;
             MainId = 0;
             
             guna2DataGridView1.Rows.Clear();
@@ -534,6 +605,93 @@ namespace popus_pizzeria.Model
             lblTotal.Text = "00";
 
 
+        }
+
+        private void btnHold_Click(object sender, EventArgs e)
+        {
+            string qry1 = ""; //Main table
+            string qry2 = ""; //Detail table
+
+            int detailID = 0;
+
+            if (OrderType == "")
+            {
+                guna2MessageDialog1.Show( "Porfavor elija un tipo de orden de pedido antes de enviar el pedido a la cocina");
+                return;
+            }
+
+            if (MainId == 0) // insert
+            {
+                qry1 = @"insert into tblMain values (@aDate, @aTime, @TableName, @WaiterName, @status, @orderType, @total, @received, @change);
+                                             Select SCOPE_IDENTITY()";
+            }
+            else //update
+            {
+                qry1 = @"update tblMain set status = @status, total = @total, 
+                                                     received = @received, change = @change where MainID = @ID ";
+            }
+
+
+
+
+            SqlCommand cmd = new SqlCommand(qry1, MainClass.con);
+            cmd.Parameters.AddWithValue("@ID", MainId);
+            cmd.Parameters.AddWithValue("@aDate", Convert.ToDateTime(DateTime.Now.Date));
+            cmd.Parameters.AddWithValue("@aTime", DateTime.Now.ToShortTimeString());
+            cmd.Parameters.AddWithValue("@TableName", lblTable.Text);
+            cmd.Parameters.AddWithValue("@WaiterName", lblWaiter.Text);
+            cmd.Parameters.AddWithValue("@status", "Hold");
+            cmd.Parameters.AddWithValue("@orderType", OrderType);
+            cmd.Parameters.AddWithValue("@total", Convert.ToDouble(lblTotal.Text));
+            cmd.Parameters.AddWithValue("@received", Convert.ToDouble(0));
+            cmd.Parameters.AddWithValue("@change", Convert.ToDouble(0));
+
+            if (MainClass.con.State == ConnectionState.Closed) { MainClass.con.Open(); }
+            if (MainId == 0) { MainId = Convert.ToInt32(cmd.ExecuteScalar()); } else { cmd.ExecuteNonQuery(); }
+            if (MainClass.con.State == ConnectionState.Open) { MainClass.con.Close(); }
+
+            foreach (DataGridViewRow row in guna2DataGridView1.Rows)
+            {
+                if (row.IsNewRow) continue; // evita fila vacía
+
+                detailID = Convert.ToInt32(row.Cells["dgvid"].Value);
+
+                if (detailID == 0) //insert
+                {
+                    qry2 = @"insert into tblDetails values (@MainID, @ProdID, @qty, @price, @amount, @observation)";
+                }
+                else //update
+                {
+                    qry2 = @"update tblDetails set prodID = @ProdID, qty = @qty, price = @price, amount = @amount, observation = @observation
+                                        where DetailID  = @ID";
+                }
+
+                SqlCommand cmd2 = new SqlCommand(qry2, MainClass.con);
+                cmd2.Parameters.AddWithValue("@ID", detailID);
+                cmd2.Parameters.AddWithValue("@MainID", MainId);
+                cmd2.Parameters.AddWithValue("@ProdID", Convert.ToInt32(row.Cells["dgvProID"].Value)); // ✅ aquí está correcto
+                cmd2.Parameters.AddWithValue("@qty", Convert.ToInt32(row.Cells["dgvQty"].Value));
+                cmd2.Parameters.AddWithValue("@price", Convert.ToDouble(row.Cells["dgvPrice"].Value));
+                cmd2.Parameters.AddWithValue("@amount", Convert.ToDouble(row.Cells["dgvAmount"].Value));
+                cmd2.Parameters.AddWithValue("@observation", row.Cells["dgvObs"].Value?.ToString() ?? "");
+
+                if (MainClass.con.State == ConnectionState.Closed) { MainClass.con.Open(); }
+                cmd2.ExecuteNonQuery();
+                if (MainClass.con.State == ConnectionState.Open) { MainClass.con.Close(); }
+            }
+
+
+
+            // ✅ Mensaje de éxito y limpieza — solo una vez
+            guna2MessageDialog1.Show("Guardado Correctamente");
+            MainId = 0;
+            detailID = 0;
+            guna2DataGridView1.Rows.Clear();
+            lblTable.Text = "";
+            lblWaiter.Text = "";
+            lblTable.Visible = false;
+            lblWaiter.Visible = false;
+            lblTotal.Text = "00";
         }
     }
 

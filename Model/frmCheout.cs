@@ -50,6 +50,7 @@ namespace popus_pizzeria.Model
             {
                 guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.OK;
                 guna2MessageDialog1.Show("Cobrado correctamente");
+                guna2MessageDialog1.Parent = this;
                 this.Close();
             }
         }
