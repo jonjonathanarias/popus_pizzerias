@@ -83,5 +83,10 @@ namespace popus_pizzeria
         {
             agregarControles(new frmKitchenView());
         }
+
+        private void btnConfiguraciones_Click(object sender, EventArgs e)
+        {
+            agregarControles(new frmArqueoCaja(DateTime.Today));
+        }
     }
 }

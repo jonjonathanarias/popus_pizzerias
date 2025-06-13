@@ -166,6 +166,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArqueoCaja.cs" />
     <Compile Include="ComandaPrinter.cs" />
     <Compile Include="ComandaPrinterPreview.cs" />
     <Compile Include="frmHome.cs">
@@ -192,6 +193,12 @@
     </Compile>
     <Compile Include="Model\frmAddCustomer.Designer.cs">
       <DependentUpon>frmAddCustomer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Model\frmArqueoCaja.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Model\frmArqueoCaja.Designer.cs">
+      <DependentUpon>frmArqueoCaja.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\frmBillList.cs">
       <SubType>Form</SubType>
@@ -320,6 +327,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Model\frmAddCustomer.resx">
       <DependentUpon>frmAddCustomer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Model\frmArqueoCaja.resx">
+      <DependentUpon>frmArqueoCaja.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Model\frmBillList.resx">
       <DependentUpon>frmBillList.cs</DependentUpon>

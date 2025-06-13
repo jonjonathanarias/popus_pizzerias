@@ -442,7 +442,7 @@ namespace popus_pizzeria.Model
         
         private void btnDin_Click(object sender, EventArgs e)
         {
-            OrderType = "Din In";
+            OrderType = "Mesas";
             // Mostrar formulario de selección de mesa
             frmTableSelect frm = new frmTableSelect();
             if (frm.ShowDialog() == DialogResult.OK)
@@ -491,7 +491,7 @@ namespace popus_pizzeria.Model
 
             if (MainId == 0) // insert
             {
-                qry1 = @"insert into tblMain values (@aDate, @aTime, @TableName, @WaiterName, @status, @orderType, @total, @received, @change, @CustomerID);
+                qry1 = @"insert into tblMain values (@aDate, @aTime, @TableName, @WaiterName, @status, @orderType, @total, @received, @change, @CustomerID, 0);
                                              Select SCOPE_IDENTITY()";
             }
             else //update

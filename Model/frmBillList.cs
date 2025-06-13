@@ -31,8 +31,10 @@ namespace popus_pizzeria.Model
 
         private void LoadDate()
         {
-            string qry = @"Select MainID, TableName, WaiterName, orderType, status, total from tblMain
-                                where status <> 'Pendiente' ";
+            string qry = @"SELECT MainID, TableName, WaiterName, orderType, status, total 
+               FROM tblMain
+               WHERE status = 'Completo'";
+
             ListBox lb = new ListBox();
             lb.Items.Add(dgvid);
             lb.Items.Add(dgvTable);
