@@ -166,6 +166,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComandaPrinter.cs" />
+    <Compile Include="ComandaPrinterPreview.cs" />
     <Compile Include="frmHome.cs">
       <SubType>Form</SubType>
     </Compile>
