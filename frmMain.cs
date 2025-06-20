@@ -88,5 +88,10 @@ namespace popus_pizzeria
         {
             agregarControles(new frmArqueoCaja(DateTime.Today));
         }
+
+        private void DiseñoMesa_Click(object sender, EventArgs e)
+        {
+            agregarControles(new frmTableDesigner());
+        }
     }
 }

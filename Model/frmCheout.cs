@@ -20,12 +20,14 @@ namespace popus_pizzeria.Model
 
         public double amt;
         public int MainID = 0;
+        public string TableName = "";
 
         private void txtRecived_TextChanged(object sender, EventArgs e)
         {
             double amt = 0;
             double receipt = 0;
             double change = 0;
+            
 
             double.TryParse(txtBillAmount.Text, out amt);
             double.TryParse(txtRecived.Text, out receipt);
@@ -40,19 +42,40 @@ namespace popus_pizzeria.Model
             string qry = @"update tblMain set total = @total, received = @rec, change = @change, status = 'Pagado'
                                             where MainID = @id";
 
+            string updateTableQry = "UPDATE tables SET status = 'Pagada' WHERE tname = @tableName";
+
+
             Hashtable ht = new Hashtable();
             ht.Add("@id", MainID);
             ht.Add("@total", txtBillAmount.Text);
             ht.Add("@rec", txtRecived.Text);
             ht.Add("@change", txtChange.Text);
+            
+            if (!string.IsNullOrEmpty(TableName)) 
+            {
+                ht.Add("@tableName", TableName);
+            }
+            
 
-            if (MainClass.SQl(qry, ht)>0)
+            if (MainClass.SQl(qry, ht) > 0)
             {
                 guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.OK;
                 guna2MessageDialog1.Show("Cobrado correctamente");
                 guna2MessageDialog1.Parent = this;
-                this.Close();
+
+                
+                if (!string.IsNullOrEmpty(TableName))
+                {
+                    
+                    Hashtable htTableUpdate = new Hashtable();
+                    htTableUpdate.Add("@tableName", TableName);
+                    MainClass.SQl(updateTableQry, htTableUpdate);
+                }
+                
+
+                this.Close(); 
             }
+            
         }
 
         private void frmCheout_Load(object sender, EventArgs e)

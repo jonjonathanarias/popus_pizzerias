@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -22,29 +23,50 @@ namespace popus_pizzeria.Model
 
         public override void btnGuardar_Click(object sender, EventArgs e)
         {
-            string qry = "";
+            string nombreNuevo = txtNombre.Text.Trim();
 
-            if (id == 0)
+            if (string.IsNullOrWhiteSpace(nombreNuevo))
             {
-                qry = "Insert into tables Values(@Name)";
-            }
-            else
-            {
-                qry = "Update tables Set tname = @Name where tid = @id ";
+                MessageBox.Show("Por favor ingresá el nombre de la mesa.");
+                return;
             }
 
-            Hashtable ht = new Hashtable();
-            ht.Add("@id", id);
-            ht.Add("@Name", txtNombre.Text);
+            // Verificar duplicado
+            string consulta = "SELECT COUNT(*) FROM tables WHERE tname = @Name AND tid <> @id";
+            SqlCommand checkCmd = new SqlCommand(consulta, MainClass.con);
+            checkCmd.Parameters.AddWithValue("@Name", nombreNuevo);
+            checkCmd.Parameters.AddWithValue("@id", id);
+
+            if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
+            int cantidad = Convert.ToInt32(checkCmd.ExecuteScalar());
+            MainClass.con.Close();
+
+            if (cantidad > 0)
+            {
+                MessageBox.Show("Ya existe una mesa con ese nombre.");
+                return;
+            }
+
+            // Guardar
+            string qry = (id == 0)
+                ? "INSERT INTO tables (tname) VALUES (@Name)"
+                : "UPDATE tables SET tname = @Name WHERE tid = @id";
+
+            Hashtable ht = new Hashtable
+            {
+                { "@id", id },
+                { "@Name", nombreNuevo }
+            };
 
             if (MainClass.SQl(qry, ht) > 0)
             {
-                MessageBox.Show("Mesa Guardada");
-                id = 0;
-                txtNombre.Text = "";
-                txtNombre.Focus();
+                MessageBox.Show("Mesa guardada correctamente.");
+                this.DialogResult = DialogResult.OK;
+                this.Close();
             }
         }
+
+
 
         public override void btnCerrar_Click(object sender, EventArgs e)
         {
