@@ -73,11 +73,13 @@ namespace popus_pizzeria.Model
 
             if (id == 0)//para insertar
             {
-                qry = "Insert into products Values(@Name, @Price, @Cat, @Img)";
+                qry = "Insert into products (pName, pPrice, categoryID, pImage, pCode) VALUES (@Name, @Price, @Cat, @Img, @Code)";
+
             }
             else//para actuaslizar
             {
-                qry = "Update products Set pName = @Name, pPrice = @Price, categoryID = @Cat, pImage = @Img where pID = @id ";
+                qry = "Update products Set pName = @Name, pPrice = @Price, categoryID = @Cat, pImage = @Img, pCode = @Code where pID = @id ";
+
             }
 
             //para la imagen
@@ -90,6 +92,7 @@ namespace popus_pizzeria.Model
             Hashtable ht = new Hashtable();
             ht.Add("@id", id);
             ht.Add("@Name", txtNombre.Text);
+            ht.Add("@Code", txtCodigo.Text.Trim());
             ht.Add("@Price", txtPrice.Text);
             ht.Add("@Cat", Convert.ToInt32(cbCat.SelectedValue));
             ht.Add("@Img", imageByteArray);
@@ -97,10 +100,11 @@ namespace popus_pizzeria.Model
 
             if (MainClass.SQl(qry, ht) > 0)
             {
-                MessageBox.Show("Empleado Registrado");
+                guna2MessageDialog1.Show("Producto Registrado");
                 id = 0;
                 cID = 0;
                 txtNombre.Text = "";
+                txtCodigo.Text = "";
                 txtPrice.Text = "";
                 cbCat.SelectedIndex = 0;
                 cbCat.SelectedIndex = -1;
@@ -126,6 +130,7 @@ namespace popus_pizzeria.Model
             if (dt.Rows.Count > 0)
             {
                 txtNombre.Text = dt.Rows[0]["pName"].ToString();
+                txtCodigo.Text = dt.Rows[0]["pCode"].ToString();
                 txtPrice.Text = dt.Rows[0]["pPrice"].ToString();
 
                 Byte[] imageArray = (byte[])(dt.Rows[0]["pImage"]);

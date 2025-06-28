@@ -15,8 +15,8 @@ namespace popus_pizzeria
     {
         public static void CargarPlanoVisual(
             Panel contenedor,
-            Action<Guna2Button>? alSeleccionarMesa = null,
-            Action<Guna2Button>? alDobleClickMesa = null)
+            Action<Guna2Button> alSeleccionarMesa = null,
+            Action<Guna2Button> alDobleClickMesa = null)
         {
             contenedor.Controls.Clear();
 
@@ -80,6 +80,7 @@ namespace popus_pizzeria
 
                 contenedor.Controls.Add(btn);
             }
+
         }
     }
 

@@ -26,14 +26,16 @@ namespace popus_pizzeria.View
 
         public void GetData()
         {
-            string qry = "Select pID,pName,pPrice,categoryID, c.catName From products p inner join category c on c.catID = p.categoryID where pName like '%" + txtBuscar.Text + "%' ";
+            string qry = "SELECT pID, pName, pPrice, categoryID, c.catName, pCode FROM products p INNER JOIN category c ON c.catID = p.categoryID WHERE pName LIKE '%" + txtBuscar.Text + "%' OR pCode LIKE '%" + txtBuscar.Text + "%'";
             ListBox lb = new ListBox();
+
             lb.Items.Add(dgvid);
             lb.Items.Add(dgvName);
             lb.Items.Add(dgvPrice);
             lb.Items.Add(dgvcID);
             lb.Items.Add(dgvCat);
-            
+            lb.Items.Add(dgvCode);
+
 
             MainClass.LoadData(qry, guna2DataGridView1, lb);
 
@@ -51,6 +53,7 @@ namespace popus_pizzeria.View
             GetData();
         }
 
+
         private void guna2DataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (guna2DataGridView1.CurrentCell.OwningColumn.Name == "dgvedit")
@@ -63,6 +66,7 @@ namespace popus_pizzeria.View
                     frmProductsAdd frm = new frmProductsAdd();
                     frm.id = Convert.ToInt32(guna2DataGridView1.CurrentRow.Cells["dgvid"].Value);
                     frm.txtNombre.Text = Convert.ToString(guna2DataGridView1.CurrentRow.Cells["dgvName"].Value);
+                    frm.txtCodigo.Text = Convert.ToString(guna2DataGridView1.CurrentRow.Cells["dgvCode"].Value);
                     frm.txtPrice.Text = Convert.ToString(guna2DataGridView1.CurrentRow.Cells["dgvPrice"].Value);
                     frm.cbCat.Text = Convert.ToString(guna2DataGridView1.CurrentRow.Cells["dgvCat"].Value);
                     

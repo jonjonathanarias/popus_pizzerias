@@ -39,8 +39,14 @@ namespace popus_pizzeria.Model
 
         public override void btnGuardar_Click(object sender, EventArgs e)
         {
-            string qry = @"update tblMain set total = @total, received = @rec, change = @change, status = 'Pagado'
-                                            where MainID = @id";
+            string qry = @"UPDATE tblMain 
+               SET total = @total, 
+                   received = @rec, 
+                   change = @change, 
+                   status = 'Pagado', 
+                   paymentMethod = @paymentMethod 
+               WHERE MainID = @id";
+
 
             string updateTableQry = "UPDATE tables SET status = 'Pagada' WHERE tname = @tableName";
 
@@ -50,12 +56,21 @@ namespace popus_pizzeria.Model
             ht.Add("@total", txtBillAmount.Text);
             ht.Add("@rec", txtRecived.Text);
             ht.Add("@change", txtChange.Text);
-            
+            ht.Add("@paymentMethod", cmbPaymentMethod.Text);
+
+
             if (!string.IsNullOrEmpty(TableName)) 
             {
                 ht.Add("@tableName", TableName);
             }
-            
+
+            if (string.IsNullOrWhiteSpace(cmbPaymentMethod.Text))
+            {
+                MessageBox.Show("Seleccione un medio de pago");
+                return;
+            }
+
+
 
             if (MainClass.SQl(qry, ht) > 0)
             {
@@ -77,6 +92,22 @@ namespace popus_pizzeria.Model
             }
             
         }
+
+        private void cmbPaymentMethod_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbPaymentMethod.Text == "Efectivo")
+            {
+                txtRecived.Enabled = true;
+                txtRecived.Text = "";
+            }
+            else
+            {
+                txtRecived.Enabled = false;
+                txtRecived.Text = txtBillAmount.Text;
+                txtChange.Text = "0";
+            }
+        }
+
 
         private void frmCheout_Load(object sender, EventArgs e)
         {

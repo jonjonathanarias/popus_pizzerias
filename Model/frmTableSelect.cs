@@ -25,80 +25,65 @@ namespace popus_pizzeria.Model
         private int mesaSeleccionadaId = -1;
         private Timer timerLiberacion;
         private int minutosParaLiberar = 3;
+        private bool hayPedidoAbierto = false;
+        private int mesaPedidoAbierta = -1;
+        public int PedidoMainID { get; set; }
+
 
 
 
         private void frmTableSelect_Load(object sender, EventArgs e)
         {
-            string qry = "Select * from tables";
-            SqlCommand cmd = new SqlCommand(qry, MainClass.con);
-            DataTable dt = new DataTable();
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            da.Fill(dt);
+            panelMesas.Controls.Clear(); // Asegurate que panelMesas sea el panel visual
 
-            panelMesas.Controls.Clear();
-            string zonasQry = "SELECT * FROM zonas";
-            SqlDataAdapter daZ = new SqlDataAdapter(zonasQry, MainClass.con);
-            DataTable zonas = new DataTable();
-            daZ.Fill(zonas);
-
-            foreach (DataRow row in zonas.Rows)
-            {
-                var zona = new Panel
+            PlanoHelper.CargarPlanoVisual(
+                panelMesas,
+                alSeleccionarMesa: (btn) =>
                 {
-                    Location = new Point(Convert.ToInt32(row["x"]), Convert.ToInt32(row["y"])),
-                    Width = Convert.ToInt32(row["ancho"]),
-                    Height = Convert.ToInt32(row["alto"]),
-                    BackColor = row["tipo"].ToString().Contains("Mostrador") ? Color.DarkRed :
-                                row["tipo"].ToString().Contains("Interno") ? Color.LightGreen : Color.LightBlue,
-                    BorderStyle = BorderStyle.FixedSingle,
-                    Tag = row["tipo"].ToString()
-                };
+                    int tid = Convert.ToInt32(btn.Tag);
+                    TableName = btn.Text;
+                    mesaSeleccionadaId = tid;
 
-                zona.Controls.Add(new Label
+                    // Buscar el MainID del pedido activo en esa mesa
+                    string qry = "SELECT MainID FROM tblMain WHERE TableName = @TableName AND status = 'Pendiente'";
+                    SqlCommand cmd = new SqlCommand(qry, MainClass.con);
+                    cmd.Parameters.AddWithValue("@TableName", TableName);
+
+                    if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
+                    object result = cmd.ExecuteScalar();
+                    if (MainClass.con.State == ConnectionState.Open) MainClass.con.Close();
+
+                    if (result != null)
+                        PedidoMainID = Convert.ToInt32(result);  // Lo usamos luego en frmPOS
+                    else
+                        PedidoMainID = 0;  // No hay pedido activo
+
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                },
+                alDobleClickMesa: (btn) =>
                 {
-                    Text = row["nombre"].ToString(),
-                    Location = new Point(5, 5),
-                    BackColor = Color.Transparent
-                });
+                    int tid = Convert.ToInt32(btn.Tag);
 
-                panelMesas.Controls.Add(zona);
-            }
+                    // Marcar como Libre
+                    string qry = "UPDATE tables SET status = 'Libre' WHERE tid = @tid";
+                    Hashtable ht = new Hashtable { { "@tid", tid } };
+                    MainClass.SQl(qry, ht);
 
-
-            foreach (DataRow row in dt.Rows)
-            {
-                Guna2Button btn = new Guna2Button();
-                btn.Text = row["tname"].ToString();
-                btn.Width = 60;
-                btn.Height = 60;
-                btn.Location = new Point(Convert.ToInt32(row["xpos"]), Convert.ToInt32(row["ypos"]));
-
-                string estado = row["status"].ToString();
-                switch (estado)
-                {
-                    case "Libre":
-                        btn.FillColor = Color.Green;
-                        break;
-                    case "Ocupada":
-                        btn.FillColor = Color.Red;
-                        break;
-                    case "Pagada":
-                        btn.FillColor = Color.Blue;
-                        break;
+                    mesaSeleccionadaId = -1;
+                    mesasPagadas.Remove(tid);
+                    frmTableSelect_Load(null, null);
                 }
+            );
 
-                btn.Tag = row["tid"];
-                btn.Click += b_Click;
-                btn.DoubleClick += Mesa_DoubleClick;
-
-
-                panelMesas.Controls.Add(btn);
-            }
+            
 
             IniciarTimerLiberacion();
             InicializarBotonCheckout();
         }
+
+
+
         private void InicializarBotonCheckout()
         {
             if (!this.Controls.ContainsKey("btnCheckout"))
@@ -203,6 +188,8 @@ namespace popus_pizzeria.Model
             TableName = btn.Text;
             mesaSeleccionadaId = tid;
             
+
+
             this.DialogResult = DialogResult.OK;
             this.Close();
         }

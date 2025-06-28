@@ -45,7 +45,7 @@
             this.guna2ControlBox2 = new Guna.UI2.WinForms.Guna2ControlBox();
             this.btnCerrar = new Guna.UI2.WinForms.Guna2ControlBox();
             this.CenterPanel = new Guna.UI2.WinForms.Guna2Panel();
-            this.DiseñoMesa = new Guna.UI2.WinForms.Guna2Button();
+            this.ExcelCosto = new Guna.UI2.WinForms.Guna2Button();
             this.guna2Panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.guna2PictureBox1)).BeginInit();
             this.guna2Panel2.SuspendLayout();
@@ -53,8 +53,8 @@
             // 
             // guna2Panel1
             // 
-            this.guna2Panel1.Controls.Add(this.DiseñoMesa);
             this.guna2Panel1.Controls.Add(this.btnProductos);
+            this.guna2Panel1.Controls.Add(this.ExcelCosto);
             this.guna2Panel1.Controls.Add(this.btnConfiguraciones);
             this.guna2Panel1.Controls.Add(this.btnEmpleados);
             this.guna2Panel1.Controls.Add(this.btnCocina);
@@ -367,31 +367,31 @@
             this.CenterPanel.Size = new System.Drawing.Size(1039, 665);
             this.CenterPanel.TabIndex = 0;
             // 
-            // DiseñoMesa
+            // ExcelCosto
             // 
-            this.DiseñoMesa.AutoRoundedCorners = true;
-            this.DiseñoMesa.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(50)))), ((int)(((byte)(55)))));
-            this.DiseñoMesa.BorderRadius = 27;
-            this.DiseñoMesa.ButtonMode = Guna.UI2.WinForms.Enums.ButtonMode.RadioButton;
-            this.DiseñoMesa.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.DiseñoMesa.CustomizableEdges.BottomRight = false;
-            this.DiseñoMesa.CustomizableEdges.TopRight = false;
-            this.DiseñoMesa.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.DiseñoMesa.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.DiseñoMesa.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.DiseñoMesa.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.DiseñoMesa.FillColor = System.Drawing.Color.Transparent;
-            this.DiseñoMesa.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.DiseñoMesa.ForeColor = System.Drawing.Color.White;
-            this.DiseñoMesa.Image = global::popus_pizzeria.Properties.Resources.home;
-            this.DiseñoMesa.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
-            this.DiseñoMesa.ImageOffset = new System.Drawing.Point(10, 0);
-            this.DiseñoMesa.Location = new System.Drawing.Point(29, 170);
-            this.DiseñoMesa.Name = "DiseñoMesa";
-            this.DiseñoMesa.Size = new System.Drawing.Size(210, 56);
-            this.DiseñoMesa.TabIndex = 3;
-            this.DiseñoMesa.Text = "Inicio";
-            this.DiseñoMesa.Click += new System.EventHandler(this.DiseñoMesa_Click);
+            this.ExcelCosto.AutoRoundedCorners = true;
+            this.ExcelCosto.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(50)))), ((int)(((byte)(55)))));
+            this.ExcelCosto.BorderRadius = 27;
+            this.ExcelCosto.ButtonMode = Guna.UI2.WinForms.Enums.ButtonMode.RadioButton;
+            this.ExcelCosto.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.ExcelCosto.CustomizableEdges.BottomRight = false;
+            this.ExcelCosto.CustomizableEdges.TopRight = false;
+            this.ExcelCosto.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.ExcelCosto.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.ExcelCosto.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.ExcelCosto.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.ExcelCosto.FillColor = System.Drawing.Color.Transparent;
+            this.ExcelCosto.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.ExcelCosto.ForeColor = System.Drawing.Color.White;
+            this.ExcelCosto.Image = global::popus_pizzeria.Properties.Resources.settings_3873641;
+            this.ExcelCosto.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.ExcelCosto.ImageOffset = new System.Drawing.Point(10, 0);
+            this.ExcelCosto.Location = new System.Drawing.Point(29, 716);
+            this.ExcelCosto.Name = "ExcelCosto";
+            this.ExcelCosto.Size = new System.Drawing.Size(210, 56);
+            this.ExcelCosto.TabIndex = 2;
+            this.ExcelCosto.Text = "Costos";
+            this.ExcelCosto.Click += new System.EventHandler(this.ExcelCosto_Click);
             // 
             // frmMain
             // 
@@ -436,6 +436,6 @@
         private Guna.UI2.WinForms.Guna2Button btnConfiguraciones;
         private System.Windows.Forms.Label lblUser;
         private Guna.UI2.WinForms.Guna2Button btnPos;
-        private Guna.UI2.WinForms.Guna2Button DiseñoMesa;
+        private Guna.UI2.WinForms.Guna2Button ExcelCosto;
     }
 }

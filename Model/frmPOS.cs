@@ -231,7 +231,7 @@ namespace popus_pizzeria.Model
 
 
 
-        private void AddItems(string id,string proID, string name, string cat, string price, Image pimage)
+        private void AddItems(string code, string proID, string name, string cat, string price, Image pimage)
         {
             bool found = false;
             var w = new ucProduct()
@@ -244,6 +244,10 @@ namespace popus_pizzeria.Model
                 Width = itemWidth,
                 Height = itemHeight
             };
+            w.Tag = id; // reemplazar por el código real
+            w.Tag = code; // Aquí sí va el código inventado del producto
+
+
 
             if (currentX + itemWidth > ProductPanel.Width)
             {
@@ -317,20 +321,26 @@ namespace popus_pizzeria.Model
                 Byte[] imagearry = (byte[])item["pImage"];
                 Byte[] imagebytearray = imagearry;
 
-                AddItems("0",item["pID"].ToString(), item["pName"].ToString(), item["catName"].ToString(), 
-                    item["pPrice"].ToString(), Image.FromStream(new MemoryStream(imagearry)));
+                AddItems(item["pCode"].ToString(), item["pID"].ToString(), item["pName"].ToString(), item["catName"].ToString(), item["pPrice"].ToString(), Image.FromStream(new MemoryStream(imagearry)));
+
             }
         }
 
         private void txtBuscar_TextChanged(object sender, EventArgs e)
         {
+            string busqueda = txtBuscar.Text.Trim().ToLower();
+
             foreach (Control item in ProductPanel.Controls)
             {
                 if (item is ucProduct pro)
                 {
-                    pro.Visible = pro.PName.ToLower().Contains(txtBuscar.Text.Trim().ToLower());
+                    string nombre = pro.PName.ToLower();
+                    string codigo = pro.Tag?.ToString().ToLower() ?? "";
+
+                    pro.Visible = nombre.Contains(busqueda) || codigo.Contains(busqueda);
                 }
             }
+
 
             ReorganizeProducts(); // reorganiza los visibles
         }
@@ -512,7 +522,7 @@ namespace popus_pizzeria.Model
             
         }
 
-        
+
         private void btnDin_Click(object sender, EventArgs e)
         {
             OrderType = "Mesas";
@@ -521,29 +531,50 @@ namespace popus_pizzeria.Model
             {
                 lblTable.Text = frm.TableName;
                 lblTable.Visible = true;
+
+                // 🔴 Marcar la mesa como ocupada
+                string qry = "UPDATE tables SET status = 'Ocupada' WHERE tname = @tname";
+                using (SqlCommand cmd = new SqlCommand(qry, MainClass.con))
+                {
+                    cmd.Parameters.AddWithValue("@tname", frm.TableName);
+                    if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
+                    cmd.ExecuteNonQuery();
+                    if (MainClass.con.State == ConnectionState.Open) MainClass.con.Close();
+                }
+
+                // ✅ Si hay pedido abierto, lo cargamos
+                if (frm.PedidoMainID > 0)
+                {
+                    id = frm.PedidoMainID;
+                    MainId = frm.PedidoMainID;
+                    LoadEntries(); // ← ya lo tenés
+                }
+                else
+                {
+                    // 🔍 Solo pedimos mozo si no hay pedido
+                    frmWaiterSelect frm2 = new frmWaiterSelect();
+                    if (frm2.ShowDialog() == DialogResult.OK)
+                    {
+                        lblWaiter.Text = frm2.WaiterName;
+                        lblWaiter.Visible = true;
+                    }
+                    else
+                    {
+                        // ❌ Si no selecciona mozo, cancelamos todo
+                        this.DialogResult = DialogResult.Cancel;
+                        this.Close();
+                        return;
+                    }
+                }
             }
             else
             {
-                lblTable.Text = "";
-                lblTable.Visible = false;
+                // ❌ Si no seleccionó ninguna mesa, salir también
+                this.DialogResult = DialogResult.Cancel;
+                this.Close();
             }
-
-            // Mostrar formulario de selección de mozo
-            frmWaiterSelect frm2 = new frmWaiterSelect();
-            if (frm2.ShowDialog() == DialogResult.OK)
-            {
-                lblWaiter.Text = frm2.WaiterName;
-                lblWaiter.Visible = true;
-            }
-            else
-            {
-                lblWaiter.Text = "";
-                lblWaiter.Visible = false;
-            }
-
-            guna2MessageDialog1.Show("Mesa seleccionada: " + frm.TableName);
-            guna2MessageDialog1.Show("Mozo seleccionado: " + frm2.WaiterName);
         }
+
 
         private void btnAceptar_Click(object sender, EventArgs e)
         {

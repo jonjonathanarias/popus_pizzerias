@@ -36,6 +36,8 @@
             this.cbCat = new Guna.UI2.WinForms.Guna2ComboBox();
             this.btnBrowse = new Guna.UI2.WinForms.Guna2Button();
             this.txtImage = new Guna.UI2.WinForms.Guna2PictureBox();
+            this.Codigo = new System.Windows.Forms.Label();
+            this.txtCodigo = new Guna.UI2.WinForms.Guna2TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.txtImage)).BeginInit();
             this.SuspendLayout();
             // 
@@ -105,7 +107,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(45, 247);
+            this.label4.Location = new System.Drawing.Point(45, 333);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(84, 23);
             this.label4.TabIndex = 3;
@@ -121,7 +123,7 @@
             this.cbCat.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.cbCat.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
             this.cbCat.ItemHeight = 30;
-            this.cbCat.Location = new System.Drawing.Point(49, 281);
+            this.cbCat.Location = new System.Drawing.Point(49, 372);
             this.cbCat.Name = "cbCat";
             this.cbCat.Size = new System.Drawing.Size(304, 36);
             this.cbCat.TabIndex = 5;
@@ -154,6 +156,35 @@
             this.txtImage.TabIndex = 6;
             this.txtImage.TabStop = false;
             // 
+            // Codigo
+            // 
+            this.Codigo.AutoSize = true;
+            this.Codigo.Location = new System.Drawing.Point(45, 239);
+            this.Codigo.Name = "Codigo";
+            this.Codigo.Size = new System.Drawing.Size(138, 23);
+            this.Codigo.TabIndex = 3;
+            this.Codigo.Text = "Codigo Opcional";
+            // 
+            // txtCodigo
+            // 
+            this.txtCodigo.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtCodigo.DefaultText = "";
+            this.txtCodigo.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
+            this.txtCodigo.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(226)))), ((int)(((byte)(226)))));
+            this.txtCodigo.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
+            this.txtCodigo.DisabledState.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
+            this.txtCodigo.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.txtCodigo.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.txtCodigo.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.txtCodigo.Location = new System.Drawing.Point(49, 279);
+            this.txtCodigo.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.txtCodigo.Name = "txtCodigo";
+            this.txtCodigo.PasswordChar = '\0';
+            this.txtCodigo.PlaceholderText = "";
+            this.txtCodigo.SelectedText = "";
+            this.txtCodigo.Size = new System.Drawing.Size(304, 43);
+            this.txtCodigo.TabIndex = 4;
+            // 
             // frmProductsAdd
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 23F);
@@ -165,7 +196,9 @@
             this.Controls.Add(this.txtPrice);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
+            this.Controls.Add(this.txtCodigo);
             this.Controls.Add(this.txtNombre);
+            this.Controls.Add(this.Codigo);
             this.Controls.Add(this.label2);
             this.Name = "frmProductsAdd";
             this.Text = "frmProductsAdd";
@@ -186,5 +219,7 @@
         private Guna.UI2.WinForms.Guna2PictureBox txtImage;
         private Guna.UI2.WinForms.Guna2Button btnBrowse;
         public Guna.UI2.WinForms.Guna2ComboBox cbCat;
+        private System.Windows.Forms.Label Codigo;
+        public Guna.UI2.WinForms.Guna2TextBox txtCodigo;
     }
 }

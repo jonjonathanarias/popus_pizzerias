@@ -148,6 +148,7 @@ namespace popus_pizzeria.Model
 
         private void btnGuardarPosiciones_Click_1(object sender, EventArgs e)
         {
+            // Guardar zonas especiales
             foreach (Control ctrl in panelPlano.Controls)
             {
                 if (ctrl is Panel zona && zona.Tag != null)
@@ -159,10 +160,10 @@ namespace popus_pizzeria.Model
                     int h = zona.Height;
 
                     string qryUpsert = @"
-                                    IF EXISTS (SELECT 1 FROM zonas WHERE tipo = @tipo)
-                                        UPDATE zonas SET x = @x, y = @y, ancho = @w, alto = @h WHERE tipo = @tipo
-                                    ELSE
-                                        INSERT INTO zonas (nombre, tipo, x, y, ancho, alto) VALUES (@nombre, @tipo, @x, @y, @w, @h)";
+                IF EXISTS (SELECT 1 FROM zonas WHERE tipo = @tipo)
+                    UPDATE zonas SET x = @x, y = @y, ancho = @w, alto = @h WHERE tipo = @tipo
+                ELSE
+                    INSERT INTO zonas (nombre, tipo, x, y, ancho, alto) VALUES (@nombre, @tipo, @x, @y, @w, @h)";
 
                     Hashtable ht = new Hashtable
                     {
@@ -178,10 +179,32 @@ namespace popus_pizzeria.Model
                 }
             }
 
+            // Guardar posiciones de las mesas
+            foreach (Control ctrl in panelPlano.Controls)
+            {
+                if (ctrl is Guna2Button btnMesa && btnMesa.Tag != null)
+                {
+                    int id = Convert.ToInt32(btnMesa.Tag);
+                    int x = btnMesa.Left;
+                    int y = btnMesa.Top;
 
-            MessageBox.Show("Posiciones guardadas correctamente");
-        
+                    string qryUpdate = "UPDATE tables SET xpos = @x, ypos = @y WHERE tid = @id";
+                    Hashtable ht = new Hashtable
+                    {
+                        { "@x", x },
+                        { "@y", y },
+                        { "@id", id }
+                    };
+
+                    MainClass.SQl(qryUpdate, ht);
+                    
+
+                }
+            }
+
+            guna2MessageDialog1.Show("Posiciones guardadas correctamente");
         }
+
 
         private void btnEliminarMesa_Click(object sender, EventArgs e)
         {

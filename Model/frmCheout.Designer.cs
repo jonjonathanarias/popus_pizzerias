@@ -35,6 +35,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.txtRecived = new Guna.UI2.WinForms.Guna2TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.cmbPaymentMethod = new Guna.UI2.WinForms.Guna2ComboBox();
             this.SuspendLayout();
             // 
             // label1
@@ -140,17 +142,52 @@
             this.txtRecived.TabIndex = 9;
             this.txtRecived.TextChanged += new System.EventHandler(this.txtRecived_TextChanged);
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(412, 223);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(114, 23);
+            this.label5.TabIndex = 7;
+            this.label5.Text = "Pago recibido";
+            // 
+            // cmbPaymentMethod
+            // 
+            this.cmbPaymentMethod.BackColor = System.Drawing.Color.Transparent;
+            this.cmbPaymentMethod.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cmbPaymentMethod.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPaymentMethod.FocusedColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.cmbPaymentMethod.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.cmbPaymentMethod.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.cmbPaymentMethod.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
+            this.cmbPaymentMethod.ItemHeight = 30;
+            this.cmbPaymentMethod.Location = new System.Drawing.Point(416, 257);
+            this.cmbPaymentMethod.Name = "cmbPaymentMethod";
+            this.cmbPaymentMethod.Size = new System.Drawing.Size(304, 36);
+            this.cmbPaymentMethod.TabIndex = 11;
+            this.cmbPaymentMethod.SelectedIndexChanged += new System.EventHandler(this.cmbPaymentMethod_SelectedIndexChanged);
+            // 
             // frmCheout
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 23F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.cmbPaymentMethod);
             this.Controls.Add(this.txtRecived);
             this.Controls.Add(this.txtChange);
             this.Controls.Add(this.txtBillAmount);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
+            this.cmbPaymentMethod.Items.AddRange(new object[] {
+                "Efectivo",
+                "Transferencia",
+                "QR",
+                "Tarjeta de Débito",
+                "Tarjeta de Crédito"
+            });
+
             this.Controls.Add(this.guna2ControlBox1);
             this.Name = "frmCheout";
             this.Text = "frmCheout";
@@ -159,6 +196,8 @@
             this.PerformLayout();
 
         }
+
+
 
         #endregion
 
@@ -169,5 +208,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label4;
         public Guna.UI2.WinForms.Guna2TextBox txtRecived;
+        private System.Windows.Forms.Label label5;
+        public Guna.UI2.WinForms.Guna2ComboBox cmbPaymentMethod;
     }
 }

@@ -32,7 +32,7 @@
             this.guna2ControlBox1 = new Guna.UI2.WinForms.Guna2ControlBox();
             this.guna2PictureBox1 = new Guna.UI2.WinForms.Guna2PictureBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.panelMesas = new System.Windows.Forms.FlowLayoutPanel();
+            this.panelMesas = new System.Windows.Forms.Panel();
             this.guna2Panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.guna2PictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -46,7 +46,7 @@
             this.guna2Panel1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(139)))), ((int)(((byte)(48)))), ((int)(((byte)(4)))));
             this.guna2Panel1.Location = new System.Drawing.Point(0, 0);
             this.guna2Panel1.Name = "guna2Panel1";
-            this.guna2Panel1.Size = new System.Drawing.Size(1224, 108);
+            this.guna2Panel1.Size = new System.Drawing.Size(1273, 108);
             this.guna2Panel1.TabIndex = 1;
             // 
             // guna2ControlBox1
@@ -54,7 +54,7 @@
             this.guna2ControlBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.guna2ControlBox1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(139)))), ((int)(((byte)(152)))), ((int)(((byte)(166)))));
             this.guna2ControlBox1.IconColor = System.Drawing.Color.White;
-            this.guna2ControlBox1.Location = new System.Drawing.Point(1155, 31);
+            this.guna2ControlBox1.Location = new System.Drawing.Point(1204, 31);
             this.guna2ControlBox1.Name = "guna2ControlBox1";
             this.guna2ControlBox1.Size = new System.Drawing.Size(45, 29);
             this.guna2ControlBox1.TabIndex = 3;
@@ -90,14 +90,14 @@
             this.panelMesas.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelMesas.Location = new System.Drawing.Point(0, 108);
             this.panelMesas.Name = "panelMesas";
-            this.panelMesas.Size = new System.Drawing.Size(1224, 762);
+            this.panelMesas.Size = new System.Drawing.Size(1273, 796);
             this.panelMesas.TabIndex = 2;
             // 
             // frmTableSelect
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1224, 870);
+            this.ClientSize = new System.Drawing.Size(1273, 904);
             this.Controls.Add(this.panelMesas);
             this.Controls.Add(this.guna2Panel1);
             this.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -119,6 +119,6 @@
         public Guna.UI2.WinForms.Guna2PictureBox guna2PictureBox1;
         public System.Windows.Forms.Label label1;
         private Guna.UI2.WinForms.Guna2ControlBox guna2ControlBox1;
-        private System.Windows.Forms.FlowLayoutPanel panelMesas;
+        private System.Windows.Forms.Panel panelMesas;
     }
 }

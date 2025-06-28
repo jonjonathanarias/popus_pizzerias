@@ -32,6 +32,7 @@
             this.btnAgregarMesa = new Guna.UI2.WinForms.Guna2Button();
             this.btnGuardarPosiciones = new Guna.UI2.WinForms.Guna2Button();
             this.btnEliminarMesa = new Guna.UI2.WinForms.Guna2Button();
+            this.guna2MessageDialog1 = new Guna.UI2.WinForms.Guna2MessageDialog();
             this.SuspendLayout();
             // 
             // panelPlano
@@ -54,7 +55,7 @@
             this.btnAgregarMesa.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(194)))), ((int)(((byte)(96)))));
             this.btnAgregarMesa.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnAgregarMesa.ForeColor = System.Drawing.Color.White;
-            this.btnAgregarMesa.Location = new System.Drawing.Point(197, 512);
+            this.btnAgregarMesa.Location = new System.Drawing.Point(321, 512);
             this.btnAgregarMesa.Name = "btnAgregarMesa";
             this.btnAgregarMesa.Size = new System.Drawing.Size(160, 45);
             this.btnAgregarMesa.TabIndex = 2;
@@ -71,10 +72,10 @@
             this.btnGuardarPosiciones.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnGuardarPosiciones.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btnGuardarPosiciones.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btnGuardarPosiciones.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(194)))), ((int)(((byte)(96)))));
+            this.btnGuardarPosiciones.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(246)))), ((int)(((byte)(169)))), ((int)(((byte)(43)))));
             this.btnGuardarPosiciones.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnGuardarPosiciones.ForeColor = System.Drawing.Color.White;
-            this.btnGuardarPosiciones.Location = new System.Drawing.Point(12, 512);
+            this.btnGuardarPosiciones.Location = new System.Drawing.Point(653, 512);
             this.btnGuardarPosiciones.Name = "btnGuardarPosiciones";
             this.btnGuardarPosiciones.Size = new System.Drawing.Size(160, 45);
             this.btnGuardarPosiciones.TabIndex = 3;
@@ -91,15 +92,24 @@
             this.btnEliminarMesa.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnEliminarMesa.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btnEliminarMesa.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btnEliminarMesa.FillColor = System.Drawing.Color.Red;
+            this.btnEliminarMesa.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(50)))), ((int)(((byte)(55)))));
             this.btnEliminarMesa.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnEliminarMesa.ForeColor = System.Drawing.Color.White;
-            this.btnEliminarMesa.Location = new System.Drawing.Point(414, 512);
+            this.btnEliminarMesa.Location = new System.Drawing.Point(487, 512);
             this.btnEliminarMesa.Name = "btnEliminarMesa";
             this.btnEliminarMesa.Size = new System.Drawing.Size(160, 45);
             this.btnEliminarMesa.TabIndex = 2;
             this.btnEliminarMesa.Text = "Eliminar Mesa";
             this.btnEliminarMesa.Click += new System.EventHandler(this.btnEliminarMesa_Click);
+            // 
+            // guna2MessageDialog1
+            // 
+            this.guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.OK;
+            this.guna2MessageDialog1.Caption = "popus_pizzeria";
+            this.guna2MessageDialog1.Icon = Guna.UI2.WinForms.MessageDialogIcon.Information;
+            this.guna2MessageDialog1.Parent = null;
+            this.guna2MessageDialog1.Style = Guna.UI2.WinForms.MessageDialogStyle.Light;
+            this.guna2MessageDialog1.Text = null;
             // 
             // frmTableDesigner
             // 
@@ -110,6 +120,7 @@
             this.Controls.Add(this.btnAgregarMesa);
             this.Controls.Add(this.btnGuardarPosiciones);
             this.Controls.Add(this.panelPlano);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "frmTableDesigner";
             this.Text = "frmTableDesigner";
             this.Load += new System.EventHandler(this.frmTableDesigner_Load_1);
@@ -123,5 +134,6 @@
         protected Guna.UI2.WinForms.Guna2Button btnAgregarMesa;
         protected Guna.UI2.WinForms.Guna2Button btnGuardarPosiciones;
         protected Guna.UI2.WinForms.Guna2Button btnEliminarMesa;
+        private Guna.UI2.WinForms.Guna2MessageDialog guna2MessageDialog1;
     }
 }

@@ -60,7 +60,7 @@ namespace popus_pizzeria
 
         private void btnMesas_Click(object sender, EventArgs e)
         {
-            agregarControles(new frmTableView());
+            agregarControles(new frmTableDesigner());
         }
 
         private void btnEmpleados_Click(object sender, EventArgs e)
@@ -91,7 +91,12 @@ namespace popus_pizzeria
 
         private void DiseñoMesa_Click(object sender, EventArgs e)
         {
-            agregarControles(new frmTableDesigner());
+            
+        }
+
+        private void ExcelCosto_Click(object sender, EventArgs e)
+        {
+            agregarControles(new frmCostosExcel());
         }
     }
 }
