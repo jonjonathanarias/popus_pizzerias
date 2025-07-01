@@ -1,6 +1,6 @@
 ﻿namespace popus_pizzeria.Model
 {
-    partial class frmCostosExcel
+    partial class frmMenuCostos
     {
         /// <summary>
         /// Required designer variable.
@@ -30,13 +30,14 @@
         {
             this.SuspendLayout();
             // 
-            // frmCostosExcel
+            // frmMenuCostos
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1302, 605);
-            this.Name = "frmCostosExcel";
-            this.Text = "frmCostosExcel";
+            this.ClientSize = new System.Drawing.Size(1273, 602);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Name = "frmMenuCostos";
+            this.Text = "frmMenuCostos";
             this.ResumeLayout(false);
 
         }

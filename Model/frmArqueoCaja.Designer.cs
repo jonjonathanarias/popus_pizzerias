@@ -34,6 +34,9 @@
             this.lblDelivery = new System.Windows.Forms.Label();
             this.lblTotalGeneral = new System.Windows.Forms.Label();
             this.btnCerrarArqueo = new Guna.UI2.WinForms.Guna2Button();
+            this.btnCierreX = new Guna.UI2.WinForms.Guna2Button();
+            this.btnCierreY = new Guna.UI2.WinForms.Guna2Button();
+            this.txtResultado = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lblFecha
@@ -95,19 +98,70 @@
             this.btnCerrarArqueo.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(194)))), ((int)(((byte)(96)))));
             this.btnCerrarArqueo.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnCerrarArqueo.ForeColor = System.Drawing.Color.White;
-            this.btnCerrarArqueo.Location = new System.Drawing.Point(169, 296);
+            this.btnCerrarArqueo.Location = new System.Drawing.Point(169, 281);
             this.btnCerrarArqueo.Name = "btnCerrarArqueo";
             this.btnCerrarArqueo.Size = new System.Drawing.Size(229, 45);
             this.btnCerrarArqueo.TabIndex = 4;
-            this.btnCerrarArqueo.Text = "Cerrar Aqueo de Caja";
+            this.btnCerrarArqueo.Text = "Cierre Z";
             this.btnCerrarArqueo.Click += new System.EventHandler(this.btnCerrarArqueo_Click);
+            // 
+            // btnCierreX
+            // 
+            this.btnCierreX.AutoRoundedCorners = true;
+            this.btnCierreX.BackColor = System.Drawing.Color.Transparent;
+            this.btnCierreX.BorderRadius = 21;
+            this.btnCierreX.CustomizableEdges.TopRight = false;
+            this.btnCierreX.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnCierreX.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btnCierreX.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btnCierreX.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btnCierreX.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(194)))), ((int)(((byte)(96)))));
+            this.btnCierreX.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.btnCierreX.ForeColor = System.Drawing.Color.White;
+            this.btnCierreX.Location = new System.Drawing.Point(169, 332);
+            this.btnCierreX.Name = "btnCierreX";
+            this.btnCierreX.Size = new System.Drawing.Size(229, 45);
+            this.btnCierreX.TabIndex = 4;
+            this.btnCierreX.Text = "Cierre X";
+            this.btnCierreX.Click += new System.EventHandler(this.btnCierreX_Click);
+            // 
+            // btnCierreY
+            // 
+            this.btnCierreY.AutoRoundedCorners = true;
+            this.btnCierreY.BackColor = System.Drawing.Color.Transparent;
+            this.btnCierreY.BorderRadius = 21;
+            this.btnCierreY.CustomizableEdges.TopRight = false;
+            this.btnCierreY.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnCierreY.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btnCierreY.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btnCierreY.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btnCierreY.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(194)))), ((int)(((byte)(96)))));
+            this.btnCierreY.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.btnCierreY.ForeColor = System.Drawing.Color.White;
+            this.btnCierreY.Location = new System.Drawing.Point(169, 383);
+            this.btnCierreY.Name = "btnCierreY";
+            this.btnCierreY.Size = new System.Drawing.Size(229, 45);
+            this.btnCierreY.TabIndex = 4;
+            this.btnCierreY.Text = "Cierre Y";
+            this.btnCierreY.Click += new System.EventHandler(this.btnCierreY_Click);
+            // 
+            // txtResultado
+            // 
+            this.txtResultado.AutoSize = true;
+            this.txtResultado.Location = new System.Drawing.Point(561, 58);
+            this.txtResultado.Name = "txtResultado";
+            this.txtResultado.Size = new System.Drawing.Size(0, 16);
+            this.txtResultado.TabIndex = 1;
             // 
             // frmArqueoCaja
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnCierreY);
+            this.Controls.Add(this.btnCierreX);
             this.Controls.Add(this.btnCerrarArqueo);
+            this.Controls.Add(this.txtResultado);
             this.Controls.Add(this.lblTotalGeneral);
             this.Controls.Add(this.lblDelivery);
             this.Controls.Add(this.lblTakeAway);
@@ -115,13 +169,16 @@
             this.Controls.Add(this.lblFecha);
             this.Name = "frmArqueoCaja";
             this.Text = "frmArqueoCaja";
-            this.Controls.SetChildIndex(this.label1, 0);
             this.Controls.SetChildIndex(this.lblFecha, 0);
             this.Controls.SetChildIndex(this.lblDinIn, 0);
             this.Controls.SetChildIndex(this.lblTakeAway, 0);
             this.Controls.SetChildIndex(this.lblDelivery, 0);
             this.Controls.SetChildIndex(this.lblTotalGeneral, 0);
+            this.Controls.SetChildIndex(this.txtResultado, 0);
             this.Controls.SetChildIndex(this.btnCerrarArqueo, 0);
+            this.Controls.SetChildIndex(this.btnCierreX, 0);
+            this.Controls.SetChildIndex(this.btnCierreY, 0);
+            this.Controls.SetChildIndex(this.label1, 0);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -135,5 +192,8 @@
         private System.Windows.Forms.Label lblDelivery;
         private System.Windows.Forms.Label lblTotalGeneral;
         protected Guna.UI2.WinForms.Guna2Button btnCerrarArqueo;
+        protected Guna.UI2.WinForms.Guna2Button btnCierreX;
+        protected Guna.UI2.WinForms.Guna2Button btnCierreY;
+        private System.Windows.Forms.Label txtResultado;
     }
 }

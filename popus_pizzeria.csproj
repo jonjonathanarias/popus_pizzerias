@@ -261,11 +261,11 @@
     <Compile Include="Model\frmCheout.Designer.cs">
       <DependentUpon>frmCheout.cs</DependentUpon>
     </Compile>
-    <Compile Include="Model\frmCostosExcel.cs">
+    <Compile Include="Model\frmMenuCostos.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Model\frmCostosExcel.Designer.cs">
-      <DependentUpon>frmCostosExcel.cs</DependentUpon>
+    <Compile Include="Model\frmMenuCostos.Designer.cs">
+      <DependentUpon>frmMenuCostos.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\frmObservation.cs">
       <SubType>Form</SubType>
@@ -357,6 +357,18 @@
     <Compile Include="View\frmKitchenView.Designer.cs">
       <DependentUpon>frmKitchenView.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\frmMateriaPrima.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\frmMateriaPrima.Designer.cs">
+      <DependentUpon>frmMateriaPrima.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\frmProductoMateriaPrima.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\frmProductoMateriaPrima.Designer.cs">
+      <DependentUpon>frmProductoMateriaPrima.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\frmProductsView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -399,8 +411,8 @@
     <EmbeddedResource Include="Model\frmCheout.resx">
       <DependentUpon>frmCheout.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Model\frmCostosExcel.resx">
-      <DependentUpon>frmCostosExcel.cs</DependentUpon>
+    <EmbeddedResource Include="Model\frmMenuCostos.resx">
+      <DependentUpon>frmMenuCostos.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Model\frmObservation.resx">
       <DependentUpon>frmObservation.cs</DependentUpon>
@@ -453,6 +465,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="View\frmKitchenView.resx">
       <DependentUpon>frmKitchenView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\frmMateriaPrima.resx">
+      <DependentUpon>frmMateriaPrima.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\frmProductoMateriaPrima.resx">
+      <DependentUpon>frmProductoMateriaPrima.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="View\frmProductsView.resx">
       <DependentUpon>frmProductsView.cs</DependentUpon>

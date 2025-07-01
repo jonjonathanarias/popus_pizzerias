@@ -14,6 +14,79 @@ namespace popus_pizzeria.Model
             Fecha = fecha.Date;
         }
 
+        public ArqueoResultado ObtenerArqueoParcial()
+        {
+            var resultado = new ArqueoResultado();
+
+            string qry = @"SELECT orderType, SUM(total) AS Total
+                   FROM tblMain
+                   WHERE CAST(aDate AS DATE) = @Fecha AND status = 'Pagado' 
+                   GROUP BY orderType";
+
+            using (SqlCommand cmd = new SqlCommand(qry, MainClass.con))
+            {
+                cmd.Parameters.AddWithValue("@Fecha", Fecha);
+                if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string tipo = reader["orderType"].ToString().Trim().ToLower();
+                        double total = Convert.ToDouble(reader["Total"]);
+
+                        switch (tipo)
+                        {
+                            case "mesas": resultado.TotalMesas = total; break;
+                            case "takeaway": resultado.TotalTakeAway = total; break;
+                            case "delivery": resultado.TotalDelivery = total; break;
+                        }
+
+                        resultado.TotalGeneral += total;
+                    }
+                }
+                MainClass.con.Close();
+            }
+
+            return resultado;
+        }
+
+        public ArqueoResultado ObtenerArqueoAcumulado()
+        {
+            var resultado = new ArqueoResultado();
+
+            string qry = @"SELECT orderType, SUM(total) AS Total
+                   FROM tblMain
+                   WHERE CAST(aDate AS DATE) = @Fecha AND status = 'Pagado'
+                   GROUP BY orderType";
+
+            using (SqlCommand cmd = new SqlCommand(qry, MainClass.con))
+            {
+                cmd.Parameters.AddWithValue("@Fecha", Fecha);
+                if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string tipo = reader["orderType"].ToString().Trim().ToLower();
+                        double total = Convert.ToDouble(reader["Total"]);
+
+                        switch (tipo)
+                        {
+                            case "mesas": resultado.TotalMesas += total; break;
+                            case "takeaway": resultado.TotalTakeAway += total; break;
+                            case "delivery": resultado.TotalDelivery += total; break;
+                        }
+
+                        resultado.TotalGeneral += total;
+                    }
+                }
+                MainClass.con.Close();
+            }
+
+            return resultado;
+        }
+
+
         public ArqueoResultado RealizarArqueo()
         {
             var resultado = new ArqueoResultado();
@@ -121,6 +194,7 @@ namespace popus_pizzeria.Model
             }
         }
     }
+
 
 
     public class ArqueoResultado

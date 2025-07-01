@@ -96,7 +96,7 @@ namespace popus_pizzeria
 
         private void ExcelCosto_Click(object sender, EventArgs e)
         {
-            agregarControles(new frmCostosExcel());
+            agregarControles(new frmMenuCostos());
         }
     }
 }

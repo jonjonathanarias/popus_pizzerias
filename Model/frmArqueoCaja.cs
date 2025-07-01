@@ -74,6 +74,20 @@ namespace popus_pizzeria.Model
                 MessageBox.Show("Error al cerrar el arqueo.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void btnCierreX_Click(object sender, EventArgs e)
+        {
+            var arqueo = new ArqueoCaja(_fecha);
+            var resultado = arqueo.ObtenerArqueoParcial();
+            txtResultado.Text = "--- Cierre X (Parcial) ---\r\n" + resultado.ToString();
+        }
+
+        private void btnCierreY_Click(object sender, EventArgs e)
+        {
+            var arqueo = new ArqueoCaja(_fecha);
+            var resultado = arqueo.ObtenerArqueoAcumulado();
+            txtResultado.Text = "--- Cierre Y (Acumulado) ---\r\n" + resultado.ToString();
+        }
     }
 }
 
