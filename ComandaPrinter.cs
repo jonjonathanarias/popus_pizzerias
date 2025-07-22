@@ -13,7 +13,7 @@ namespace popus_pizzeria
 {
     public static class ComandaPrinter
     {
-        public static void ImprimirTexto(string texto, string nombreImpresora = "NombreDeTuImpresora")
+        public static void ImprimirTexto(string texto, string nombreImpresora = "ImpresoraZJ-58")
         {
             PrintDocument pd = new PrintDocument();
             pd.PrinterSettings.PrinterName = nombreImpresora;

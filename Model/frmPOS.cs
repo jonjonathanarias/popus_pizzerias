@@ -724,9 +724,9 @@ namespace popus_pizzeria.Model
 
             // --- Step 4: Generate and Display/Print KOT for ONLY the newly sent items ---
             string textoComanda = GenerarTextoComandaForNewItems(MainId, tempNewProductDetails); // Pass the new items
-            ComandaPrinterPreview.MostrarComandaComoImagen(textoComanda);
+            ComandaPrinter.ImprimirTexto(textoComanda);
 
-            
+
             MainId = 0; 
             ClearForm();
         }
@@ -748,13 +748,15 @@ namespace popus_pizzeria.Model
 
             using (SqlCommand cmd = new SqlCommand(qryMain, MainClass.con))
             {
+                int nroComanda = ComandaManager.ObtenerNumeroCorrelativo();
                 cmd.Parameters.AddWithValue("@MainId", MainId);
                 if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
                 using (SqlDataReader dr = cmd.ExecuteReader())
                 {
+                    
                     if (dr.Read())
                     {
-                        sb.AppendLine("***** COMANDA *****");
+                        sb.AppendLine($"**** COMANDA N° {nroComanda} ****");
                         sb.AppendLine($"Fecha: {Convert.ToDateTime(dr["aDate"]).ToShortDateString()}");
                         sb.AppendLine($"Hora: {dr["aTime"]}");
                         sb.AppendLine($"Mesa: {dr["TableName"]}");
