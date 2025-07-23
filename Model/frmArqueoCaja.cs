@@ -66,7 +66,7 @@ namespace popus_pizzeria.Model
                 lblDelivery.Text = "Delivery: $0.00";
                 lblTotalGeneral.Text = "TOTAL: $0.00";
 
-                // 🔽 También podés desactivar el botón si querés
+                //  También podés desactivar el botón si querés
                 btnCerrarArqueo.Enabled = false;
             }
             else
