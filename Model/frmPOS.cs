@@ -101,6 +101,20 @@ namespace popus_pizzeria.Model
             guna2DataGridView1.Columns.Add(new DataGridViewTextBoxColumn() { HeaderText = "Total", Name = "dgvAmount", Width = 100 });
             guna2DataGridView1.Columns.Add(new DataGridViewTextBoxColumn() { HeaderText = "Observacion", Name = "dgvObs", Width = 150 });
             guna2DataGridView1.Columns.Add(new DataGridViewCheckBoxColumn() { HeaderText = "Enviado", Name = "dgvIsSent", Visible = false });
+            guna2DataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                HeaderText = "QtyOriginal",
+                Name = "dgvQtyOriginal",
+                Visible = false
+            });
+            guna2DataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                HeaderText = "QtyEnviado",
+                Name = "dgvQtyEnviado",
+                Visible = false
+            });
+
+
             AddDeleteButtonColumn();
         }
 
@@ -201,7 +215,7 @@ namespace popus_pizzeria.Model
                 if (row.IsNewRow) continue;
 
                 bool isSent = Convert.ToBoolean(row.Cells["dgvIsSent"]?.Value ?? false);
-                if (isSent) continue; // Solo combinamos filas nuevas
+                if (isSent) continue; // Solo fusionamos filas no enviadas
 
                 int prodID = Convert.ToInt32(row.Cells["dgvProID"].Value);
                 string observation = (row.Cells["dgvObs"].Value?.ToString() ?? "").Trim().ToLower();
@@ -219,8 +233,7 @@ namespace popus_pizzeria.Model
                     existingRow.Cells["dgvQty"].Value = existingQty + newQty;
                     existingRow.Cells["dgvAmount"].Value = (existingQty + newQty) * price;
 
-                    // Eliminar fila actual porque se fusionó
-                    guna2DataGridView1.Rows.RemoveAt(i);
+                    guna2DataGridView1.Rows.RemoveAt(i); // Eliminar fila duplicada
                 }
                 else
                 {
@@ -231,9 +244,10 @@ namespace popus_pizzeria.Model
 
 
 
+
+
         private void AddItems(string code, string proID, string name, string cat, string price, Image pimage)
         {
-            bool found = false;
             var w = new ucProduct()
             {
                 PName = name,
@@ -244,10 +258,7 @@ namespace popus_pizzeria.Model
                 Width = itemWidth,
                 Height = itemHeight
             };
-            w.Tag = id; // reemplazar por el código real
-            w.Tag = code; // Aquí sí va el código inventado del producto
-
-
+            w.Tag = code; // Código interno del producto
 
             if (currentX + itemWidth > ProductPanel.Width)
             {
@@ -258,55 +269,66 @@ namespace popus_pizzeria.Model
             w.Location = new Point(currentX, currentY);
             ProductPanel.Controls.Add(w);
             currentX += itemWidth + itemSpacing;
+
             w.onSelect += (ss, ee) =>
             {
                 var wdg = (ucProduct)ss;
-
+                bool found = false;
 
                 foreach (DataGridViewRow item in guna2DataGridView1.Rows)
                 {
-                    int prodId = Convert.ToInt32(item.Cells["dgvProID"].Value);
-                    bool enviado = Convert.ToBoolean(item.Cells["dgvIsSent"]?.Value ?? false);
+                    if (item.IsNewRow) continue;
 
-                    if (prodId == wdg.id && !enviado)
+                    int prodId = Convert.ToInt32(item.Cells["dgvProID"].Value);
+                    string obs = (item.Cells["dgvObs"].Value?.ToString() ?? "").Trim().ToLower();
+                    int qty = Convert.ToInt32(item.Cells["dgvQty"].Value);
+                    // int qtyEnviado = Convert.ToInt32(item.Cells["dgvQtyEnviado"].Value ?? 0); // Este valor lo usaremos en KOT
+
+                    string nuevaObs = ""; // o podés capturarla desde un TextBox de observación
+                    if (prodId == wdg.id && obs == nuevaObs)
                     {
                         found = true;
-                        item.Cells["dgvQty"].Value = int.Parse(item.Cells["dgvQty"].Value.ToString()) + 1;
-                        item.Cells["dgvAmount"].Value = int.Parse(item.Cells["dgvQty"].Value.ToString()) *
-                                        double.Parse(item.Cells["dgvPrice"].Value.ToString());
+
+                        item.Cells["dgvQty"].Value = qty + 1; // Incrementa la cantidad total en la grilla
+                        item.Cells["dgvAmount"].Value = (qty + 1) * Convert.ToDouble(item.Cells["dgvPrice"].Value);
+
+                        // Si el ítem estaba completamente enviado (gris/tachado), ahora tiene cantidad pendiente,
+                        // así que resetear su estilo y el flag dgvIsSent.
+                        if (Convert.ToBoolean(item.Cells["dgvIsSent"].Value ?? false))
+                        {
+                            item.Cells["dgvIsSent"].Value = false; // Marcar como no completamente enviado
+                            item.ReadOnly = false; // Hacerlo editable de nuevo
+                            item.DefaultCellStyle.ForeColor = Color.DarkGreen;
+                            item.DefaultCellStyle.Font = new Font(guna2DataGridView1.Font, FontStyle.Bold);
+                        }
                         break;
                     }
                 }
 
-                // 👇 Si ya existe pero está marcado como enviado, agregar como nuevo
+                // Si no existe fila previa para ese producto, agregar nueva
                 if (!found)
                 {
-                    int newRowIndex = guna2DataGridView1.Rows.Add(new object[] {
-                        0,
-                        0, // DetailID = 0 => nuevo
-                            wdg.id,
-                        wdg.PName,
-                        1,
-                        wdg.PPrice,
-                        wdg.PPrice,
-                        "",
-                        false // No enviado
-                    });
+                    int n = guna2DataGridView1.Rows.Add();
 
-                    // Estilo visual para nuevo producto
-                    var newRow = guna2DataGridView1.Rows[newRowIndex];
-                    newRow.DefaultCellStyle.ForeColor = Color.DarkGreen;
-                    newRow.DefaultCellStyle.Font = new Font(guna2DataGridView1.Font, FontStyle.Bold);
+                    guna2DataGridView1.Rows[n].Cells["dgvID"].Value = 0;
+                    guna2DataGridView1.Rows[n].Cells["dgvProID"].Value = wdg.id;
+                    guna2DataGridView1.Rows[n].Cells["dgvPName"].Value = wdg.PName;
+                    guna2DataGridView1.Rows[n].Cells["dgvQty"].Value = 1;
+                    guna2DataGridView1.Rows[n].Cells["dgvPrice"].Value = wdg.PPrice;
+                    guna2DataGridView1.Rows[n].Cells["dgvAmount"].Value = wdg.PPrice;
+                    guna2DataGridView1.Rows[n].Cells["dgvObs"].Value = "";
+                    guna2DataGridView1.Rows[n].Cells["dgvDelete"].Value = "Eliminar";
+                    guna2DataGridView1.Rows[n].Cells["dgvIsSent"].Value = false; // Nuevo ítem, no está enviado
+                    guna2DataGridView1.Rows[n].Cells["dgvQtyEnviado"].Value = 0; // Cantidad enviada es 0
+
+                    guna2DataGridView1.Rows[n].DefaultCellStyle.ForeColor = Color.DarkGreen;
+                    guna2DataGridView1.Rows[n].DefaultCellStyle.Font = new Font(guna2DataGridView1.Font, FontStyle.Bold);
                 }
-
-
-                MergePendingProductRows();
-
-
-                GetTotal();
+                MergePendingProductRows(); // Esto debería seguir funcionando
+                GetTotal(); // Actualiza el total
             };
-
         }
+
 
         private void LoadProduct()
         {
@@ -584,28 +606,15 @@ namespace popus_pizzeria.Model
 
         private void btnKot_Click(object sender, EventArgs e)
         {
-            string qryMain = "";
-            string qryDetail = "";
-            int detailID = 0; 
-            
-            if (MainId == 0) 
-            {
-                qryMain = @"INSERT INTO tblMain 
-                    (aDate, aTime, TableName, WaiterName, status, orderType, total, received, change, CustomerID, discount)
-                    VALUES (@aDate, @aTime, @TableName, @WaiterName, @status, @orderType, @total, @received, @change, @CustomerID, 0);
-                    SELECT SCOPE_IDENTITY()"; 
-            }
-            else 
-            {
-                
-                qryMain = @"UPDATE tblMain SET 
-                        status = @status, 
-                        total = @total, 
-                        received = @received, 
-                        change = @change, 
-                        CustomerID = @CustomerID
-                    WHERE MainID = @ID";
-            }
+            // 1. Guardar encabezado (La lógica para tblMain sigue siendo la misma)
+            string qryMain = MainId == 0
+                ? @"INSERT INTO tblMain 
+        (aDate, aTime, TableName, WaiterName, status, orderType, total, received, change, CustomerID, discount)
+        VALUES (@aDate, @aTime, @TableName, @WaiterName, @status, @orderType, @total, @received, @change, @CustomerID, 0);
+        SELECT SCOPE_IDENTITY();"
+                : @"UPDATE tblMain SET 
+        status = @status, total = @total, received = @received, change = @change, CustomerID = @CustomerID
+        WHERE MainID = @ID";
 
             SqlCommand cmdMain = new SqlCommand(qryMain, MainClass.con);
             cmdMain.Parameters.AddWithValue("@ID", MainId);
@@ -613,185 +622,155 @@ namespace popus_pizzeria.Model
             cmdMain.Parameters.AddWithValue("@aTime", DateTime.Now.ToShortTimeString());
             cmdMain.Parameters.AddWithValue("@TableName", lblTable.Text);
             cmdMain.Parameters.AddWithValue("@WaiterName", lblWaiter.Text);
-            cmdMain.Parameters.AddWithValue("@status", "Pendiente"); // Status is 'Pendiente' when KOT is sent
+            cmdMain.Parameters.AddWithValue("@status", "Pendiente");
             cmdMain.Parameters.AddWithValue("@orderType", OrderType);
             cmdMain.Parameters.AddWithValue("@total", Convert.ToDouble(lblTotal.Text));
-            cmdMain.Parameters.AddWithValue("@received", 0); // Not received yet for KOT
-            cmdMain.Parameters.AddWithValue("@change", 0);   // No change yet
+            cmdMain.Parameters.AddWithValue("@received", 0);
+            cmdMain.Parameters.AddWithValue("@change", 0);
             cmdMain.Parameters.AddWithValue("@CustomerID", CustomerID);
 
             if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
             try
             {
                 if (MainId == 0)
-                {
-                    MainId = Convert.ToInt32(cmdMain.ExecuteScalar()); // Get the new MainID
-                }
+                    MainId = Convert.ToInt32(cmdMain.ExecuteScalar());
                 else
-                {
-                    cmdMain.ExecuteNonQuery(); // Update existing Main record
-                }
+                    cmdMain.ExecuteNonQuery();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al guardar el encabezado del pedido: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                if (MainClass.con.State == ConnectionState.Open) MainClass.con.Close();
-                return; // Exit if main saving fails
+                MessageBox.Show("Error al guardar encabezado: " + ex.Message);
+                MainClass.con.Close();
+                return;
             }
             finally
             {
-                if (MainClass.con.State == ConnectionState.Open) MainClass.con.Close();
+                MainClass.con.Close();
             }
 
-
-      
-            List<int> productsToKot = new List<int>();
-            List<string> tempNewProductDetails = new List<string>(); // To build KOT text
+            // 2. Procesar productos (Lógica modificada para enviar solo lo pendiente)
+            List<string> tempNewProductDetails = new List<string>();
+            bool hayProductosParaEnviar = false;
 
             foreach (DataGridViewRow row in guna2DataGridView1.Rows)
             {
-                if (row.IsNewRow) continue; 
-                
-                detailID = Convert.ToInt32(row.Cells["dgvid"].Value); // DetailID from DGV
+                if (row.IsNewRow) continue;
+
                 int prodID = Convert.ToInt32(row.Cells["dgvProID"].Value);
-                int qty = Convert.ToInt32(row.Cells["dgvQty"].Value);
+                int currentQtyInGrid = Convert.ToInt32(row.Cells["dgvQty"].Value); // Cantidad total actual de este ítem en la grilla
                 double price = Convert.ToDouble(row.Cells["dgvPrice"].Value);
-                double amount = Convert.ToDouble(row.Cells["dgvAmount"].Value);
                 string observation = row.Cells["dgvObs"].Value?.ToString() ?? "";
-                bool isSent = Convert.ToBoolean(row.Cells["dgvIsSent"]?.Value ?? false);
 
+                int qtyAlreadySent = Convert.ToInt32(row.Cells["dgvQtyEnviado"].Value ?? 0); // Cantidad de este ítem ya enviada (desde BD o KOTs anteriores)
 
-                // IMPORTANT: Only insert/update items that haven't been sent yet
-                if (detailID == 0 && !isSent) // This is a brand new item in the DGV for this order
+                int qtyToSend = currentQtyInGrid - qtyAlreadySent; // Esta es la cantidad NUEVA a enviar
+
+                if (qtyToSend <= 0) continue; // Si no hay cantidad nueva (o es negativa), no enviamos nada
+
+                hayProductosParaEnviar = true;
+
+                // Insertar un nuevo registro en tblDetails para la *cantidad adicional* a enviar
+                string qryDetail = @"INSERT INTO tblDetails
+              (MainID, prodID, qty, price, amount, observation, IsSentToKitchen)
+              VALUES
+              (@MainID, @ProdID, @qty, @price, @amount, @observation, 1);"; // Marcar como enviado inmediatamente al insertar
+
+                SqlCommand cmdDetail = new SqlCommand(qryDetail, MainClass.con);
+                cmdDetail.Parameters.AddWithValue("@MainID", MainId);
+                cmdDetail.Parameters.AddWithValue("@ProdID", prodID);
+                cmdDetail.Parameters.AddWithValue("@qty", qtyToSend); // Enviamos solo la diferencia
+                cmdDetail.Parameters.AddWithValue("@price", price);
+                cmdDetail.Parameters.AddWithValue("@amount", qtyToSend * price);
+                cmdDetail.Parameters.AddWithValue("@observation", observation);
+
+                if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
+                try
                 {
-                    // Insert new detail
-                    qryDetail = @"INSERT INTO tblDetails 
-                                  (MainID, prodID, qty, price, amount, observation, IsSentToKitchen) 
-                                  VALUES 
-                                  (@MainID, @ProdID, @qty, @price, @amount, @observation, 0);
-                                  SELECT SCOPE_IDENTITY()"; // Get the new DetailID
+                    cmdDetail.ExecuteNonQuery();
 
-                    SqlCommand cmdDetail = new SqlCommand(qryDetail, MainClass.con);
-                    cmdDetail.Parameters.AddWithValue("@MainID", MainId);
-                    cmdDetail.Parameters.AddWithValue("@ProdID", prodID);
-                    cmdDetail.Parameters.AddWithValue("@qty", qty);
-                    cmdDetail.Parameters.AddWithValue("@price", price);
-                    cmdDetail.Parameters.AddWithValue("@amount", amount);
-                    cmdDetail.Parameters.AddWithValue("@observation", observation);
+                    // Añadir los detalles para la impresión de la comanda (solo los ítems recién enviados)
+                    tempNewProductDetails.Add($"{qtyToSend} x {row.Cells["dgvPName"].Value}");
+                    if (!string.IsNullOrWhiteSpace(observation))
+                        tempNewProductDetails.Add($"  -> {observation}");
 
-                    if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
-                    try
+                    // Actualizar la fila del DataGridView para reflejar la cantidad recién enviada
+                    row.Cells["dgvQtyEnviado"].Value = qtyAlreadySent + qtyToSend; // Suma al total ya enviado
+
+                    // Actualizar el estilo de la fila si toda la cantidad ahora está enviada
+                    if (Convert.ToInt32(row.Cells["dgvQtyEnviado"].Value) == currentQtyInGrid)
                     {
-                        // Update the DGV row's DetailID with the newly inserted ID from the DB
-                        row.Cells["dgvid"].Value = Convert.ToInt32(cmdDetail.ExecuteScalar());
-                        // Mark it as sent in the DGV immediately after saving
-                        row.Cells["dgvIsSent"].Value = true;
-
-                        // Add to list for KOT generation
-                        productsToKot.Add(prodID);
-                        tempNewProductDetails.Add($"{qty} x {row.Cells["dgvPName"].Value}");
-                        if (!string.IsNullOrWhiteSpace(observation))
-                            tempNewProductDetails.Add($"  -> {observation}");
-
-                        // Visually update the row in the DGV
-                        row.ReadOnly = true;
+                        row.Cells["dgvIsSent"].Value = true; // Marca como completamente enviado
+                        row.ReadOnly = true; // Hacer la fila de solo lectura
                         row.DefaultCellStyle.ForeColor = Color.Gray;
                         row.DefaultCellStyle.Font = new Font(guna2DataGridView1.Font, FontStyle.Strikeout);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        MessageBox.Show($"Error al guardar detalle del producto {row.Cells["dgvPName"].Value}: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    finally
-                    {
-                        if (MainClass.con.State == ConnectionState.Open) MainClass.con.Close();
+                        // Si aún quedan cantidades sin enviar, asegurar que no esté tachado ni gris
+                        row.Cells["dgvIsSent"].Value = false; // Marca como no completamente enviado
+                        row.ReadOnly = false; // Asegurar que la fila sea editable
+                        row.DefaultCellStyle.ForeColor = Color.DarkGreen;
+                        row.DefaultCellStyle.Font = new Font(guna2DataGridView1.Font, FontStyle.Bold);
                     }
                 }
-                
-                
-                
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error al guardar detalle del producto {row.Cells["dgvPName"].Value}: {ex.Message}");
+                }
+                finally
+                {
+                    MainClass.con.Close();
+                }
             }
 
-            guna2MessageDialog1.Show("Guardado correctamente");
-
-            // --- Step 3: Check if there are any products to send to kitchen from the current operation ---
-            if (productsToKot.Count == 0)
+            if (!hayProductosParaEnviar)
             {
-                guna2MessageDialog1.Show("No hay productos nuevos para enviar a cocina.");
-                // No need to clear the form here, the existing items stay.
+                guna2MessageDialog1.Show("No hay productos nuevos ni modificados para enviar a cocina.");
                 return;
             }
 
-            // --- Step 4: Generate and Display/Print KOT for ONLY the newly sent items ---
-            string textoComanda = GenerarTextoComandaForNewItems(MainId, tempNewProductDetails); // Pass the new items
+            guna2MessageDialog1.Show("Pedido enviado a cocina correctamente");
+
+            // Llama a la función para imprimir solo los ítems nuevos
+            string textoComanda = GenerarTextoComandaForNewItems(MainId, tempNewProductDetails);
             ComandaPrinter.ImprimirTexto(textoComanda);
 
-
-            MainId = 0; 
-            ClearForm();
+            // IMPORTANTE: No llamar a ClearForm() aquí si el pedido sigue abierto y se esperan más cambios/pagos.
+            // Esto es lo que estaba borrando el formulario después de cada envío.
+            // MainId = 0; 
+            // ClearForm(); 
         }
+
+
+
+
 
 
 
 
         // --- NEW METHOD FOR GENERATING KOT FOR ONLY NEWLY SENT ITEMS ---
-        private string GenerarTextoComandaForNewItems(int MainId, List<string> newProductDetails)
+        // Ejemplo de cómo podría ser tu GenerarTextoComandaForNewItems
+        public string GenerarTextoComandaForNewItems(int mainId, List<string> newItemsDetails)
         {
-            StringBuilder sb = new StringBuilder();
-
-            // Fetch main order details
-            string qryMain = @"SELECT m.aDate, m.aTime, m.TableName, m.WaiterName, m.orderType, c.Name AS CustomerName, 
-                                        c.Address, c.Phone, c.Reference
-                                    FROM tblMain m
-                                    LEFT JOIN tblCustomers c ON m.CustomerID = c.CustomerID
-                                    WHERE m.MainID = @MainId;";
-
-            using (SqlCommand cmd = new SqlCommand(qryMain, MainClass.con))
+            StringBuilder comanda = new StringBuilder();
+            // ... (obtener datos de mesa, mozo, etc. usando mainId si es necesario)
+            comanda.AppendLine("******** COMANDA Nº " + mainId + " ********");
+            comanda.AppendLine("Fecha: " + DateTime.Now.ToShortDateString());
+            comanda.AppendLine("Hora: " + DateTime.Now.ToShortTimeString());
+            comanda.AppendLine("Mesa: " + lblTable.Text); // O obtener de la DB si no está disponible aquí
+            comanda.AppendLine("Mozo: " + lblWaiter.Text); // Idem
+            comanda.AppendLine("Tipo: " + OrderType); // Idem
+            comanda.AppendLine("-----------------------------------");
+            comanda.AppendLine("Productos:");
+            foreach (string itemDetail in newItemsDetails)
             {
-                int nroComanda = ComandaManager.ObtenerNumeroCorrelativo();
-                cmd.Parameters.AddWithValue("@MainId", MainId);
-                if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
-                using (SqlDataReader dr = cmd.ExecuteReader())
-                {
-                    
-                    if (dr.Read())
-                    {
-                        sb.AppendLine($"**** COMANDA N° {nroComanda} ****");
-                        sb.AppendLine($"Fecha: {Convert.ToDateTime(dr["aDate"]).ToShortDateString()}");
-                        sb.AppendLine($"Hora: {dr["aTime"]}");
-                        sb.AppendLine($"Mesa: {dr["TableName"]}");
-                        sb.AppendLine($"Mozo: {dr["WaiterName"]}");
-                        sb.AppendLine($"Tipo: {dr["orderType"]}");
-                        sb.AppendLine();
-
-                        if (!string.IsNullOrEmpty(dr["CustomerName"]?.ToString()))
-                        {
-                            sb.AppendLine($"Cliente: {dr["CustomerName"]}");
-                            sb.AppendLine($"Telefono: {dr["Phone"]}");
-                            sb.AppendLine($"Direccion: {dr["Address"]}");
-                            sb.AppendLine($"Referencia: {dr["Reference"]}");
-                            sb.AppendLine();
-                        }
-                    }
-                }
-                MainClass.con.Close();
+                comanda.AppendLine(itemDetail);
             }
-
-            sb.AppendLine("Productos:");
-            sb.AppendLine("--------------------------------");
-
-            // Add the new product details passed from btnKot_Click
-            foreach (string detailLine in newProductDetails)
-            {
-                sb.AppendLine(detailLine);
-            }
-
-            sb.AppendLine("--------------------------------");
-            sb.AppendLine("  ¡Gracias!");
-            MessageBox.Show(sb.ToString()); // SOLO PARA DEPURAR
-            return sb.ToString();
+            comanda.AppendLine("-----------------------------------");
+            comanda.AppendLine("¡Gracias!");
+            return comanda.ToString();
         }
-   
+
         private string GenerarTextoComanda(int MainId)
         {
             StringBuilder sb = new StringBuilder();
@@ -915,24 +894,34 @@ namespace popus_pizzeria.Model
 
         private void LoadEntries()
         {
-            string qry = @"SELECT d.DetailID, d.ProdID, p.pName, d.qty, d.price, d.amount, d.observation, d.IsSentToKitchen,
-                          m.TableName, m.WaiterName, m.orderType
-                   FROM tblMain m 
-                   INNER JOIN tblDetails d ON m.MainID = d.MainID
-                   INNER JOIN products p ON p.pID = d.ProdID
-                   WHERE m.MainID = " + id;
+            // Esta consulta ahora agrupa por ProdID, nombre del producto, precio y observación
+            // para obtener las cantidades totales y las cantidades ya enviadas de forma AGREGADA.
+            string qry = @"
+        SELECT
+            d.ProdID,
+            p.pName,
+            SUM(d.qty) AS TotalQty, -- Suma la cantidad total del producto con esa observación
+            d.price,                -- Asumimos que el precio es consistente para un producto
+            d.observation,
+            SUM(CASE WHEN d.IsSentToKitchen = 1 THEN d.qty ELSE 0 END) AS TotalQtyEnviado, -- Suma las cantidades YA ENVIADAS
+            m.TableName,
+            m.WaiterName,
+            m.orderType
+        FROM tblMain m
+        INNER JOIN tblDetails d ON m.MainID = d.MainID
+        INNER JOIN products p ON p.pID = d.ProdID
+        WHERE m.MainID = @MainID
+        GROUP BY d.ProdID, p.pName, d.price, d.observation, m.TableName, m.WaiterName, m.orderType;
+    ";
 
-            SqlCommand cmd = new SqlCommand(qry, MainClass.con);
+            SqlCommand cmd = new SqlCommand(qry, MainClass.con); // Sintaxis corregida
+            cmd.Parameters.AddWithValue("@MainID", id);
+
             DataTable dt = new DataTable();
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             da.Fill(dt);
 
             if (dt.Rows.Count == 0) return;
-
-            string orderType = dt.Rows[0]["orderType"].ToString();
-            if (orderType == "Delivery") btnDelivery.Checked = true;
-            else if (orderType == "Take away") btnTake.Checked = true;
-            else btnDin.Checked = true;
 
             lblTable.Text = dt.Rows[0]["TableName"].ToString();
             lblWaiter.Text = dt.Rows[0]["WaiterName"].ToString();
@@ -940,40 +929,73 @@ namespace popus_pizzeria.Model
             lblWaiter.Visible = true;
 
             guna2DataGridView1.Rows.Clear();
+
             foreach (DataRow row in dt.Rows)
             {
-                    object[] obj = {
-                0, // Index opcional
-                row["DetailID"],
-                row["ProdID"],
-                row["pName"],
-                row["qty"],
-                row["price"],
-                row["amount"],
-                row["observation"],
-                Convert.ToBoolean(row["IsSentToKitchen"])
-            };
-                int index = guna2DataGridView1.Rows.Add(obj);
+                int totalQty = Convert.ToInt32(row["TotalQty"]); // Cantidad total del producto en el pedido (en DB)
+                int totalQtyEnviado = Convert.ToInt32(row["TotalQtyEnviado"]); // Cantidad total del producto ya enviada (en DB)
 
-                // Si ya fue enviado, marcar visualmente
-                if (Convert.ToBoolean(row["IsSentToKitchen"]))
+                object[] obj = {
+            0, // S/N
+            0, // dgvID (DetailID no aplica directamente a filas agregadas, lo ponemos en 0)
+            row["ProdID"],
+            row["pName"],
+            totalQty, // Cantidad TOTAL para esta fila en la grilla (dgvQty)
+            row["price"],
+            Convert.ToDouble(row["price"]) * totalQty, // Cálculo del monto total
+            row["observation"],
+            (totalQty == totalQtyEnviado), // dgvIsSent: true si TODA la cantidad de esta fila ya fue enviada
+            0, // QtyOriginal (no se usa con esta lógica agregada)
+            totalQtyEnviado // dgvQtyEnviado contendrá la cantidad total que YA fue enviada para este ítem
+        };
+
+                int index = guna2DataGridView1.Rows.Add(obj);
+                var dgvRow = guna2DataGridView1.Rows[index];
+
+                // Establecer el estilo de la fila: si todo está enviado, gris y tachado; si no, verde y negrita.
+                if (totalQty == totalQtyEnviado)
                 {
-                    var dgvRow = guna2DataGridView1.Rows[index];
-                    dgvRow.ReadOnly = true;
                     dgvRow.DefaultCellStyle.ForeColor = Color.Gray;
                     dgvRow.DefaultCellStyle.Font = new Font(guna2DataGridView1.Font, FontStyle.Strikeout);
+                    dgvRow.ReadOnly = true; // Hacer la fila de solo lectura si ya está todo enviado
                 }
                 else
                 {
-                    var dgvRow = guna2DataGridView1.Rows[index];
                     dgvRow.DefaultCellStyle.ForeColor = Color.DarkGreen;
                     dgvRow.DefaultCellStyle.Font = new Font(guna2DataGridView1.Font, FontStyle.Bold);
+                    dgvRow.ReadOnly = false; // Hacerla editable si hay algo pendiente
                 }
-
             }
 
-            GetTotal();
+            // Numerar las filas (esto sigue igual)
+            for (int i = 0; i < guna2DataGridView1.Rows.Count; i++)
+            {
+                guna2DataGridView1.Rows[i].Cells[0].Value = i + 1;
+            }
+
+            GetTotal(); // Actualiza el total del pedido
         }
+
+        private void UpdateQtyEnviado(object detailID, int qtyEnviado)
+        {
+            string qry = @"
+        UPDATE tblDetails 
+        SET IsSentToKitchen = 1 
+        WHERE DetailID = @DetailID";
+
+            SqlCommand cmd = new SqlCommand(qry, MainClass.con);
+            cmd.Parameters.AddWithValue("@DetailID", detailID);
+
+            if (MainClass.con.State == ConnectionState.Closed)
+                MainClass.con.Open();
+
+            cmd.ExecuteNonQuery();
+            MainClass.con.Close();
+
+            // Opcional: registrar qtyEnviado en otra tabla si llevás historial
+        }
+
+
 
 
         private void btnCheckout_Click(object sender, EventArgs e)

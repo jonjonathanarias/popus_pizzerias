@@ -53,7 +53,7 @@
             this.guna2MessageDialog1 = new Guna.UI2.WinForms.Guna2MessageDialog();
             this.txtBuscar = new Guna.UI2.WinForms.Guna2TextBox();
             this.lblCustomer = new System.Windows.Forms.Label();
-            this.dgvSno = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvSr = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgvid = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgvProID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgvPName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -361,7 +361,7 @@
             this.guna2DataGridView1.ColumnHeadersHeight = 40;
             this.guna2DataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
             this.guna2DataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dgvSno,
+            this.dgvSr,
             this.dgvid,
             this.dgvProID,
             this.dgvPName,
@@ -465,16 +465,16 @@
             this.lblCustomer.Size = new System.Drawing.Size(0, 31);
             this.lblCustomer.TabIndex = 9;
             // 
-            // dgvSno
+            // dgvSr
             // 
-            this.dgvSno.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.dgvSno.FillWeight = 70F;
-            this.dgvSno.Frozen = true;
-            this.dgvSno.HeaderText = "Sr#";
-            this.dgvSno.MinimumWidth = 70;
-            this.dgvSno.Name = "dgvSno";
-            this.dgvSno.ReadOnly = true;
-            this.dgvSno.Width = 70;
+            this.dgvSr.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.dgvSr.FillWeight = 70F;
+            this.dgvSr.Frozen = true;
+            this.dgvSr.HeaderText = "Sr#";
+            this.dgvSr.MinimumWidth = 70;
+            this.dgvSr.Name = "dgvSr";
+            this.dgvSr.ReadOnly = true;
+            this.dgvSr.Width = 70;
             // 
             // dgvid
             // 
@@ -612,7 +612,7 @@
         private Guna.UI2.WinForms.Guna2MessageDialog guna2MessageDialog1;
         protected Guna.UI2.WinForms.Guna2Button btnCheckout;
         private System.Windows.Forms.Label lblCustomer;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dgvSno;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgvSr;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvid;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvProID;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvPName;
