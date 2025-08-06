@@ -232,6 +232,8 @@
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
     <Compile Include="MainClass.cs" />
+    <Compile Include="Model\CostCalculator.cs" />
+    <Compile Include="Model\DataManager.cs" />
     <Compile Include="Model\frmAddCustomer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -261,12 +263,6 @@
     </Compile>
     <Compile Include="Model\frmCheout.Designer.cs">
       <DependentUpon>frmCheout.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Model\frmMenuCostos.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Model\frmMenuCostos.Designer.cs">
-      <DependentUpon>frmMenuCostos.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\frmObservation.cs">
       <SubType>Form</SubType>
@@ -322,6 +318,9 @@
     <Compile Include="Model\frmWaiterSelect.Designer.cs">
       <DependentUpon>frmWaiterSelect.cs</DependentUpon>
     </Compile>
+    <Compile Include="Model\MateriaPrima.cs" />
+    <Compile Include="Model\Producto.cs" />
+    <Compile Include="Model\ProductoMateriaPrima.cs" />
     <Compile Include="Model\ucProduct.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -352,6 +351,12 @@
     <Compile Include="View\frmCategoriaView.Designer.cs">
       <DependentUpon>frmCategoriaView.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\frmCostoProducto.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\frmCostoProducto.Designer.cs">
+      <DependentUpon>frmCostoProducto.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\frmKitchenView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -363,6 +368,12 @@
     </Compile>
     <Compile Include="View\frmMateriaPrima.Designer.cs">
       <DependentUpon>frmMateriaPrima.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\frmMenuCostos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\frmMenuCostos.Designer.cs">
+      <DependentUpon>frmMenuCostos.cs</DependentUpon>
     </Compile>
     <Compile Include="View\frmProductoMateriaPrima.cs">
       <SubType>Form</SubType>
@@ -411,9 +422,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Model\frmCheout.resx">
       <DependentUpon>frmCheout.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Model\frmMenuCostos.resx">
-      <DependentUpon>frmMenuCostos.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Model\frmObservation.resx">
       <DependentUpon>frmObservation.cs</DependentUpon>
@@ -466,9 +474,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="View\frmKitchenView.resx">
       <DependentUpon>frmKitchenView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="View\frmMateriaPrima.resx">
-      <DependentUpon>frmMateriaPrima.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="View\frmProductoMateriaPrima.resx">
       <DependentUpon>frmProductoMateriaPrima.cs</DependentUpon>

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using popus_pizzeria.Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -11,94 +11,157 @@ using System.Windows.Forms;
 
 namespace popus_pizzeria.View
 {
-    public partial class frmProductoMateriaPrima : Form
+    public partial class frmProductoMateriaPrima: Form
     {
-        SqlConnection con = new SqlConnection("Server=DESKTOP-FFIHDBP\\SQLEXPRESS;Database=popus_pizzeria;Trusted_Connection=True; TrustServerCertificate=True;");
-
-        ComboBox cmbProducto;
-        ComboBox cmbMateriaPrima;
-        TextBox txtCantidad;
-        Button btnAgregar;
-        DataGridView dgvRelaciones;
+        private ComboBox cmbProductos;
+        private ComboBox cmbMateriasPrimas;
+        private TextBox txtCantidadUsada;
+        private Button btnAgregarIngrediente;
+        private DataGridView dgvReceta;
         public frmProductoMateriaPrima()
         {
             InitializeComponent();
-            cmbProducto = new ComboBox { Left = 20, Top = 20, Width = 200 };
-            cmbMateriaPrima = new ComboBox { Left = 20, Top = 60, Width = 200 };
-            txtCantidad = new TextBox { Left = 20, Top = 100, Width = 200, };
-            btnAgregar = new Button { Text = "Agregar", Left = 240, Top = 100, Width = 100 };
-            dgvRelaciones = new DataGridView { Left = 20, Top = 150, Width = 500, Height = 200 };
-
-            btnAgregar.Click += btnAgregar_Click;
-            cmbProducto.SelectedIndexChanged += (s, e) => CargarRelaciones();
-
-            this.Controls.Add(cmbProducto);
-            this.Controls.Add(cmbMateriaPrima);
-            this.Controls.Add(txtCantidad);
-            this.Controls.Add(btnAgregar);
-            this.Controls.Add(dgvRelaciones);
-
-            this.Load += frmProductoMateriaPrima_Load;
+            InitializeCustomComponents();
+            CargarDatosIniciales();
         }
 
-        private void frmProductoMateriaPrima_Load(object sender, EventArgs e)
+        private void InitializeCustomComponents()
         {
-            CargarProductos();
-            CargarMateriasPrimas();
-            CargarRelaciones();
+            this.Text = "Asignar Insumos a Producto";
+            this.Size = new Size(800, 550);
+            this.StartPosition = FormStartPosition.CenterScreen;
+
+            // Controles para seleccionar Producto
+            Label lblProducto = new Label { Text = "Producto:", Left = 20, Top = 20, AutoSize = true };
+            cmbProductos = new ComboBox { Left = 120, Top = 18, Width = 250, DropDownStyle = ComboBoxStyle.DropDownList };
+            cmbProductos.SelectedIndexChanged += CmbProductos_SelectedIndexChanged;
+
+            // Controles para seleccionar Materia Prima y Cantidad
+            Label lblMateriaPrima = new Label { Text = "Materia Prima:", Left = 20, Top = 60, AutoSize = true };
+            cmbMateriasPrimas = new ComboBox { Left = 120, Top = 58, Width = 250, DropDownStyle = ComboBoxStyle.DropDownList };
+
+            Label lblCantidad = new Label { Text = "Cantidad Usada:", Left = 20, Top = 100, AutoSize = true };
+            txtCantidadUsada = new TextBox { Left = 120, Top = 98, Width = 100 };
+
+            btnAgregarIngrediente = new Button { Text = "Agregar Ingrediente a Receta", Left = 20, Top = 140, Width = 200 };
+            btnAgregarIngrediente.Click += BtnAgregarIngrediente_Click;
+
+            // DataGridView para mostrar la receta del producto seleccionado
+            dgvReceta = new DataGridView
+            {
+                Left = 20,
+                Top = 180,
+                Width = 750,
+                Height = 300,
+                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+                AllowUserToAddRows = false,
+                ReadOnly = true
+            };
+
+            this.Controls.Add(lblProducto);
+            this.Controls.Add(cmbProductos);
+            this.Controls.Add(lblMateriaPrima);
+            this.Controls.Add(cmbMateriasPrimas);
+            this.Controls.Add(lblCantidad);
+            this.Controls.Add(txtCantidadUsada);
+            this.Controls.Add(btnAgregarIngrediente);
+            this.Controls.Add(dgvReceta);
         }
 
-        private void CargarProductos()
+        private void CargarDatosIniciales()
         {
-            SqlDataAdapter da = new SqlDataAdapter("SELECT pID, pName FROM products", con);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            cmbProducto.DataSource = dt;
-            cmbProducto.DisplayMember = "pName";
-            cmbProducto.ValueMember = "pID";
+            // Cargar Productos en el ComboBox
+            cmbProductos.DataSource = DataManager.Productos;
+            cmbProductos.DisplayMember = "Nombre"; // Mostrar el nombre del producto
+            cmbProductos.ValueMember = "Id";     // Usar el Id como valor
+
+            // Cargar Materias Primas en el ComboBox
+            cmbMateriasPrimas.DataSource = DataManager.MateriasPrimas;
+            cmbMateriasPrimas.DisplayMember = "Nombre"; // Mostrar el nombre de la materia prima
+            cmbMateriasPrimas.ValueMember = "Id";     // Usar el Id como valor
         }
 
-        private void CargarMateriasPrimas()
+        private void CmbProductos_SelectedIndexChanged(object sender, EventArgs e)
         {
-            SqlDataAdapter da = new SqlDataAdapter("SELECT id, nombre FROM MateriaPrima", con);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            cmbMateriaPrima.DataSource = dt;
-            cmbMateriaPrima.DisplayMember = "nombre";
-            cmbMateriaPrima.ValueMember = "id";
+            CargarRecetaProductoSeleccionado();
         }
 
-        private void CargarRelaciones()
+        private void CargarRecetaProductoSeleccionado()
         {
-            if (cmbProducto.SelectedValue == null) return;
-            int productoID = (int)cmbProducto.SelectedValue;
-            string qry = @"SELECT pm.id, mp.nombre, pm.cantidadNecesaria
-                           FROM ProductoMateriaPrima pm
-                           JOIN MateriaPrima mp ON mp.id = pm.materiaPrimaID
-                           WHERE pm.productoID = @productoID";
+            // Verificación agregada para evitar el error cuando no hay un producto seleccionado
+            if (cmbProductos.SelectedValue != null)
+            {
+                int productoId = (int)cmbProductos.SelectedValue;
 
-            SqlDataAdapter da = new SqlDataAdapter(qry, con);
-            da.SelectCommand.Parameters.AddWithValue("@productoID", productoID);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            dgvRelaciones.DataSource = dt;
+                // Obtener las entradas de receta para el producto seleccionado
+                var recetaActual = DataManager.Recetas
+                                    .Where(r => r.ProductoId == productoId)
+                                    .Join(DataManager.MateriasPrimas, // Unir con MateriasPrimas para obtener nombres
+                                          receta => receta.MateriaPrimaId,
+                                          mp => mp.Id,
+                                          (receta, mp) => new
+                                          {
+                                              MateriaPrima = mp.Nombre,
+                                              Cantidad = receta.CantidadUsada,
+                                              Unidad = mp.UnidadMedida,
+                                              MateriaPrimaId = mp.Id // Mantener el ID para posibles eliminaciones
+                                          })
+                                    .ToList();
+
+                dgvReceta.DataSource = null;
+                dgvReceta.DataSource = recetaActual;
+                dgvReceta.Columns["MateriaPrimaId"].Visible = false; // Ocultar esta columna
+            }
+            else
+            {
+                dgvReceta.DataSource = null; // Limpiar si no hay producto seleccionado
+            }
         }
 
-        private void btnAgregar_Click(object sender, EventArgs e)
+        private void BtnAgregarIngrediente_Click(object sender, EventArgs e)
         {
-            int productoID = (int)cmbProducto.SelectedValue;
-            int materiaPrimaID = (int)cmbMateriaPrima.SelectedValue;
-            decimal cantidad = decimal.Parse(txtCantidad.Text);
+            if (cmbProductos.SelectedValue == null)
+            {
+                MessageBox.Show("Por favor, seleccione un producto.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (cmbMateriasPrimas.SelectedValue == null)
+            {
+                MessageBox.Show("Por favor, seleccione una materia prima.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (!decimal.TryParse(txtCantidadUsada.Text, out decimal cantidad))
+            {
+                MessageBox.Show("Por favor, ingrese una cantidad válida.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (cantidad <= 0)
+            {
+                MessageBox.Show("La cantidad debe ser mayor que cero.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
-            string qry = "INSERT INTO ProductoMateriaPrima (productoID, materiaPrimaID, cantidadNecesaria) VALUES (@pID, @mpID, @cantidad)";
-            SqlCommand cmd = new SqlCommand(qry, con);
-            cmd.Parameters.AddWithValue("@pID", productoID);
-            cmd.Parameters.AddWithValue("@mpID", materiaPrimaID);
-            cmd.Parameters.AddWithValue("@cantidad", cantidad);
-            con.Open();
-            cmd.ExecuteNonQuery();
-            con.Close();
-            CargarRelaciones();
+            int productoId = (int)cmbProductos.SelectedValue;
+            int materiaPrimaId = (int)cmbMateriasPrimas.SelectedValue;
+
+            // Verificar si el ingrediente ya existe en la receta del producto
+            var existingEntry = DataManager.Recetas.FirstOrDefault(r => r.ProductoId == productoId && r.MateriaPrimaId == materiaPrimaId);
+
+            if (existingEntry != null)
+            {
+                existingEntry.CantidadUsada = cantidad;
+                MessageBox.Show("Cantidad de ingrediente actualizada.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                ProductoMateriaPrima nuevaEntrada = new ProductoMateriaPrima(productoId, materiaPrimaId, cantidad);
+                DataManager.Recetas.Add(nuevaEntrada);
+                MessageBox.Show("Ingrediente agregado a la receta.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+            CargarRecetaProductoSeleccionado();
+
+            txtCantidadUsada.Clear();
         }
     }
 }
