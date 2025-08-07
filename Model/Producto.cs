@@ -20,9 +20,6 @@ namespace popus_pizzeria.Model
             Descripcion = descripcion;
         }
 
-        public Producto()
-        {
-            // Constructor vacío
-        }
+        public override string ToString() => Nombre; // Por si lo usás en listas sin binding
     }
 }

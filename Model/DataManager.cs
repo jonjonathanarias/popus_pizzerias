@@ -1,68 +1,180 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace popus_pizzeria.Model
 {
     public static class DataManager
     {
-        // Listas en memoria para almacenar los datos
-        public static List<MateriaPrima> MateriasPrimas { get; private set; }
-        public static List<Producto> Productos { get; private set; }
-        public static List<ProductoMateriaPrima> Recetas { get; private set; }
-
-        static DataManager()
+        public static List<Producto> GetProductos()
         {
-            // Inicializar las listas al cargar la aplicación
-            MateriasPrimas = new List<MateriaPrima>();
-            Productos = new List<Producto>();
-            Recetas = new List<ProductoMateriaPrima>();
+            var lista = new List<Producto>();
+            SqlCommand cmd = new SqlCommand("SELECT * FROM Productos", MainClass.con);
 
-            // *** Datos de ejemplo para probar ***
-            CargarDatosDeEjemplo();
+            if (MainClass.con.State == ConnectionState.Closed)
+                MainClass.con.Open();
+
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                lista.Add(new Producto(
+                    (int)dr["Id"],
+                    dr["Nombre"].ToString(),
+                    dr["Descripcion"].ToString()
+                ));
+            }
+
+            dr.Close();
+            MainClass.con.Close();
+            return lista;
         }
 
-        private static void CargarDatosDeEjemplo()
+        public static List<MateriaPrima> GetMateriasPrimas()
         {
-            // Materias Primas de ejemplo
-            MateriasPrimas.Add(new MateriaPrima(1, "Harina de Trigo", "kg", 1.20m));
-            MateriasPrimas.Add(new MateriaPrima(2, "Tomate Perita", "kg", 0.80m));
-            MateriasPrimas.Add(new MateriaPrima(3, "Queso Mozzarella", "kg", 8.50m));
-            MateriasPrimas.Add(new MateriaPrima(4, "Aceite de Oliva", "litro", 5.00m));
-            MateriasPrimas.Add(new MateriaPrima(5, "Sal", "kg", 0.50m));
-            MateriasPrimas.Add(new MateriaPrima(6, "Levadura Fresca", "gramos", 0.01m)); // 10 gramos = 0.10
+            var lista = new List<MateriaPrima>();
+            SqlCommand cmd = new SqlCommand("SELECT * FROM MateriasPrimas", MainClass.con);
 
-            // Productos de ejemplo
-            Productos.Add(new Producto(101, "Pizza Margarita Grande", "Pizza clásica con tomate y mozzarella"));
-            Productos.Add(new Producto(102, "Pizza Napolitana Mediana", "Pizza con tomate, mozzarella y orégano"));
+            if (MainClass.con.State == ConnectionState.Closed)
+                MainClass.con.Open();
 
-            // Recetas de ejemplo (Asignar Insumos a Producto)
-            // Receta para Pizza Margarita Grande
-            Recetas.Add(new ProductoMateriaPrima(101, 1, 0.300m)); // 300 gramos de harina
-            Recetas.Add(new ProductoMateriaPrima(101, 2, 0.200m)); // 200 gramos de tomate
-            Recetas.Add(new ProductoMateriaPrima(101, 3, 0.250m)); // 250 gramos de queso
-            Recetas.Add(new ProductoMateriaPrima(101, 4, 0.020m)); // 20 ml de aceite
-            Recetas.Add(new ProductoMateriaPrima(101, 5, 0.005m)); // 5 gramos de sal
-            Recetas.Add(new ProductoMateriaPrima(101, 6, 20m));    // 20 gramos de levadura
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                lista.Add(new MateriaPrima(
+                    (int)dr["Id"],
+                    dr["Nombre"].ToString(),
+                    dr["UnidadMedida"].ToString(),
+                    (decimal)dr["CostoPorUnidad"]
+                ));
+            }
 
-            // Receta para Pizza Napolitana Mediana (ejemplo simplificado)
-            Recetas.Add(new ProductoMateriaPrima(102, 1, 0.200m)); // 200 gramos de harina
-            Recetas.Add(new ProductoMateriaPrima(102, 2, 0.150m)); // 150 gramos de tomate
-            Recetas.Add(new ProductoMateriaPrima(102, 3, 0.180m)); // 180 gramos de queso
-            Recetas.Add(new ProductoMateriaPrima(102, 5, 0.003m)); // 3 gramos de sal
+            dr.Close();
+            MainClass.con.Close();
+            return lista;
         }
 
-        // Métodos de ayuda para la gestión de IDs
-        public static int GetNextMateriaPrimaId()
+        public static List<ProductoMateriaPrima> GetRecetasPorProducto(int productoId)
         {
-            return MateriasPrimas.Any() ? MateriasPrimas.Max(mp => mp.Id) + 1 : 1;
+            var lista = new List<ProductoMateriaPrima>();
+            SqlCommand cmd = new SqlCommand("SELECT * FROM Recetas WHERE ProductoId = @ProductoId", MainClass.con);
+            cmd.Parameters.AddWithValue("@ProductoId", productoId);
+
+            if (MainClass.con.State == ConnectionState.Closed)
+                MainClass.con.Open();
+
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                lista.Add(new ProductoMateriaPrima(
+                    (int)dr["ProductoId"],
+                    (int)dr["MateriaPrimaId"],
+                    (decimal)dr["CantidadUsada"]
+                ));
+            }
+
+            dr.Close();
+            MainClass.con.Close();
+            return lista;
         }
 
-        public static int GetNextProductoId()
+        public static void AgregarMateriaPrima(MateriaPrima mp)
         {
-            return Productos.Any() ? Productos.Max(p => p.Id) + 1 : 1;
+            SqlCommand cmd = new SqlCommand("INSERT INTO MateriasPrimas (Nombre, UnidadMedida, CostoPorUnidad) VALUES (@n, @u, @c)", MainClass.con);
+            cmd.Parameters.AddWithValue("@n", mp.Nombre);
+            cmd.Parameters.AddWithValue("@u", mp.UnidadMedida);
+            cmd.Parameters.AddWithValue("@c", mp.CostoPorUnidad);
+
+            if (MainClass.con.State == ConnectionState.Closed)
+                MainClass.con.Open();
+
+            cmd.ExecuteNonQuery();
+            MainClass.con.Close();
         }
+
+        public static void AgregarReceta(ProductoMateriaPrima receta)
+        {
+            if (MainClass.con.State == ConnectionState.Closed)
+                MainClass.con.Open();
+
+            var exists = new SqlCommand("SELECT COUNT(*) FROM Recetas WHERE ProductoId = @p AND MateriaPrimaId = @m", MainClass.con);
+            exists.Parameters.AddWithValue("@p", receta.ProductoId);
+            exists.Parameters.AddWithValue("@m", receta.MateriaPrimaId);
+
+            int count = (int)exists.ExecuteScalar();
+
+            if (count == 0)
+            {
+                var insert = new SqlCommand("INSERT INTO Recetas (ProductoId, MateriaPrimaId, CantidadUsada) VALUES (@p, @m, @c)", MainClass.con);
+                insert.Parameters.AddWithValue("@p", receta.ProductoId);
+                insert.Parameters.AddWithValue("@m", receta.MateriaPrimaId);
+                insert.Parameters.AddWithValue("@c", receta.CantidadUsada);
+                insert.ExecuteNonQuery();
+            }
+            else
+            {
+                var update = new SqlCommand("UPDATE Recetas SET CantidadUsada = @c WHERE ProductoId = @p AND MateriaPrimaId = @m", MainClass.con);
+                update.Parameters.AddWithValue("@p", receta.ProductoId);
+                update.Parameters.AddWithValue("@m", receta.MateriaPrimaId);
+                update.Parameters.AddWithValue("@c", receta.CantidadUsada);
+                update.ExecuteNonQuery();
+            }
+
+            MainClass.con.Close();
+        }
+
+        public static decimal CalcularCostoProducto(int productoId)
+        {
+            decimal total = 0;
+            SqlCommand cmd = new SqlCommand(@"
+                SELECT r.CantidadUsada, m.CostoPorUnidad 
+                FROM Recetas r 
+                JOIN MateriasPrimas m ON r.MateriaPrimaId = m.Id 
+                WHERE r.ProductoId = @id", MainClass.con);
+            cmd.Parameters.AddWithValue("@id", productoId);
+
+            if (MainClass.con.State == ConnectionState.Closed)
+                MainClass.con.Open();
+
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                decimal cantidad = (decimal)dr["CantidadUsada"];
+                decimal costoUnidad = (decimal)dr["CostoPorUnidad"];
+                total += cantidad * costoUnidad;
+            }
+
+            dr.Close();
+            MainClass.con.Close();
+            return total;
+        }
+
+        public static void EliminarIngredienteDeReceta(int productoId, int materiaPrimaId)
+        {
+            if (MainClass.con.State == ConnectionState.Closed)
+                MainClass.con.Open();
+
+            SqlCommand cmd = new SqlCommand("DELETE FROM Recetas WHERE ProductoId = @p AND MateriaPrimaId = @m", MainClass.con);
+            cmd.Parameters.AddWithValue("@p", productoId);
+            cmd.Parameters.AddWithValue("@m", materiaPrimaId);
+            cmd.ExecuteNonQuery();
+
+            MainClass.con.Close();
+        }
+
+        public static void AgregarProducto(Producto producto)
+        {
+            SqlCommand cmd = new SqlCommand("INSERT INTO Productos (Nombre, Descripcion) VALUES (@n, @d)", MainClass.con);
+            cmd.Parameters.AddWithValue("@n", producto.Nombre);
+            cmd.Parameters.AddWithValue("@d", producto.Descripcion);
+
+            if (MainClass.con.State == ConnectionState.Closed)
+                MainClass.con.Open();
+
+            cmd.ExecuteNonQuery();
+            MainClass.con.Close();
+        }
+
+
     }
 }

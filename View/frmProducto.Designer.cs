@@ -1,6 +1,6 @@
 ﻿namespace popus_pizzeria.View
 {
-    partial class frmMenuCostos
+    partial class frmProducto
     {
         /// <summary>
         /// Required designer variable.
@@ -28,19 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.SuspendLayout();
-            // 
-            // frmMenuCostos
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Name = "frmMenuCostos";
-            this.Text = "frmMenuCostos";
-            this.ResumeLayout(false);
-
+            this.Text = "frmProducto";
         }
 
         #endregion

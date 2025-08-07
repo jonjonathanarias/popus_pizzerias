@@ -375,6 +375,12 @@
     <Compile Include="View\frmMenuCostos.Designer.cs">
       <DependentUpon>frmMenuCostos.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\frmProducto.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\frmProducto.Designer.cs">
+      <DependentUpon>frmProducto.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\frmProductoMateriaPrima.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -474,6 +480,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="View\frmKitchenView.resx">
       <DependentUpon>frmKitchenView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\frmMenuCostos.resx">
+      <DependentUpon>frmMenuCostos.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="View\frmProductoMateriaPrima.resx">
       <DependentUpon>frmProductoMateriaPrima.cs</DependentUpon>
