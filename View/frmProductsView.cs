@@ -1,4 +1,5 @@
-﻿using popus_pizzeria.Model;
+﻿using Microsoft.VisualBasic;
+using popus_pizzeria.Model;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -55,7 +56,7 @@ namespace popus_pizzeria.View
 
 
         private void guna2DataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
+{
             if (guna2DataGridView1.CurrentCell.OwningColumn.Name == "dgvedit")
             {
                 //alerta para confirmar la editar de la categoria
@@ -69,35 +70,43 @@ namespace popus_pizzeria.View
                     frm.txtCodigo.Text = Convert.ToString(guna2DataGridView1.CurrentRow.Cells["dgvCode"].Value);
                     frm.txtPrice.Text = Convert.ToString(guna2DataGridView1.CurrentRow.Cells["dgvPrice"].Value);
                     frm.cbCat.Text = Convert.ToString(guna2DataGridView1.CurrentRow.Cells["dgvCat"].Value);
-                    
+            
                     frm.Show();
                     GetData();
                 }
-
-
-
             }
             if (guna2DataGridView1.CurrentCell.OwningColumn.Name == "dgvdelete")
             {
-                //alerta para confirmar la eliminacion de la categoria
+                // alerta para confirmar la eliminacion de la categoria
                 guna2MessageDialog1.Icon = Guna.UI2.WinForms.MessageDialogIcon.Question;
                 guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.YesNo;
-                if (guna2MessageDialog1.Show("Estas seguro que desea eliminar el Producto?") == DialogResult.Yes)
+                if (guna2MessageDialog1.Show("¿Está seguro que desea eliminar el Producto?") == DialogResult.Yes)
                 {
-                    int id = Convert.ToInt32(guna2DataGridView1.CurrentRow.Cells["dgvid"].Value);
-                    string qry = "Delete from products where pID= " + id + " ";
-                    Hashtable ht = new Hashtable();
-                    MainClass.SQl(qry, ht);
+                    // Pide la contraseña
+                    string password = Interaction.InputBox("Por favor, ingrese la contraseña para eliminar el producto:", "Confirmar Eliminación", "");
 
-                    guna2MessageDialog1.Icon = Guna.UI2.WinForms.MessageDialogIcon.Information;
-                    guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.OK;
-                    guna2MessageDialog1.Show("Producto Eliminado Correctamente");
-                    GetData();
+                    // Verifica si la contraseña es correcta
+                    if (password == "ivanleonelbrendapopulin" )
+                    {
+                        int id = Convert.ToInt32(guna2DataGridView1.CurrentRow.Cells["dgvid"].Value);
+                        string qry = "Delete from products where pID= " + id + " ";
+                        Hashtable ht = new Hashtable();
+                        MainClass.SQl(qry, ht);
+
+                        guna2MessageDialog1.Icon = Guna.UI2.WinForms.MessageDialogIcon.Information;
+                        guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.OK;
+                        guna2MessageDialog1.Show("Producto Eliminado Correctamente");
+                        GetData();
+                    }
+                    else
+                    {
+                        // Muestra un mensaje de error si la contraseña es incorrecta
+                        guna2MessageDialog1.Icon = Guna.UI2.WinForms.MessageDialogIcon.Error;
+                        guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.OK;
+                        guna2MessageDialog1.Show("Contraseña incorrecta. No se pudo eliminar el producto.");
+                    }
                 }
-
-
             }
-            
         }
 
         

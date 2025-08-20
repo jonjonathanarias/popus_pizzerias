@@ -1,4 +1,5 @@
-﻿using popus_pizzeria.Model;
+﻿using Microsoft.VisualBasic;
+using popus_pizzeria.Model;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -73,15 +74,31 @@ namespace popus_pizzeria.View
                 guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.YesNo;
                 if (guna2MessageDialog1.Show("Estas seguro que desea eliminar la categoria?") == DialogResult.Yes)
                 {
-                    int id = Convert.ToInt32(guna2DataGridView1.CurrentRow.Cells["dgvid"].Value);
-                    string qry = "Delete from category where catID= " + id + " ";
-                    Hashtable ht = new Hashtable();
-                    MainClass.SQl(qry, ht);
+                    // Pide la contraseña
+                    string password = Interaction.InputBox("Por favor, ingrese la contraseña para eliminar la Categoria:", "Confirmar Eliminación", "");
 
-                    guna2MessageDialog1.Icon = Guna.UI2.WinForms.MessageDialogIcon.Information;
-                    guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.OK;
-                    guna2MessageDialog1.Show("Categoria Eliminada Correctamente");
-                    GetData();
+                    //Verifica si la contraseña es correcta
+                    if(password == "ivanleonelbrendapopulin") 
+                    {
+                        int id = Convert.ToInt32(guna2DataGridView1.CurrentRow.Cells["dgvid"].Value);
+                        string qry = "Delete from category where catID= " + id + " ";
+                        Hashtable ht = new Hashtable();
+                        MainClass.SQl(qry, ht);
+
+                        guna2MessageDialog1.Icon = Guna.UI2.WinForms.MessageDialogIcon.Information;
+                        guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.OK;
+                        guna2MessageDialog1.Show("Categoria Eliminada Correctamente");
+                        GetData();
+                    }
+                    else
+                    {
+                        // Muestra un mensaje de error si la contraseña es incorrecta
+                        guna2MessageDialog1.Icon = Guna.UI2.WinForms.MessageDialogIcon.Error;
+                        guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.OK;
+                        guna2MessageDialog1.Show("Contraseña incorrecta. No se pudo eliminar la categoria.");
+                    }
+
+
                 }
 
                 

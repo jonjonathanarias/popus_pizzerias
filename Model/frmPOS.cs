@@ -39,7 +39,7 @@ namespace popus_pizzeria.Model
             CustomerID = 0; 
             OrderType = ""; 
 
-            guna2DataGridView1.Rows.Clear(); 
+            btnImprimirCuenta.Rows.Clear(); 
             lblTotal.Text = "0.00"; 
 
            
@@ -79,7 +79,7 @@ namespace popus_pizzeria.Model
 
         private void frmPOS_Load(object sender, EventArgs e)
         {
-            guna2DataGridView1.BorderStyle = BorderStyle.FixedSingle;
+            btnImprimirCuenta.BorderStyle = BorderStyle.FixedSingle;
             SetupDataGridViewColumns(); // Call this method to set up columns
             AddCategory();
 
@@ -91,23 +91,23 @@ namespace popus_pizzeria.Model
         private void SetupDataGridViewColumns()
         {
 
-            guna2DataGridView1.Columns.Clear();
-            guna2DataGridView1.Columns.Add(new DataGridViewTextBoxColumn() { HeaderText = "S/N", Name = "dgvSerial", Width = 50 });
-            guna2DataGridView1.Columns.Add(new DataGridViewTextBoxColumn() { HeaderText = "DetailID", Name = "dgvid", Visible = false });
-            guna2DataGridView1.Columns.Add(new DataGridViewTextBoxColumn() { HeaderText = "ProdID", Name = "dgvProID", Visible = false });
-            guna2DataGridView1.Columns.Add(new DataGridViewTextBoxColumn() { HeaderText = "Nombre", Name = "dgvPName", Width = 150 });
-            guna2DataGridView1.Columns.Add(new DataGridViewTextBoxColumn() { HeaderText = "Cantidad", Name = "dgvQty", Width = 70 });
-            guna2DataGridView1.Columns.Add(new DataGridViewTextBoxColumn() { HeaderText = "Precio", Name = "dgvPrice", Width = 80 });
-            guna2DataGridView1.Columns.Add(new DataGridViewTextBoxColumn() { HeaderText = "Total", Name = "dgvAmount", Width = 100 });
-            guna2DataGridView1.Columns.Add(new DataGridViewTextBoxColumn() { HeaderText = "Observacion", Name = "dgvObs", Width = 150 });
-            guna2DataGridView1.Columns.Add(new DataGridViewCheckBoxColumn() { HeaderText = "Enviado", Name = "dgvIsSent", Visible = false });
-            guna2DataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+            btnImprimirCuenta.Columns.Clear();
+            btnImprimirCuenta.Columns.Add(new DataGridViewTextBoxColumn() { HeaderText = "S/N", Name = "dgvSerial", Width = 50 });
+            btnImprimirCuenta.Columns.Add(new DataGridViewTextBoxColumn() { HeaderText = "DetailID", Name = "dgvid", Visible = false });
+            btnImprimirCuenta.Columns.Add(new DataGridViewTextBoxColumn() { HeaderText = "ProdID", Name = "dgvProID", Visible = false });
+            btnImprimirCuenta.Columns.Add(new DataGridViewTextBoxColumn() { HeaderText = "Nombre", Name = "dgvPName", Width = 150 });
+            btnImprimirCuenta.Columns.Add(new DataGridViewTextBoxColumn() { HeaderText = "Cantidad", Name = "dgvQty", Width = 70 });
+            btnImprimirCuenta.Columns.Add(new DataGridViewTextBoxColumn() { HeaderText = "Precio", Name = "dgvPrice", Width = 80 });
+            btnImprimirCuenta.Columns.Add(new DataGridViewTextBoxColumn() { HeaderText = "Total", Name = "dgvAmount", Width = 100 });
+            btnImprimirCuenta.Columns.Add(new DataGridViewTextBoxColumn() { HeaderText = "Observacion", Name = "dgvObs", Width = 150 });
+            btnImprimirCuenta.Columns.Add(new DataGridViewCheckBoxColumn() { HeaderText = "Enviado", Name = "dgvIsSent", Visible = false });
+            btnImprimirCuenta.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 HeaderText = "QtyOriginal",
                 Name = "dgvQtyOriginal",
                 Visible = false
             });
-            guna2DataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+            btnImprimirCuenta.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 HeaderText = "QtyEnviado",
                 Name = "dgvQtyEnviado",
@@ -209,9 +209,9 @@ namespace popus_pizzeria.Model
         {
             var groupedRows = new Dictionary<string, DataGridViewRow>();
 
-            for (int i = guna2DataGridView1.Rows.Count - 1; i >= 0; i--)
+            for (int i = btnImprimirCuenta.Rows.Count - 1; i >= 0; i--)
             {
-                var row = guna2DataGridView1.Rows[i];
+                var row = btnImprimirCuenta.Rows[i];
                 if (row.IsNewRow) continue;
 
                 bool isSent = Convert.ToBoolean(row.Cells["dgvIsSent"]?.Value ?? false);
@@ -233,7 +233,7 @@ namespace popus_pizzeria.Model
                     existingRow.Cells["dgvQty"].Value = existingQty + newQty;
                     existingRow.Cells["dgvAmount"].Value = (existingQty + newQty) * price;
 
-                    guna2DataGridView1.Rows.RemoveAt(i); // Eliminar fila duplicada
+                    btnImprimirCuenta.Rows.RemoveAt(i); // Eliminar fila duplicada
                 }
                 else
                 {
@@ -275,7 +275,7 @@ namespace popus_pizzeria.Model
                 var wdg = (ucProduct)ss;
                 bool found = false;
 
-                foreach (DataGridViewRow item in guna2DataGridView1.Rows)
+                foreach (DataGridViewRow item in btnImprimirCuenta.Rows)
                 {
                     if (item.IsNewRow) continue;
 
@@ -299,7 +299,7 @@ namespace popus_pizzeria.Model
                             item.Cells["dgvIsSent"].Value = false; // Marcar como no completamente enviado
                             item.ReadOnly = false; // Hacerlo editable de nuevo
                             item.DefaultCellStyle.ForeColor = Color.DarkGreen;
-                            item.DefaultCellStyle.Font = new Font(guna2DataGridView1.Font, FontStyle.Bold);
+                            item.DefaultCellStyle.Font = new Font(btnImprimirCuenta.Font, FontStyle.Bold);
                         }
                         break;
                     }
@@ -308,21 +308,21 @@ namespace popus_pizzeria.Model
                 // Si no existe fila previa para ese producto, agregar nueva
                 if (!found)
                 {
-                    int n = guna2DataGridView1.Rows.Add();
+                    int n = btnImprimirCuenta.Rows.Add();
 
-                    guna2DataGridView1.Rows[n].Cells["dgvID"].Value = 0;
-                    guna2DataGridView1.Rows[n].Cells["dgvProID"].Value = wdg.id;
-                    guna2DataGridView1.Rows[n].Cells["dgvPName"].Value = wdg.PName;
-                    guna2DataGridView1.Rows[n].Cells["dgvQty"].Value = 1;
-                    guna2DataGridView1.Rows[n].Cells["dgvPrice"].Value = wdg.PPrice;
-                    guna2DataGridView1.Rows[n].Cells["dgvAmount"].Value = wdg.PPrice;
-                    guna2DataGridView1.Rows[n].Cells["dgvObs"].Value = "";
-                    guna2DataGridView1.Rows[n].Cells["dgvDelete"].Value = "Eliminar";
-                    guna2DataGridView1.Rows[n].Cells["dgvIsSent"].Value = false; // Nuevo ítem, no está enviado
-                    guna2DataGridView1.Rows[n].Cells["dgvQtyEnviado"].Value = 0; // Cantidad enviada es 0
+                    btnImprimirCuenta.Rows[n].Cells["dgvID"].Value = 0;
+                    btnImprimirCuenta.Rows[n].Cells["dgvProID"].Value = wdg.id;
+                    btnImprimirCuenta.Rows[n].Cells["dgvPName"].Value = wdg.PName;
+                    btnImprimirCuenta.Rows[n].Cells["dgvQty"].Value = 1;
+                    btnImprimirCuenta.Rows[n].Cells["dgvPrice"].Value = wdg.PPrice;
+                    btnImprimirCuenta.Rows[n].Cells["dgvAmount"].Value = wdg.PPrice;
+                    btnImprimirCuenta.Rows[n].Cells["dgvObs"].Value = "";
+                    btnImprimirCuenta.Rows[n].Cells["dgvDelete"].Value = "Eliminar";
+                    btnImprimirCuenta.Rows[n].Cells["dgvIsSent"].Value = false; // Nuevo ítem, no está enviado
+                    btnImprimirCuenta.Rows[n].Cells["dgvQtyEnviado"].Value = 0; // Cantidad enviada es 0
 
-                    guna2DataGridView1.Rows[n].DefaultCellStyle.ForeColor = Color.DarkGreen;
-                    guna2DataGridView1.Rows[n].DefaultCellStyle.Font = new Font(guna2DataGridView1.Font, FontStyle.Bold);
+                    btnImprimirCuenta.Rows[n].DefaultCellStyle.ForeColor = Color.DarkGreen;
+                    btnImprimirCuenta.Rows[n].DefaultCellStyle.Font = new Font(btnImprimirCuenta.Font, FontStyle.Bold);
                 }
                 MergePendingProductRows(); // Esto debería seguir funcionando
                 GetTotal(); // Actualiza el total
@@ -374,18 +374,18 @@ namespace popus_pizzeria.Model
             DataGridViewButtonColumn dgvDeleteButton = new DataGridViewButtonColumn();
             dgvDeleteButton.HeaderText = "Eliminar";
             dgvDeleteButton.Name = "dgvDelete";
-            dgvDeleteButton.Text = "*";
+            dgvDeleteButton.Text = "-";
             dgvDeleteButton.UseColumnTextForButtonValue = true;
             dgvDeleteButton.Width = 50;
-            guna2DataGridView1.Columns.Add(dgvDeleteButton);
+            btnImprimirCuenta.Columns.Add(dgvDeleteButton);
 
         }
         private void guna2DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             
-            if (e.ColumnIndex == guna2DataGridView1.Columns["dgvDelete"].Index && e.RowIndex >= 0)
+            if (e.ColumnIndex == btnImprimirCuenta.Columns["dgvDelete"].Index && e.RowIndex >= 0)
             {
-                DataGridViewRow row = guna2DataGridView1.Rows[e.RowIndex];
+                DataGridViewRow row = btnImprimirCuenta.Rows[e.RowIndex];
                 int currentQty = Convert.ToInt32(row.Cells["dgvQty"].Value);
 
                 if (currentQty > 1)
@@ -398,7 +398,7 @@ namespace popus_pizzeria.Model
                 else
                 {
                     
-                    guna2DataGridView1.Rows.RemoveAt(e.RowIndex);
+                    btnImprimirCuenta.Rows.RemoveAt(e.RowIndex);
                 }
 
                 
@@ -406,16 +406,16 @@ namespace popus_pizzeria.Model
             }
 
             
-            if (e.RowIndex >= 0 && guna2DataGridView1.Columns[e.ColumnIndex].Name == "dgvObs")
+            if (e.RowIndex >= 0 && btnImprimirCuenta.Columns[e.ColumnIndex].Name == "dgvObs")
             {
                 
-                string currentObservation = guna2DataGridView1.Rows[e.RowIndex].Cells["dgvObs"].Value?.ToString() ?? string.Empty;
+                string currentObservation = btnImprimirCuenta.Rows[e.RowIndex].Cells["dgvObs"].Value?.ToString() ?? string.Empty;
 
                 using (frmObservation obsForm = new frmObservation(currentObservation))
                 {
                     if (obsForm.ShowDialog() == DialogResult.OK)
                     {
-                        guna2DataGridView1.Rows[e.RowIndex].Cells["dgvObs"].Value = obsForm.Observation;
+                        btnImprimirCuenta.Rows[e.RowIndex].Cells["dgvObs"].Value = obsForm.Observation;
                     }
                 }
             }
@@ -425,7 +425,7 @@ namespace popus_pizzeria.Model
             // por serial
             int count = 0;
 
-            foreach (DataGridViewRow row in guna2DataGridView1.Rows)
+            foreach (DataGridViewRow row in btnImprimirCuenta.Rows)
             {
 
                 count++;
@@ -438,7 +438,7 @@ namespace popus_pizzeria.Model
             double total = 0;
             lblTotal.Text = "";
 
-            foreach (DataGridViewRow item in guna2DataGridView1.Rows)
+            foreach (DataGridViewRow item in btnImprimirCuenta.Rows)
             {
                 total += double.Parse(item.Cells["dgvAmount"].Value.ToString());
             }
@@ -452,7 +452,7 @@ namespace popus_pizzeria.Model
             lblWaiter.Text = "";
             lblTable.Visible = false;
             lblWaiter.Visible = false;
-            guna2DataGridView1.Rows.Clear();
+            btnImprimirCuenta.Rows.Clear();
             MainId = 0;
             lblTotal.Text = "00";
             lblCustomer.Text = "";
@@ -652,7 +652,7 @@ namespace popus_pizzeria.Model
             List<string> tempNewProductDetails = new List<string>();
             bool hayProductosParaEnviar = false;
 
-            foreach (DataGridViewRow row in guna2DataGridView1.Rows)
+            foreach (DataGridViewRow row in btnImprimirCuenta.Rows)
             {
                 if (row.IsNewRow) continue;
 
@@ -702,7 +702,7 @@ namespace popus_pizzeria.Model
                         row.Cells["dgvIsSent"].Value = true; // Marca como completamente enviado
                         row.ReadOnly = true; // Hacer la fila de solo lectura
                         row.DefaultCellStyle.ForeColor = Color.Gray;
-                        row.DefaultCellStyle.Font = new Font(guna2DataGridView1.Font, FontStyle.Strikeout);
+                        row.DefaultCellStyle.Font = new Font(btnImprimirCuenta.Font, FontStyle.Strikeout);
                     }
                     else
                     {
@@ -710,7 +710,7 @@ namespace popus_pizzeria.Model
                         row.Cells["dgvIsSent"].Value = false; // Marca como no completamente enviado
                         row.ReadOnly = false; // Asegurar que la fila sea editable
                         row.DefaultCellStyle.ForeColor = Color.DarkGreen;
-                        row.DefaultCellStyle.Font = new Font(guna2DataGridView1.Font, FontStyle.Bold);
+                        row.DefaultCellStyle.Font = new Font(btnImprimirCuenta.Font, FontStyle.Bold);
                     }
                 }
                 catch (Exception ex)
@@ -859,10 +859,10 @@ namespace popus_pizzeria.Model
         private void guna2DataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             
-            if (e.RowIndex >= 0 && guna2DataGridView1.Columns[e.ColumnIndex].Name == "dgvObs")
+            if (e.RowIndex >= 0 && btnImprimirCuenta.Columns[e.ColumnIndex].Name == "dgvObs")
             {
                 
-                string currentObservation = guna2DataGridView1.Rows[e.RowIndex].Cells["dgvObs"].Value?.ToString() ?? string.Empty;
+                string currentObservation = btnImprimirCuenta.Rows[e.RowIndex].Cells["dgvObs"].Value?.ToString() ?? string.Empty;
 
                 
                 using (frmObservation obsForm = new frmObservation(currentObservation))
@@ -870,7 +870,7 @@ namespace popus_pizzeria.Model
                     if (obsForm.ShowDialog() == DialogResult.OK)
                     {
                      
-                        guna2DataGridView1.Rows[e.RowIndex].Cells["dgvObs"].Value = obsForm.Observation;
+                        btnImprimirCuenta.Rows[e.RowIndex].Cells["dgvObs"].Value = obsForm.Observation;
                     }
                 }
             }
@@ -928,7 +928,7 @@ namespace popus_pizzeria.Model
             lblTable.Visible = true;
             lblWaiter.Visible = true;
 
-            guna2DataGridView1.Rows.Clear();
+            btnImprimirCuenta.Rows.Clear();
 
             foreach (DataRow row in dt.Rows)
             {
@@ -949,28 +949,28 @@ namespace popus_pizzeria.Model
             totalQtyEnviado // dgvQtyEnviado contendrá la cantidad total que YA fue enviada para este ítem
         };
 
-                int index = guna2DataGridView1.Rows.Add(obj);
-                var dgvRow = guna2DataGridView1.Rows[index];
+                int index = btnImprimirCuenta.Rows.Add(obj);
+                var dgvRow = btnImprimirCuenta.Rows[index];
 
                 // Establecer el estilo de la fila: si todo está enviado, gris y tachado; si no, verde y negrita.
                 if (totalQty == totalQtyEnviado)
                 {
                     dgvRow.DefaultCellStyle.ForeColor = Color.Gray;
-                    dgvRow.DefaultCellStyle.Font = new Font(guna2DataGridView1.Font, FontStyle.Strikeout);
+                    dgvRow.DefaultCellStyle.Font = new Font(btnImprimirCuenta.Font, FontStyle.Strikeout);
                     dgvRow.ReadOnly = true; // Hacer la fila de solo lectura si ya está todo enviado
                 }
                 else
                 {
                     dgvRow.DefaultCellStyle.ForeColor = Color.DarkGreen;
-                    dgvRow.DefaultCellStyle.Font = new Font(guna2DataGridView1.Font, FontStyle.Bold);
+                    dgvRow.DefaultCellStyle.Font = new Font(btnImprimirCuenta.Font, FontStyle.Bold);
                     dgvRow.ReadOnly = false; // Hacerla editable si hay algo pendiente
                 }
             }
 
             // Numerar las filas (esto sigue igual)
-            for (int i = 0; i < guna2DataGridView1.Rows.Count; i++)
+            for (int i = 0; i < btnImprimirCuenta.Rows.Count; i++)
             {
-                guna2DataGridView1.Rows[i].Cells[0].Value = i + 1;
+                btnImprimirCuenta.Rows[i].Cells[0].Value = i + 1;
             }
 
             GetTotal(); // Actualiza el total del pedido
@@ -1023,7 +1023,7 @@ namespace popus_pizzeria.Model
             }
 
             MainId = 0;
-            guna2DataGridView1.Rows.Clear();
+            btnImprimirCuenta.Rows.Clear();
             lblTable.Text = "";
             lblWaiter.Text = "";
             lblTable.Visible = false;
@@ -1033,7 +1033,142 @@ namespace popus_pizzeria.Model
 
         }
 
+        private void btnPrintCuenta_Click(object sender, EventArgs e)
+        {
+            // Verify if there are items in the DataGridView to print
+            if (btnImprimirCuenta.Rows.Count == 0)
+            {
+                guna2MessageDialog1.Show("No hay productos en la cuenta para imprimir.");
+                return;
+            }
 
+            // Create a new PrintDocument object, which represents the document to be printed
+            PrintDocument printDocument = new PrintDocument();
+            // Attach the PrintBill method to the PrintPage event. This method will contain the
+            // logic for drawing the content on each page of the document.
+            printDocument.PrintPage += new PrintPageEventHandler(PrintBill);
+
+            // Create a PrintPreviewDialog to allow the user to see how the document
+            // will look before actually sending it to the printer.
+            PrintPreviewDialog printPreviewDialog = new PrintPreviewDialog();
+            // Assign the printDocument to the PrintPreviewDialog
+            printPreviewDialog.Document = printDocument;
+
+            // Show the PrintPreviewDialog. If the user clicks 'Print' in the dialog,
+            // then the Print method of the printDocument will be called.
+            if (printPreviewDialog.ShowDialog() == DialogResult.OK)
+            {
+                printDocument.Print(); // Sends the document to the printer
+            }
+        }
+
+        private void PrintBill(object sender, PrintPageEventArgs e)
+        {
+            // Define different fonts for various sections of the bill for better readability
+            // Optimized for thermal printer (smaller fonts)
+            Font fontTitle = new Font("Arial", 10, FontStyle.Bold);     // Font for the main title
+            Font fontHeader = new Font("Arial", 8, FontStyle.Bold);    // Font for section headers (e.g., "Producto", "Cantidad")
+            Font fontBody = new Font("Arial", 8);                      // Font for general text and product details
+            Font fontTotal = new Font("Arial", 9, FontStyle.Bold);     // Font for the final total amount
+
+            // Get the Graphics object from the PrintPageEventArgs. This object allows us to draw
+            // text, lines, and other graphics onto the printer page.
+            Graphics g = e.Graphics;
+
+            // Define the starting Y position for drawing, considering the top margin of the page.
+            float yPos = e.MarginBounds.Top;
+            // Define the left and right margins of the printable area.
+            float leftMargin = e.MarginBounds.Left;
+            float rightMargin = e.MarginBounds.Right;
+
+            // --- Draw the Bill Title ---
+            string title = "--- DETALLE DE CUENTA ---";
+            // Measure the size of the title string with the specified font to center it.
+            SizeF titleSize = g.MeasureString(title, fontTitle);
+            // Draw the title string, centered horizontally.
+            g.DrawString(title, fontTitle, Brushes.Black, leftMargin + (e.MarginBounds.Width - titleSize.Width) / 2, yPos);
+            // Move the Y position down for the next section, adding some padding.
+            yPos += titleSize.Height + 10;
+
+            // --- Draw General Information ---
+            // Concatenate table, waiter, date, and time information.
+            string billInfo = $"Mesa: {lblTable.Text}\nMozo: {lblWaiter.Text}\nFecha: {DateTime.Now.ToShortDateString()}\nHora: {DateTime.Now.ToShortTimeString()}";
+            // Draw the general information.
+            g.DrawString(billInfo, fontBody, Brushes.Black, leftMargin, yPos);
+            // Move the Y position down based on the height of the drawn text.
+            yPos += g.MeasureString(billInfo, fontBody).Height + 10; // Reduced spacing
+
+            // --- Draw Product List Headers ---
+            // Draw column headers for the product details.
+            // Adjust X positions for thermal printer narrow width
+            g.DrawString("Cant.", fontHeader, Brushes.Black, leftMargin, yPos);
+            g.DrawString("Producto", fontHeader, Brushes.Black, leftMargin + 50, yPos);
+            g.DrawString("Precio U.", fontHeader, Brushes.Black, leftMargin + 180, yPos);
+            g.DrawString("Total", fontHeader, Brushes.Black, rightMargin - g.MeasureString("Total", fontHeader).Width, yPos);
+            // Move Y position down after headers.
+            yPos += g.MeasureString("Producto", fontHeader).Height + 3; // Reduced spacing
+            // Draw a horizontal line to separate headers from product items.
+            g.DrawLine(Pens.Black, leftMargin, yPos, rightMargin, yPos);
+            yPos += 3; // Small padding after the line.
+
+            // --- Draw Individual Product Details ---
+            // Loop through each row in the DataGridView (btnImprimirCuenta) to get product information.
+            foreach (DataGridViewRow row in btnImprimirCuenta.Rows)
+            {
+                // Skip new rows that are not yet committed.
+                if (row.IsNewRow) continue;
+
+                // Extract product details from the DataGridView cells.
+                string productName = row.Cells["dgvPName"].Value.ToString();
+                string quantity = row.Cells["dgvQty"].Value.ToString();
+                // Format price and total as currency (e.g., "$12.34").
+                string price = double.Parse(row.Cells["dgvPrice"].Value.ToString()).ToString("N2"); // Use N2 for standard number format
+                string total = double.Parse(row.Cells["dgvAmount"].Value.ToString()).ToString("N2"); // Use N2 for standard number format
+                string observation = row.Cells["dgvObs"].Value?.ToString() ?? string.Empty;
+
+                // Draw quantity, product name, unit price, and total on the current line.
+                g.DrawString(quantity, fontBody, Brushes.Black, leftMargin, yPos);
+                g.DrawString(productName, fontBody, Brushes.Black, leftMargin + 50, yPos);
+                g.DrawString(price, fontBody, Brushes.Black, leftMargin + 180, yPos);
+                // Align total to the right.
+                g.DrawString(total, fontBody, Brushes.Black, rightMargin - g.MeasureString(total, fontBody).Width, yPos);
+                // Move Y position down.
+                yPos += g.MeasureString(productName, fontBody).Height;
+
+                // If there's an observation, print it indented below the product.
+                if (!string.IsNullOrEmpty(observation))
+                {
+                    g.DrawString($"  - Obs: {observation}", new Font("Arial", 7, FontStyle.Italic), Brushes.Black, leftMargin + 10, yPos);
+                    yPos += g.MeasureString("  - Obs:", new Font("Arial", 7, FontStyle.Italic)).Height;
+                }
+
+                yPos += 3; // Small padding between items.
+            }
+
+            // --- Draw Separator and Total ---
+            // Draw a line to separate the product list from the total section.
+            g.DrawLine(Pens.Black, leftMargin, yPos, rightMargin, yPos);
+            yPos += 5; // Padding after the line.
+
+            // Define the text for "TOTAL:" and get the actual total value from lblTotal.
+            string totalText = "TOTAL:";
+            string totalValue = double.Parse(lblTotal.Text).ToString("N2"); // Format total as standard number.
+
+            // Measure sizes to align the total.
+            SizeF totalTextSize = g.MeasureString(totalText, fontTotal);
+            SizeF totalValueSize = g.MeasureString(totalValue, fontTotal);
+
+            // Draw "TOTAL:" aligned to the left.
+            g.DrawString(totalText, fontTotal, Brushes.Black, leftMargin, yPos);
+            // Draw the total value aligned to the right.
+            g.DrawString(totalValue, fontTotal, Brushes.Black, rightMargin - totalValueSize.Width, yPos);
+
+            yPos += fontTotal.Height + 10;
+            // Add a simple footer
+            string footer = "--- ¡GRACIAS POR SU VISITA! ---";
+            SizeF footerSize = g.MeasureString(footer, fontBody);
+            g.DrawString(footer, fontBody, Brushes.Black, leftMargin + (e.MarginBounds.Width - footerSize.Width) / 2, yPos);
+        }
     }
 
 }
