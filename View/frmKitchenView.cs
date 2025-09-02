@@ -184,7 +184,7 @@ namespace popus_pizzeria.View
                 int id = Convert.ToInt32((sender as Guna.UI2.WinForms.Guna2Button).Tag.ToString());
                 guna2MessageDialog1.Icon = Guna.UI2.WinForms.MessageDialogIcon.Question;
                 guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.YesNo;
-                if (guna2MessageDialog1.Show("Estas seguro que desea eliminar el pedido?") == DialogResult.Yes)
+                if (guna2MessageDialog1.Show("Estas seguro que desea completar el pedido?") == DialogResult.Yes)
                 {
                     string qry = @"update tblMain set status = 'Completo' where MainID = @ID";
                     Hashtable ht = new Hashtable();
@@ -193,7 +193,7 @@ namespace popus_pizzeria.View
                     if (MainClass.SQl(qry, ht)>0)
                     {
                         guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.OK;
-                        guna2MessageDialog1.Show("eliminado correctamente");
+                        guna2MessageDialog1.Show("Pedido completado correctamente.\nCobrar y cerrar en lista de pedidos");
                     }
                     GetOrders();
                 }

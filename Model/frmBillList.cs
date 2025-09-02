@@ -19,7 +19,9 @@ namespace popus_pizzeria.Model
         {
             InitializeComponent();
             btnGuardar.Visible = false;
+
             
+
         }
 
         public int MainID = 0;
@@ -31,20 +33,42 @@ namespace popus_pizzeria.Model
 
         private void LoadDate()
         {
-            string qry = @"SELECT MainID, TableName, WaiterName, orderType, status, total 
-               FROM tblMain
-               WHERE status = 'Completo'";
+            string qry = @"
+        SELECT 
+            m.MainID, 
+            m.TableName, 
+            m.WaiterName, 
+            m.orderType, 
+            m.status, 
+            m.total,
+            CASE 
+                WHEN m.orderType IN ('Delivery', 'Take Away') THEN c.Name 
+                ELSE '' 
+            END AS CustomerName,
+            CASE 
+                WHEN m.orderType IN ('Delivery', 'Take Away') THEN c.Phone 
+                ELSE '' 
+            END AS CustomerPhone
+        FROM tblMain m
+        LEFT JOIN tblCustomers c ON m.CustomerID = c.CustomerID
+        WHERE m.status = 'Completo'";
 
             ListBox lb = new ListBox();
-            lb.Items.Add(dgvid);
-            lb.Items.Add(dgvTable);
-            lb.Items.Add(dgvWaiter);
-            lb.Items.Add(dgvType);
-            lb.Items.Add(dgvStatus);
-            lb.Items.Add(dgvTotal);
-
+            lb.Items.Add(dgvid);             // MainID
+            lb.Items.Add(dgvTable);          // TableName
+            lb.Items.Add(dgvWaiter);         // WaiterName
+            lb.Items.Add(dgvType);           // orderType
+            lb.Items.Add(dgvStatus);         // status
+            lb.Items.Add(dgvTotal);          // total
+            lb.Items.Add(dgvCustomerName);   // CustomerName
+            lb.Items.Add(dgvCustomerPhone);  // CustomerPhone
 
             MainClass.LoadData(qry, guna2DataGridView1, lb);
+
+            if (guna2DataGridView1.Columns.Contains("dgvedit"))
+            {
+                guna2DataGridView1.Columns["dgvedit"].DisplayIndex = guna2DataGridView1.Columns.Count - 1;
+            }
         }
 
         private void guna2DataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
