@@ -1033,35 +1033,152 @@ namespace popus_pizzeria.Model
 
         }
 
+        /// <summary>
+        /// Handles the click event for the Print Bill button.
+        /// This method initiates the printing process for the current bill, optimized for thermal printers.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void btnPrintCuenta_Click(object sender, EventArgs e)
         {
-            // Verify if there are items in the DataGridView to print
+            // Verificar si hay elementos para imprimir
             if (btnImprimirCuenta.Rows.Count == 0)
             {
                 guna2MessageDialog1.Show("No hay productos en la cuenta para imprimir.");
                 return;
             }
 
-            // Create a new PrintDocument object, which represents the document to be printed
-            PrintDocument printDocument = new PrintDocument();
-            // Attach the PrintBill method to the PrintPage event. This method will contain the
-            // logic for drawing the content on each page of the document.
-            printDocument.PrintPage += new PrintPageEventHandler(PrintBill);
+            // Crear un diccionario con la información de la cabecera
+            var infoHeaders = new Dictionary<string, string>
+    {
+                { "Mesa", lblTable.Text },
+                { "Mozo", lblWaiter.Text }
+    };
 
-            // Create a PrintPreviewDialog to allow the user to see how the document
-            // will look before actually sending it to the printer.
-            PrintPreviewDialog printPreviewDialog = new PrintPreviewDialog();
-            // Assign the printDocument to the PrintPreviewDialog
-            printPreviewDialog.Document = printDocument;
-
-            // Show the PrintPreviewDialog. If the user clicks 'Print' in the dialog,
-            // then the Print method of the printDocument will be called.
-            if (printPreviewDialog.ShowDialog() == DialogResult.OK)
+            // Si el cliente está visible, añadir su nombre
+            if (lblCustomer.Visible && !string.IsNullOrWhiteSpace(lblCustomer.Text))
             {
-                printDocument.Print(); // Sends the document to the printer
+                infoHeaders["Cliente"] = lblCustomer.Text.Replace("CUSTOMER: ", "").Replace("PHONE: ", "");
             }
+
+            // Crear un PrintDocument para la vista previa
+            PrintDocument previewDoc = new PrintDocument();
+            previewDoc.DefaultPageSettings.PaperSize = new PaperSize("Recibo80mm", 315, 850); // Ajusta a 80mm
+            previewDoc.DefaultPageSettings.Margins = new Margins(10, 10, 10, 10);
+            previewDoc.PrintPage += (s, ev) =>
+            {
+                // Lógica de dibujo del recibo de 80mm
+                float yPos = ev.MarginBounds.Top;
+                float leftMargin = ev.MarginBounds.Left;
+                float rightMargin = ev.MarginBounds.Right;
+
+                // Definir fuentes
+                Font fontTitle = new Font("Arial", 12, FontStyle.Bold);
+                Font fontHeader = new Font("Arial", 9, FontStyle.Bold);
+                Font fontBody = new Font("Arial", 8);
+                Font fontTotal = new Font("Arial", 10, FontStyle.Bold);
+                Font fontObservation = new Font("Arial", 7, FontStyle.Italic);
+
+                // Título del recibo
+                string title = "--- POPU´S PIZZERIA ---";
+                SizeF titleSize = ev.Graphics.MeasureString(title, fontTitle);
+                ev.Graphics.DrawString(title, fontTitle, Brushes.Black, leftMargin + (ev.MarginBounds.Width - titleSize.Width) / 2, yPos);
+                yPos += titleSize.Height + 5;
+
+                // Información de la cabecera
+                string headerInfo = $"Mesa: {lblTable.Text}\nMozo: {lblWaiter.Text}\n";
+                if (lblCustomer.Visible && !string.IsNullOrWhiteSpace(lblCustomer.Text))
+                {
+                    headerInfo += $"Cliente: {lblCustomer.Text.Replace("CUSTOMER: ", "").Replace("PHONE: ", "")}\n";
+                }
+                headerInfo += $"Fecha: {DateTime.Now.ToShortDateString()} - Hora: {DateTime.Now.ToShortTimeString()}";
+                ev.Graphics.DrawString(headerInfo, fontBody, Brushes.Black, leftMargin, yPos);
+                yPos += ev.Graphics.MeasureString(headerInfo, fontBody).Height + 10;
+
+                // Encabezados de productos
+                float productX = leftMargin;
+                float qtyX = leftMargin + 170;
+                float priceX = leftMargin + 220;
+                float totalX = rightMargin;
+
+                ev.Graphics.DrawString("Producto", fontHeader, Brushes.Black, productX, yPos);
+                ev.Graphics.DrawString("Cant.", fontHeader, Brushes.Black, qtyX, yPos);
+                ev.Graphics.DrawString("Precio", fontHeader, Brushes.Black, priceX, yPos);
+                string totalHeader = "Total";
+                SizeF totalHeaderSize = ev.Graphics.MeasureString(totalHeader, fontHeader);
+                ev.Graphics.DrawString(totalHeader, fontHeader, Brushes.Black, totalX - totalHeaderSize.Width, yPos);
+
+                yPos += totalHeaderSize.Height + 3;
+                ev.Graphics.DrawLine(Pens.Black, leftMargin, yPos, rightMargin, yPos);
+                yPos += 3;
+
+                // Detalle de productos
+                foreach (DataGridViewRow row in btnImprimirCuenta.Rows)
+                {
+                    if (row.IsNewRow) continue;
+                    string productName = row.Cells["dgvPName"].Value.ToString();
+                    string quantity = row.Cells["dgvQty"].Value.ToString();
+                    string price = double.Parse(row.Cells["dgvPrice"].Value.ToString()).ToString("N2");
+                    string total = double.Parse(row.Cells["dgvAmount"].Value.ToString()).ToString("N2");
+                   // string observation = row.Cells["dgvObs"].Value?.ToString() ?? string.Empty;
+
+                    // Dibujar nombre del producto
+                    ev.Graphics.DrawString(productName, fontBody, Brushes.Black, productX, yPos);
+
+                    // Dibujar cantidad
+                    SizeF qtySize = ev.Graphics.MeasureString(quantity, fontBody);
+                    ev.Graphics.DrawString(quantity, fontBody, Brushes.Black, qtyX + (ev.Graphics.MeasureString("Cant.", fontHeader).Width - qtySize.Width) / 2, yPos);
+
+                    // Dibujar precio
+                    SizeF priceSize = ev.Graphics.MeasureString(price, fontBody);
+                    ev.Graphics.DrawString(price, fontBody, Brushes.Black, priceX + (ev.Graphics.MeasureString("Precio", fontHeader).Width - priceSize.Width) / 2, yPos);
+
+                    // Dibujar total
+                    SizeF totalSize = ev.Graphics.MeasureString(total, fontBody);
+                    ev.Graphics.DrawString(total, fontBody, Brushes.Black, totalX - totalSize.Width, yPos);
+
+                    yPos += ev.Graphics.MeasureString(productName, fontBody).Height;
+
+                   // if (!string.IsNullOrEmpty(observation))
+                   // {
+                   //    ev.Graphics.DrawString($"  - Obs: {observation}", fontObservation, Brushes.Black, leftMargin, yPos);
+                   //     yPos += ev.Graphics.MeasureString($"  - Obs: {observation}", fontObservation).Height;
+                   // }
+
+                    yPos += 2;
+                }
+
+                // Total y pie de página
+                ev.Graphics.DrawLine(Pens.Black, leftMargin, yPos, rightMargin, yPos);
+                yPos += 5;
+                string totalText = "TOTAL:";
+                string totalValue = double.Parse(lblTotal.Text).ToString("N2");
+                SizeF totalTextSize = ev.Graphics.MeasureString(totalText, fontTotal);
+                SizeF totalValueSize = ev.Graphics.MeasureString(totalValue, fontTotal);
+                ev.Graphics.DrawString(totalText, fontTotal, Brushes.Black, leftMargin, yPos);
+                ev.Graphics.DrawString(totalValue, fontTotal, Brushes.Black, rightMargin - totalValueSize.Width, yPos);
+                yPos += fontTotal.Height + 10;
+                string footer = "--- ¡DISFRUTA DE LA VIDA! ---\n --- ¡CON CADA BOCADO! ---";
+                SizeF footerSize = ev.Graphics.MeasureString(footer, fontBody);
+                ev.Graphics.DrawString(footer, fontBody, Brushes.Black, leftMargin + (ev.MarginBounds.Width - footerSize.Width) / 2, yPos);
+            };
+
+            // Mostrar el diálogo de vista previa
+            PrintPreviewDialog previewDialog = new PrintPreviewDialog();
+            previewDialog.Document = previewDoc;
+            previewDialog.ShowDialog();
+
+
+            // Llamar a la clase CuentaPrinter para imprimir el recibo (impresora de 80mm)
+            CuentaPrinter.ImprimirCuenta(btnImprimirCuenta, lblTotal.Text, infoHeaders);
         }
 
+        /// <summary>
+        /// This method is called by the PrintDocument when it needs to render a page for printing.
+        /// It draws the bill details onto the provided Graphics object, optimized for thermal printers.
+        /// </summary>
+        /// <param name="sender">The source of the event (the PrintDocument).</param>
+        /// <param name="e">The <see cref="PrintPageEventArgs"/> containing data about the page to be printed.</param>
         private void PrintBill(object sender, PrintPageEventArgs e)
         {
             // Define different fonts for various sections of the bill for better readability
@@ -1070,6 +1187,7 @@ namespace popus_pizzeria.Model
             Font fontHeader = new Font("Arial", 8, FontStyle.Bold);    // Font for section headers (e.g., "Producto", "Cantidad")
             Font fontBody = new Font("Arial", 8);                      // Font for general text and product details
             Font fontTotal = new Font("Arial", 9, FontStyle.Bold);     // Font for the final total amount
+            Font fontObservation = new Font("Arial", 7, FontStyle.Italic); // Font for observations
 
             // Get the Graphics object from the PrintPageEventArgs. This object allows us to draw
             // text, lines, and other graphics onto the printer page.
@@ -1080,13 +1198,14 @@ namespace popus_pizzeria.Model
             // Define the left and right margins of the printable area.
             float leftMargin = e.MarginBounds.Left;
             float rightMargin = e.MarginBounds.Right;
+            float lineWidth = rightMargin - leftMargin;
 
             // --- Draw the Bill Title ---
             string title = "--- DETALLE DE CUENTA ---";
             // Measure the size of the title string with the specified font to center it.
             SizeF titleSize = g.MeasureString(title, fontTitle);
             // Draw the title string, centered horizontally.
-            g.DrawString(title, fontTitle, Brushes.Black, leftMargin + (e.MarginBounds.Width - titleSize.Width) / 2, yPos);
+            g.DrawString(title, fontTitle, Brushes.Black, leftMargin + (lineWidth - titleSize.Width) / 2, yPos);
             // Move the Y position down for the next section, adding some padding.
             yPos += titleSize.Height + 10;
 
@@ -1096,15 +1215,20 @@ namespace popus_pizzeria.Model
             // Draw the general information.
             g.DrawString(billInfo, fontBody, Brushes.Black, leftMargin, yPos);
             // Move the Y position down based on the height of the drawn text.
-            yPos += g.MeasureString(billInfo, fontBody).Height + 10; // Reduced spacing
+            yPos += g.MeasureString(billInfo, fontBody).Height + 10;
 
             // --- Draw Product List Headers ---
             // Draw column headers for the product details.
-            // Adjust X positions for thermal printer narrow width
-            g.DrawString("Cant.", fontHeader, Brushes.Black, leftMargin, yPos);
-            g.DrawString("Producto", fontHeader, Brushes.Black, leftMargin + 50, yPos);
-            g.DrawString("Precio U.", fontHeader, Brushes.Black, leftMargin + 180, yPos);
-            g.DrawString("Total", fontHeader, Brushes.Black, rightMargin - g.MeasureString("Total", fontHeader).Width, yPos);
+            // Define X positions for columns
+            float colQty = leftMargin;
+            float colProduct = leftMargin + 50;
+            float colUnitPrice = leftMargin + 180;
+            float colTotal = rightMargin;
+
+            g.DrawString("Cant.", fontHeader, Brushes.Black, colQty, yPos);
+            g.DrawString("Producto", fontHeader, Brushes.Black, colProduct, yPos);
+            g.DrawString("Precio U.", fontHeader, Brushes.Black, colUnitPrice, yPos);
+            g.DrawString("Total", fontHeader, Brushes.Black, colTotal - g.MeasureString("Total", fontHeader).Width, yPos);
             // Move Y position down after headers.
             yPos += g.MeasureString("Producto", fontHeader).Height + 3; // Reduced spacing
             // Draw a horizontal line to separate headers from product items.
@@ -1127,19 +1251,19 @@ namespace popus_pizzeria.Model
                 string observation = row.Cells["dgvObs"].Value?.ToString() ?? string.Empty;
 
                 // Draw quantity, product name, unit price, and total on the current line.
-                g.DrawString(quantity, fontBody, Brushes.Black, leftMargin, yPos);
-                g.DrawString(productName, fontBody, Brushes.Black, leftMargin + 50, yPos);
-                g.DrawString(price, fontBody, Brushes.Black, leftMargin + 180, yPos);
+                g.DrawString(quantity, fontBody, Brushes.Black, colQty, yPos);
+                g.DrawString(productName, fontBody, Brushes.Black, colProduct, yPos);
+                g.DrawString(price, fontBody, Brushes.Black, colUnitPrice, yPos);
                 // Align total to the right.
-                g.DrawString(total, fontBody, Brushes.Black, rightMargin - g.MeasureString(total, fontBody).Width, yPos);
+                g.DrawString(total, fontBody, Brushes.Black, colTotal - g.MeasureString(total, fontBody).Width, yPos);
                 // Move Y position down.
                 yPos += g.MeasureString(productName, fontBody).Height;
 
                 // If there's an observation, print it indented below the product.
                 if (!string.IsNullOrEmpty(observation))
                 {
-                    g.DrawString($"  - Obs: {observation}", new Font("Arial", 7, FontStyle.Italic), Brushes.Black, leftMargin + 10, yPos);
-                    yPos += g.MeasureString("  - Obs:", new Font("Arial", 7, FontStyle.Italic)).Height;
+                    g.DrawString($"  - Obs: {observation}", fontObservation, Brushes.Black, leftMargin + 10, yPos);
+                    yPos += g.MeasureString("  - Obs:", fontObservation).Height;
                 }
 
                 yPos += 3; // Small padding between items.
@@ -1167,7 +1291,7 @@ namespace popus_pizzeria.Model
             // Add a simple footer
             string footer = "--- ¡GRACIAS POR SU VISITA! ---";
             SizeF footerSize = g.MeasureString(footer, fontBody);
-            g.DrawString(footer, fontBody, Brushes.Black, leftMargin + (e.MarginBounds.Width - footerSize.Width) / 2, yPos);
+            g.DrawString(footer, fontBody, Brushes.Black, leftMargin + (lineWidth - footerSize.Width) / 2, yPos);
         }
     }
 

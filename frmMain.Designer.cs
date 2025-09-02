@@ -146,7 +146,7 @@
             this.btnConfiguraciones.Name = "btnConfiguraciones";
             this.btnConfiguraciones.Size = new System.Drawing.Size(210, 56);
             this.btnConfiguraciones.TabIndex = 2;
-            this.btnConfiguraciones.Text = "Configuraciones";
+            this.btnConfiguraciones.Text = "Arquo de Caja";
             this.btnConfiguraciones.Click += new System.EventHandler(this.btnConfiguraciones_Click);
             // 
             // btnEmpleados

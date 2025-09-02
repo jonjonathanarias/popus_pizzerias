@@ -44,6 +44,7 @@
             this.btnExit = new Guna.UI2.WinForms.Guna2PictureBox();
             this.guna2PictureBox1 = new Guna.UI2.WinForms.Guna2PictureBox();
             this.guna2Panel2 = new Guna.UI2.WinForms.Guna2Panel();
+            this.btnPrintCuenta = new Guna.UI2.WinForms.Guna2Button();
             this.btnCheckout = new Guna.UI2.WinForms.Guna2Button();
             this.lblTotal = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -63,7 +64,6 @@
             this.guna2MessageDialog1 = new Guna.UI2.WinForms.Guna2MessageDialog();
             this.txtBuscar = new Guna.UI2.WinForms.Guna2TextBox();
             this.lblCustomer = new System.Windows.Forms.Label();
-            this.btnPrintCuenta = new Guna.UI2.WinForms.Guna2Button();
             this.guna2Panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.btnExit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.guna2PictureBox1)).BeginInit();
@@ -291,6 +291,26 @@
             this.guna2Panel2.Size = new System.Drawing.Size(1562, 100);
             this.guna2Panel2.TabIndex = 0;
             // 
+            // btnPrintCuenta
+            // 
+            this.btnPrintCuenta.AutoRoundedCorners = true;
+            this.btnPrintCuenta.BackColor = System.Drawing.Color.Transparent;
+            this.btnPrintCuenta.BorderRadius = 21;
+            this.btnPrintCuenta.CustomizableEdges.TopRight = false;
+            this.btnPrintCuenta.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnPrintCuenta.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btnPrintCuenta.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btnPrintCuenta.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btnPrintCuenta.FillColor = System.Drawing.Color.CornflowerBlue;
+            this.btnPrintCuenta.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.btnPrintCuenta.ForeColor = System.Drawing.Color.White;
+            this.btnPrintCuenta.Location = new System.Drawing.Point(932, 30);
+            this.btnPrintCuenta.Name = "btnPrintCuenta";
+            this.btnPrintCuenta.Size = new System.Drawing.Size(160, 45);
+            this.btnPrintCuenta.TabIndex = 3;
+            this.btnPrintCuenta.Text = "Imprimir Cuenta";
+            this.btnPrintCuenta.Click += new System.EventHandler(this.btnPrintCuenta_Click);
+            // 
             // btnCheckout
             // 
             this.btnCheckout.AutoRoundedCorners = true;
@@ -339,9 +359,10 @@
             // 
             this.CategoryPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.CategoryPanel.Location = new System.Drawing.Point(12, 168);
+            this.CategoryPanel.AutoScroll = true;
+            this.CategoryPanel.Location = new System.Drawing.Point(0, 168);
             this.CategoryPanel.Name = "CategoryPanel";
-            this.CategoryPanel.Size = new System.Drawing.Size(234, 552);
+            this.CategoryPanel.Size = new System.Drawing.Size(255, 552);
             this.CategoryPanel.TabIndex = 1;
             // 
             // btnImprimirCuenta
@@ -382,13 +403,13 @@
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.btnImprimirCuenta.DefaultCellStyle = dataGridViewCellStyle3;
             this.btnImprimirCuenta.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.btnImprimirCuenta.Location = new System.Drawing.Point(1107, 168);
+            this.btnImprimirCuenta.Location = new System.Drawing.Point(1122, 168);
             this.btnImprimirCuenta.Name = "btnImprimirCuenta";
             this.btnImprimirCuenta.ReadOnly = true;
             this.btnImprimirCuenta.RowHeadersVisible = false;
             this.btnImprimirCuenta.RowHeadersWidth = 51;
             this.btnImprimirCuenta.RowTemplate.Height = 24;
-            this.btnImprimirCuenta.Size = new System.Drawing.Size(443, 552);
+            this.btnImprimirCuenta.Size = new System.Drawing.Size(428, 552);
             this.btnImprimirCuenta.TabIndex = 7;
             this.btnImprimirCuenta.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.White;
             this.btnImprimirCuenta.ThemeStyle.AlternatingRowsStyle.Font = null;
@@ -514,9 +535,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ProductPanel.AutoScroll = true;
-            this.ProductPanel.Location = new System.Drawing.Point(252, 168);
+            this.ProductPanel.Location = new System.Drawing.Point(261, 168);
             this.ProductPanel.Name = "ProductPanel";
-            this.ProductPanel.Size = new System.Drawing.Size(849, 552);
+            this.ProductPanel.Size = new System.Drawing.Size(855, 552);
             this.ProductPanel.TabIndex = 1;
             // 
             // guna2MessageDialog1
@@ -559,26 +580,6 @@
             this.lblCustomer.Name = "lblCustomer";
             this.lblCustomer.Size = new System.Drawing.Size(0, 31);
             this.lblCustomer.TabIndex = 9;
-            // 
-            // btnPrintCuenta
-            // 
-            this.btnPrintCuenta.AutoRoundedCorners = true;
-            this.btnPrintCuenta.BackColor = System.Drawing.Color.Transparent;
-            this.btnPrintCuenta.BorderRadius = 21;
-            this.btnPrintCuenta.CustomizableEdges.TopRight = false;
-            this.btnPrintCuenta.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnPrintCuenta.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btnPrintCuenta.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btnPrintCuenta.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btnPrintCuenta.FillColor = System.Drawing.Color.CornflowerBlue;
-            this.btnPrintCuenta.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btnPrintCuenta.ForeColor = System.Drawing.Color.White;
-            this.btnPrintCuenta.Location = new System.Drawing.Point(932, 30);
-            this.btnPrintCuenta.Name = "btnPrintCuenta";
-            this.btnPrintCuenta.Size = new System.Drawing.Size(160, 45);
-            this.btnPrintCuenta.TabIndex = 3;
-            this.btnPrintCuenta.Text = "Imprimir Cuenta";
-            this.btnPrintCuenta.Click += new System.EventHandler(this.btnPrintCuenta_Click);
             // 
             // frmPOS
             // 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace popus_pizzeria
 
         // public static readonly string con_string = "Data Source=DESKTOP-FFIHDBP\\SQLEXPRESS; Initial Catalog=popus_pizzeria; Persist Security Info=True; Trusted_Connection=True;";
 
-        public static readonly string con_string = "Server=DESKTOP-FFIHDBP\\SQLEXPRESS;Database=popus_pizzeria;Trusted_Connection=True; TrustServerCertificate=True;";
+        public static readonly string con_string = ConfigurationManager.ConnectionStrings["con_string_bd"].ConnectionString;
 
         public static SqlConnection con = new SqlConnection(con_string);
 

@@ -16,6 +16,7 @@ namespace popus_pizzeria.Model
         public frmCheout()
         {
             InitializeComponent();
+            btnGuardar.Text = "Cobrar";
         }
 
         public double amt;

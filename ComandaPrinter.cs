@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Linq;
@@ -13,8 +14,9 @@ namespace popus_pizzeria
 {
     public static class ComandaPrinter
     {
-        public static void ImprimirTexto(string texto, string nombreImpresora = "ImpresoraZJ-58")
+        public static void ImprimirTexto(string texto)
         {
+            string nombreImpresora = ConfigurationManager.AppSettings["ComandaPrinter"];
             PrintDocument pd = new PrintDocument();
             pd.PrinterSettings.PrinterName = nombreImpresora;
 
@@ -22,7 +24,7 @@ namespace popus_pizzeria
             pd.PrintPage += (sender, ev) =>
             {
                 Font font = new Font("Consolas", 10); // Fuente monoespaciada para impresoras térmicas
-                float leftMargin = 5;
+                float leftMargin = 2;
                 float topMargin = 5;
 
                 ev.Graphics.DrawString(texto, font, Brushes.Black, new RectangleF(leftMargin, topMargin, ev.PageBounds.Width, ev.PageBounds.Height));
