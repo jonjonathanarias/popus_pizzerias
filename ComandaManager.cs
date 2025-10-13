@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SQLite;
 
 
 
@@ -16,6 +17,8 @@ namespace popus_pizzeria
         {
             int numeroComanda = 1;
             DateTime fechaHoy = DateTime.Today;
+            // Convertimos la fecha a un formato de texto estándar para SQLite
+            string fechaHoyStr = fechaHoy.ToString("yyyy-MM-dd");
 
             string querySelect = "SELECT UltimoNumero FROM ComandaCounter WHERE Fecha = @fecha";
             string queryInsert = "INSERT INTO ComandaCounter (Fecha, UltimoNumero) VALUES (@fecha, 1)";
@@ -28,17 +31,23 @@ namespace popus_pizzeria
                     MainClass.con.Open();
 
                 // Verificar si ya hay una entrada para la fecha de hoy
-                using (SqlCommand cmdSelect = new SqlCommand(querySelect, MainClass.con))
+                // using (SqlCommand cmdSelect = new SqlCommand(querySelect, MainClass.con))
+                // 1. Verificar si ya hay una entrada para la fecha de hoy
+                // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
+                using (SQLiteCommand cmdSelect = new SQLiteCommand(querySelect, MainClass.con))
                 {
-                    cmdSelect.Parameters.AddWithValue("@fecha", fechaHoy);
+                    cmdSelect.Parameters.AddWithValue("@fecha", fechaHoyStr);
                     var result = cmdSelect.ExecuteScalar();
 
                     if (result == null || result == DBNull.Value)
                     {
                         // No existe, se crea con valor 1
-                        using (SqlCommand cmdInsert = new SqlCommand(queryInsert, MainClass.con))
+                        //using (SqlCommand cmdInsert = new SqlCommand(queryInsert, MainClass.con))
+                        // 2. No existe, se crea con valor 1
+                        // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
+                        using (SQLiteCommand cmdInsert = new SQLiteCommand(queryInsert, MainClass.con))
                         {
-                            cmdInsert.Parameters.AddWithValue("@fecha", fechaHoy);
+                            cmdInsert.Parameters.AddWithValue("@fecha", fechaHoyStr);
                             cmdInsert.ExecuteNonQuery();
                         }
 
@@ -47,16 +56,21 @@ namespace popus_pizzeria
                     else
                     {
                         // Ya existe, incrementamos
-                        using (SqlCommand cmdUpdate = new SqlCommand(queryUpdate, MainClass.con))
+                        //using (SqlCommand cmdUpdate = new SqlCommand(queryUpdate, MainClass.con))
+                        // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
+                        using (SQLiteCommand cmdUpdate = new SQLiteCommand(queryUpdate, MainClass.con))
                         {
-                            cmdUpdate.Parameters.AddWithValue("@fecha", fechaHoy);
+                            cmdUpdate.Parameters.AddWithValue("@fecha", fechaHoyStr);
                             cmdUpdate.ExecuteNonQuery();
                         }
 
                         // Consultamos nuevamente el número actualizado
-                        using (SqlCommand cmdFinal = new SqlCommand(querySelectAfterUpdate, MainClass.con))
+                        //using (SqlCommand cmdFinal = new SqlCommand(querySelectAfterUpdate, MainClass.con))
+                        // 4. Consultamos nuevamente el número actualizado
+                        // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
+                        using (SQLiteCommand cmdFinal = new SQLiteCommand(querySelectAfterUpdate, MainClass.con))
                         {
-                            cmdFinal.Parameters.AddWithValue("@fecha", fechaHoy);
+                            cmdFinal.Parameters.AddWithValue("@fecha", fechaHoyStr);
                             var nuevoValor = cmdFinal.ExecuteScalar();
                             numeroComanda = Convert.ToInt32(nuevoValor);
                         }

@@ -24,11 +24,21 @@ namespace popus_pizzeria.Model
         {
             string qry = "";
 
+            /* if (id == 0)
+             {
+                 qry = "Insert into staff Values(@Name, @Phone, @Role)";
+             }
+             else
+             {
+                 qry = "Update staff Set sName = @Name, sPhone = @Phone, sRole = @Role where staffID = @id ";
+             }*/
+
+            // CORRECCIÓN: Listar explícitamente las columnas para dejar que staffID se autoincremente.
             if (id == 0)
             {
-                qry = "Insert into staff Values(@Name, @Phone, @Role)";
+                qry = "INSERT INTO staff (sName, sPhone, sRole) VALUES (@Name, @Phone, @Role)";
             }
-            else
+            else // La sentencia UPDATE está correcta
             {
                 qry = "Update staff Set sName = @Name, sPhone = @Phone, sRole = @Role where staffID = @id ";
             }

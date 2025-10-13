@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+//using System.Data.SqlClient;
+using System.Data.SQLite;
 
 namespace popus_pizzeria.Model
 {
@@ -16,12 +17,18 @@ namespace popus_pizzeria.Model
 
         private void CargarTotalesYConteo(string query, ArqueoResultado resultado)
         {
-            using (SqlCommand cmd = new SqlCommand(query, MainClass.con))
+            //using (SqlCommand cmd = new SqlCommand(query, MainClass.con))
+            // CAMBIO AQUI: Reemplazar SqlCommand por SQLiteCommand
+            using (SQLiteCommand cmd = new SQLiteCommand(query, MainClass.con))
             {
-                cmd.Parameters.AddWithValue("@Fecha", Fecha);
+                //cmd.Parameters.AddWithValue("@Fecha", Fecha);
+                // LÍNEA CORREGIDA
+                cmd.Parameters.AddWithValue("@Fecha", Fecha.ToString("yyyy-MM-dd"));
 
                 if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
-                using (SqlDataReader reader = cmd.ExecuteReader())
+                //using (SqlDataReader reader = cmd.ExecuteReader())
+                // CAMBIO AQUI: Reemplazar SqlDataReader por SQLiteDataReader
+                using (SQLiteDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
@@ -56,17 +63,28 @@ namespace popus_pizzeria.Model
 
         private void CargarTotalesPorMedioDePago(ArqueoResultado resultado)
         {
-            string query = @"SELECT paymentMethod, SUM(total) AS Total, COUNT(*) AS Cantidad
+            /*string query = @"SELECT paymentMethod, SUM(total) AS Total, COUNT(*) AS Cantidad
                              FROM tblMain
                              WHERE CAST(aDate AS DATE) = @Fecha AND status = 'Pagado'
+                             GROUP BY paymentMethod";*/
+            // Corrección de la sintaxis SQL: CAST(aDate AS DATE) -> DATE(aDate)
+            string query = @"SELECT paymentMethod, SUM(total) AS Total, COUNT(*) AS Cantidad
+                             FROM tblMain
+                             WHERE DATE(aDate) = @Fecha AND status = 'Pagado'
                              GROUP BY paymentMethod";
 
-            using (SqlCommand cmd = new SqlCommand(query, MainClass.con))
+            //using (SqlCommand cmd = new SqlCommand(query, MainClass.con))
+            // CAMBIO AQUI: Reemplazar SqlCommand por SQLiteCommand
+            using (SQLiteCommand cmd = new SQLiteCommand(query, MainClass.con))
             {
-                cmd.Parameters.AddWithValue("@Fecha", Fecha);
+                //cmd.Parameters.AddWithValue("@Fecha", Fecha);
+                // LÍNEA CORREGIDA
+                cmd.Parameters.AddWithValue("@Fecha", Fecha.ToString("yyyy-MM-dd"));
 
                 if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
-                using (SqlDataReader reader = cmd.ExecuteReader())
+                //using (SqlDataReader reader = cmd.ExecuteReader())
+                // CAMBIO AQUI: Reemplazar SqlDataReader por SQLiteDataReader
+                using (SQLiteDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
@@ -107,10 +125,14 @@ namespace popus_pizzeria.Model
         {
             var resultado = new ArqueoResultado();
 
-            string qry = @"SELECT orderType, SUM(total) AS Total, COUNT(*) AS Cantidad
+            /*string qry = @"SELECT orderType, SUM(total) AS Total, COUNT(*) AS Cantidad
                             FROM tblMain
                             WHERE CAST(aDate AS DATE) = @Fecha AND status = 'Pagado' 
-                            GROUP BY orderType";
+                            GROUP BY orderType";*/
+            string qry = @"SELECT orderType, SUM(total) AS Total, COUNT(*) AS Cantidad
+                           FROM tblMain
+                           WHERE DATE(aDate) = @Fecha AND status = 'Pagado'
+                           GROUP BY orderType";
 
             CargarTotalesYConteo(qry, resultado);
             CargarTotalesPorMedioDePago(resultado);
@@ -121,10 +143,15 @@ namespace popus_pizzeria.Model
         {
             var resultado = new ArqueoResultado();
 
-            string qry = @"SELECT orderType, SUM(total) AS Total, COUNT(*) AS Cantidad
+            /*string qry = @"SELECT orderType, SUM(total) AS Total, COUNT(*) AS Cantidad
                             FROM tblMain
                             WHERE CAST(aDate AS DATE) = @Fecha AND status = 'Pagado'
-                            GROUP BY orderType";
+                            GROUP BY orderType";*/
+
+            string qry = @"SELECT orderType, SUM(total) AS Total, COUNT(*) AS Cantidad
+                           FROM tblMain
+                           WHERE DATE(aDate) = @Fecha AND status = 'Pagado'
+                           GROUP BY orderType";
 
             CargarTotalesYConteo(qry, resultado);
             CargarTotalesPorMedioDePago(resultado);
@@ -135,10 +162,14 @@ namespace popus_pizzeria.Model
         {
             var resultado = new ArqueoResultado();
 
-            string qry = @"SELECT orderType, SUM(total) AS Total, COUNT(*) AS Cantidad
+            /*string qry = @"SELECT orderType, SUM(total) AS Total, COUNT(*) AS Cantidad
                             FROM tblMain
                             WHERE CAST(aDate AS DATE) = @Fecha AND status = 'Pagado' 
-                            GROUP BY orderType";
+                            GROUP BY orderType";*/
+            string qry = @"SELECT orderType, SUM(total) AS Total, COUNT(*) AS Cantidad
+               FROM tblMain
+               WHERE DATE(aDate) = @Fecha AND status = 'Pagado'  
+               GROUP BY orderType";
 
             CargarTotalesYConteo(qry, resultado);
             CargarTotalesPorMedioDePago(resultado);
@@ -148,9 +179,13 @@ namespace popus_pizzeria.Model
         public bool YaFueCerrado()
         {
             string qry = "SELECT COUNT(*) FROM tblArqueoCaja WHERE Fecha = @Fecha AND Cerrado = 1";
-            using (SqlCommand cmd = new SqlCommand(qry, MainClass.con))
+            //using (SqlCommand cmd = new SqlCommand(qry, MainClass.con))
+            // CAMBIO AQUI: Reemplazar SqlCommand por SQLiteCommand
+            using (SQLiteCommand cmd = new SQLiteCommand(qry, MainClass.con))
             {
-                cmd.Parameters.AddWithValue("@Fecha", Fecha);
+                //cmd.Parameters.AddWithValue("@Fecha", Fecha);
+                // LÍNEA CORREGIDA
+                cmd.Parameters.AddWithValue("@Fecha", Fecha.ToString("yyyy-MM-dd"));
                 if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
                 int count = Convert.ToInt32(cmd.ExecuteScalar());
                 MainClass.con.Close();
@@ -163,7 +198,9 @@ namespace popus_pizzeria.Model
             string insertQry = @"INSERT INTO tblArqueoCaja (Fecha, TotalMesas, TotalTakeAway, TotalDelivery, TotalGeneral, Cerrado)
                                 VALUES (@Fecha, @Mesas, @TakeAway, @Delivery, @Total, 1)";
 
-            using (SqlCommand cmd = new SqlCommand(insertQry, MainClass.con))
+            //using (SqlCommand cmd = new SqlCommand(insertQry, MainClass.con))
+            // CAMBIO AQUI: Reemplazar SqlCommand por SQLiteCommand
+            using (SQLiteCommand cmd = new SQLiteCommand(insertQry, MainClass.con))
             {
                 cmd.Parameters.AddWithValue("@Fecha", Fecha);
                 cmd.Parameters.AddWithValue("@Mesas", resultado.TotalMesas);
@@ -187,12 +224,18 @@ namespace popus_pizzeria.Model
 
         private void MarcarOrdenesComoArqueadas()
         {
+            /* string updateQry = @"UPDATE tblMain SET Arqueado = 1 
+                                  WHERE CAST(aDate AS DATE) = @Fecha AND status = 'Pagado' AND Arqueado = 0";*/
             string updateQry = @"UPDATE tblMain SET Arqueado = 1 
-                                 WHERE CAST(aDate AS DATE) = @Fecha AND status = 'Pagado' AND Arqueado = 0";
+                                 WHERE DATE(aDate) = @Fecha AND status = 'Pagado' AND Arqueado = 0";
 
-            using (SqlCommand cmd = new SqlCommand(updateQry, MainClass.con))
+            //using (SqlCommand cmd = new SqlCommand(updateQry, MainClass.con))
+            // CAMBIO AQUI: Reemplazar SqlCommand por SQLiteCommand
+            using (SQLiteCommand cmd = new SQLiteCommand(updateQry, MainClass.con))
             {
-                cmd.Parameters.AddWithValue("@Fecha", Fecha);
+                //cmd.Parameters.AddWithValue("@Fecha", Fecha);
+                // LÍNEA CORREGIDA
+                cmd.Parameters.AddWithValue("@Fecha", Fecha.ToString("yyyy-MM-dd"));
                 if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
                 cmd.ExecuteNonQuery();
                 MainClass.con.Close();

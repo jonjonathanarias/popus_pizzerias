@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Data.SQLite;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace popus_pizzeria.View
 {
@@ -31,8 +33,11 @@ namespace popus_pizzeria.View
 
             try
             {
-                using (SqlCommand cmdMain = new SqlCommand(qryMain, MainClass.con))
-                using (SqlDataAdapter daMain = new SqlDataAdapter(cmdMain))
+                //using (SqlCommand cmdMain = new SqlCommand(qryMain, MainClass.con))
+                // using (SqlDataAdapter daMain = new SqlDataAdapter(cmdMain))
+               // CAMBIO: SqlCommand->SQLiteCommand, SqlDataAdapter->SQLiteDataAdapter
+                using (SQLiteCommand cmdMain = new SQLiteCommand(qryMain, MainClass.con))
+                using (SQLiteDataAdapter daMain = new SQLiteDataAdapter(cmdMain))
                 {
                     DataTable dtMain = new DataTable();
                     daMain.Fill(dtMain);
@@ -132,11 +137,14 @@ namespace popus_pizzeria.View
                                INNER JOIN tblCustomers c ON m.CustomerID = c.CustomerID 
                                WHERE m.MainID = @mid";
 
-                using (SqlCommand cmd = new SqlCommand(qry, MainClass.con))
-                {
+            //using (SqlCommand cmd = new SqlCommand(qry, MainClass.con))
+            // CAMBIO: SqlCommand -> SQLiteCommand, SqlDataAdapter -> SQLiteDataAdapter
+            using (SQLiteCommand cmd = new SQLiteCommand(qry, MainClass.con))
+            {
                     cmd.Parameters.AddWithValue("@mid", mainId);
                     DataTable dt = new DataTable();
-                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    //using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    using (SQLiteDataAdapter da = new SQLiteDataAdapter(cmd))
                     {
                         da.Fill(dt);
                     }
@@ -160,11 +168,14 @@ namespace popus_pizzeria.View
                                INNER JOIN products p ON p.pID = d.ProdID
                                WHERE m.MainID = @mid";
 
-                using (SqlCommand cmd = new SqlCommand(qry, MainClass.con))
-                {
+            //using (SqlCommand cmd = new SqlCommand(qry, MainClass.con))
+            // CAMBIO: SqlCommand -> SQLiteCommand, SqlDataAdapter -> SQLiteDataAdapter
+            using (SQLiteCommand cmd = new SQLiteCommand(qry, MainClass.con))
+            {
                     cmd.Parameters.AddWithValue("@mid", mainId);
                     DataTable dt = new DataTable();
-                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    //using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    using (SQLiteDataAdapter da = new SQLiteDataAdapter(cmd))
                     {
                         da.Fill(dt);
                     }

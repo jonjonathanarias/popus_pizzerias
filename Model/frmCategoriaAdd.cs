@@ -24,11 +24,20 @@ namespace popus_pizzeria.Model
         {
             string qry = "";
 
-            if(id == 0) 
+            /* if(id == 0) 
+             {
+                 qry = "Insert into category Values(@Name)";
+             }
+             else 
+             {
+                 qry = "Update category Set catName = @Name where catID = @id ";
+             }*/
+            // CORRECCIÓN: Especificar la columna 'catName'
+            if (id == 0)
             {
-                qry = "Insert into category Values(@Name)";
+                qry = "INSERT INTO category (catName) VALUES (@Name)";
             }
-            else 
+            else // La sentencia UPDATE está correcta
             {
                 qry = "Update category Set catName = @Name where catID = @id ";
             }

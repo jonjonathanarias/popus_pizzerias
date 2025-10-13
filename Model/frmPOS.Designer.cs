@@ -41,6 +41,10 @@
             this.lblWaiter = new System.Windows.Forms.Label();
             this.lblTable = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.btnMaximixed = new Guna.UI2.WinForms.Guna2PictureBox();
+            this.btnMinimixed = new Guna.UI2.WinForms.Guna2PictureBox();
+            this.btnExit = new Guna.UI2.WinForms.Guna2PictureBox();
+            this.guna2PictureBox1 = new Guna.UI2.WinForms.Guna2PictureBox();
             this.guna2Panel2 = new Guna.UI2.WinForms.Guna2Panel();
             this.btnPrintCuenta = new Guna.UI2.WinForms.Guna2Button();
             this.btnCheckout = new Guna.UI2.WinForms.Guna2Button();
@@ -62,13 +66,13 @@
             this.guna2MessageDialog1 = new Guna.UI2.WinForms.Guna2MessageDialog();
             this.lblCustomer = new System.Windows.Forms.Label();
             this.txtBuscar = new Guna.UI2.WinForms.Guna2TextBox();
-            this.btnExit = new Guna.UI2.WinForms.Guna2PictureBox();
-            this.guna2PictureBox1 = new Guna.UI2.WinForms.Guna2PictureBox();
             this.guna2Panel1.SuspendLayout();
-            this.guna2Panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.btnImprimirCuenta)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.btnMaximixed)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.btnMinimixed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnExit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.guna2PictureBox1)).BeginInit();
+            this.guna2Panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.btnImprimirCuenta)).BeginInit();
             this.SuspendLayout();
             // 
             // guna2Panel1
@@ -82,6 +86,8 @@
             this.guna2Panel1.Controls.Add(this.lblWaiter);
             this.guna2Panel1.Controls.Add(this.lblTable);
             this.guna2Panel1.Controls.Add(this.label1);
+            this.guna2Panel1.Controls.Add(this.btnMaximixed);
+            this.guna2Panel1.Controls.Add(this.btnMinimixed);
             this.guna2Panel1.Controls.Add(this.btnExit);
             this.guna2Panel1.Controls.Add(this.guna2PictureBox1);
             this.guna2Panel1.Dock = System.Windows.Forms.DockStyle.Top;
@@ -247,6 +253,68 @@
             this.label1.Size = new System.Drawing.Size(145, 28);
             this.label1.TabIndex = 1;
             this.label1.Text = "Punto de Venta";
+            // 
+            // btnMaximixed
+            // 
+            this.btnMaximixed.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnMaximixed.BackColor = System.Drawing.Color.Transparent;
+            this.btnMaximixed.FillColor = System.Drawing.Color.Transparent;
+            this.btnMaximixed.Image = global::popus_pizzeria.Properties.Resources.maxi2;
+            this.btnMaximixed.ImageRotate = 0F;
+            this.btnMaximixed.Location = new System.Drawing.Point(1424, 27);
+            this.btnMaximixed.Name = "btnMaximixed";
+            this.btnMaximixed.Size = new System.Drawing.Size(60, 55);
+            this.btnMaximixed.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.btnMaximixed.TabIndex = 0;
+            this.btnMaximixed.TabStop = false;
+            this.btnMaximixed.UseTransparentBackground = true;
+            this.btnMaximixed.Click += new System.EventHandler(this.btnMaximixed_Click);
+            // 
+            // btnMinimixed
+            // 
+            this.btnMinimixed.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnMinimixed.BackColor = System.Drawing.Color.Transparent;
+            this.btnMinimixed.FillColor = System.Drawing.Color.Transparent;
+            this.btnMinimixed.Image = global::popus_pizzeria.Properties.Resources.mini;
+            this.btnMinimixed.ImageRotate = 0F;
+            this.btnMinimixed.Location = new System.Drawing.Point(1354, 27);
+            this.btnMinimixed.Name = "btnMinimixed";
+            this.btnMinimixed.Size = new System.Drawing.Size(60, 55);
+            this.btnMinimixed.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.btnMinimixed.TabIndex = 0;
+            this.btnMinimixed.TabStop = false;
+            this.btnMinimixed.UseTransparentBackground = true;
+            this.btnMinimixed.Click += new System.EventHandler(this.btnMinimixed_Click);
+            // 
+            // btnExit
+            // 
+            this.btnExit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnExit.BackColor = System.Drawing.Color.Transparent;
+            this.btnExit.FillColor = System.Drawing.Color.Transparent;
+            this.btnExit.Image = global::popus_pizzeria.Properties.Resources.power_button;
+            this.btnExit.ImageRotate = 0F;
+            this.btnExit.Location = new System.Drawing.Point(1490, 28);
+            this.btnExit.Name = "btnExit";
+            this.btnExit.Size = new System.Drawing.Size(60, 55);
+            this.btnExit.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.btnExit.TabIndex = 0;
+            this.btnExit.TabStop = false;
+            this.btnExit.UseTransparentBackground = true;
+            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
+            // 
+            // guna2PictureBox1
+            // 
+            this.guna2PictureBox1.BackColor = System.Drawing.Color.Transparent;
+            this.guna2PictureBox1.FillColor = System.Drawing.Color.Transparent;
+            this.guna2PictureBox1.Image = global::popus_pizzeria.Properties.Resources.simbolo_de_interfaz_de_circulo_de_cubiertos_de_tenedor_y_cuchillo_para_restaurante;
+            this.guna2PictureBox1.ImageRotate = 0F;
+            this.guna2PictureBox1.Location = new System.Drawing.Point(12, 12);
+            this.guna2PictureBox1.Name = "guna2PictureBox1";
+            this.guna2PictureBox1.Size = new System.Drawing.Size(83, 71);
+            this.guna2PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.guna2PictureBox1.TabIndex = 0;
+            this.guna2PictureBox1.TabStop = false;
+            this.guna2PictureBox1.UseTransparentBackground = true;
             // 
             // guna2Panel2
             // 
@@ -551,36 +619,6 @@
             this.txtBuscar.TabIndex = 8;
             this.txtBuscar.TextChanged += new System.EventHandler(this.txtBuscar_TextChanged);
             // 
-            // btnExit
-            // 
-            this.btnExit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExit.BackColor = System.Drawing.Color.Transparent;
-            this.btnExit.FillColor = System.Drawing.Color.Transparent;
-            this.btnExit.Image = global::popus_pizzeria.Properties.Resources.power_button;
-            this.btnExit.ImageRotate = 0F;
-            this.btnExit.Location = new System.Drawing.Point(1490, 28);
-            this.btnExit.Name = "btnExit";
-            this.btnExit.Size = new System.Drawing.Size(60, 55);
-            this.btnExit.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.btnExit.TabIndex = 0;
-            this.btnExit.TabStop = false;
-            this.btnExit.UseTransparentBackground = true;
-            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
-            // 
-            // guna2PictureBox1
-            // 
-            this.guna2PictureBox1.BackColor = System.Drawing.Color.Transparent;
-            this.guna2PictureBox1.FillColor = System.Drawing.Color.Transparent;
-            this.guna2PictureBox1.Image = global::popus_pizzeria.Properties.Resources.simbolo_de_interfaz_de_circulo_de_cubiertos_de_tenedor_y_cuchillo_para_restaurante;
-            this.guna2PictureBox1.ImageRotate = 0F;
-            this.guna2PictureBox1.Location = new System.Drawing.Point(12, 12);
-            this.guna2PictureBox1.Name = "guna2PictureBox1";
-            this.guna2PictureBox1.Size = new System.Drawing.Size(83, 71);
-            this.guna2PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.guna2PictureBox1.TabIndex = 0;
-            this.guna2PictureBox1.TabStop = false;
-            this.guna2PictureBox1.UseTransparentBackground = true;
-            // 
             // frmPOS
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -601,11 +639,13 @@
             this.Load += new System.EventHandler(this.frmPOS_Load);
             this.guna2Panel1.ResumeLayout(false);
             this.guna2Panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.btnMaximixed)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.btnMinimixed)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.btnExit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.guna2PictureBox1)).EndInit();
             this.guna2Panel2.ResumeLayout(false);
             this.guna2Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.btnImprimirCuenta)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.btnExit)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.guna2PictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -646,5 +686,7 @@
         private System.Windows.Forms.DataGridViewButtonColumn dgvDelete;
         private System.Windows.Forms.DataGridViewCheckBoxColumn dgvIsSent;
         protected Guna.UI2.WinForms.Guna2Button btnPrintCuenta;
+        private Guna.UI2.WinForms.Guna2PictureBox btnMinimixed;
+        private Guna.UI2.WinForms.Guna2PictureBox btnMaximixed;
     }
 }

@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Data.SQLite;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls.WebParts;
 using System.Windows.Forms;
 
 namespace popus_pizzeria.Model
@@ -26,7 +28,9 @@ namespace popus_pizzeria.Model
         private void frmProductsAdd_Load(object sender, EventArgs e)
         {
             //para cb fill categoria
-            string qry = "Select catID 'id' , catName 'name' from category";
+            //string qry = "Select catID 'id' , catName 'name' from category";
+            // Asegúrate de que tu consulta de categorías sea simple y válida para SQLite.
+            string qry = "SELECT catID AS id, catName AS name FROM category";
             MainClass.CBFill(qry, cbCat);
 
             if (cID > 0)//para actualizar
@@ -106,7 +110,15 @@ namespace popus_pizzeria.Model
                 txtNombre.Text = "";
                 txtCodigo.Text = "";
                 txtPrice.Text = "";
-                cbCat.SelectedIndex = 0;
+                //cbCat.SelectedIndex = 0;
+                // Si existe esta línea o similar:
+                // cbCat.SelectedIndex = 0; 
+
+                // Cámbiala por una comprobación de seguridad:
+                if (cbCat.Items.Count > 0)
+                {
+                    cbCat.SelectedIndex = 0;
+                }
                 cbCat.SelectedIndex = -1;
                 txtImage.Image = popus_pizzeria.Properties.Resources.pizza_171859921;
                 txtNombre.Focus();
@@ -122,8 +134,10 @@ namespace popus_pizzeria.Model
         private void ForUpdateLoadData() 
         {
             string qry = @"Select * From products where pid= "+id+"";
-            SqlCommand cmd = new SqlCommand(qry, MainClass.con);
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            //SqlCommand cmd = new SqlCommand(qry, MainClass.con);
+            SQLiteCommand cmd = new SQLiteCommand(qry, MainClass.con);
+            //SqlDataAdapter da = new SqlDataAdapter(cmd);
+            SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
             DataTable dt = new DataTable();
             da.Fill(dt);
 

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Data.SQLite;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -32,7 +33,7 @@ namespace popus_pizzeria.Model
 
 
 
-        private void frmTableSelect_Load(object sender, EventArgs e)
+       /* private void frmTableSelect_Load(object sender, EventArgs e)
         {
             panelMesas.Controls.Clear(); // Asegurate que panelMesas sea el panel visual
 
@@ -80,8 +81,62 @@ namespace popus_pizzeria.Model
 
             IniciarTimerLiberacion();
             InicializarBotonCheckout();
-        }
+        }*/
 
+        private void frmTableSelect_Load(object sender, EventArgs e)
+        {
+            panelMesas.Controls.Clear();
+
+            // Se asume que PlanoHelper.CargarPlanoVisual gestiona internamente la carga de datos
+            // de tablas usando métodos refactorizados o el adaptador de SQLite.
+            PlanoHelper.CargarPlanoVisual(
+                panelMesas,
+                alSeleccionarMesa: (btn) =>
+                {
+                    int tid = Convert.ToInt32(btn.Tag);
+                    TableName = btn.Text;
+                    mesaSeleccionadaId = tid;
+
+                    // Buscar el MainID del pedido activo en esa mesa
+                    string qry = "SELECT MainID FROM tblMain WHERE TableName = @TableName AND status = 'Pendiente'";
+
+                    // CAMBIO: SqlCommand -> SQLiteCommand
+                    using (SQLiteCommand cmd = new SQLiteCommand(qry, MainClass.con))
+                    {
+                        cmd.Parameters.AddWithValue("@TableName", TableName);
+
+                        if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
+                        object result = cmd.ExecuteScalar();
+                        if (MainClass.con.State == ConnectionState.Open) MainClass.con.Close();
+
+                        if (result != null && result != DBNull.Value)
+                            // SQLite devuelve un long para COUNT, pero aquí es un INTEGER MainID.
+                            PedidoMainID = Convert.ToInt32(result);
+                        else
+                            PedidoMainID = 0;  // No hay pedido activo
+                    }
+
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                },
+                alDobleClickMesa: (btn) =>
+                {
+                    int tid = Convert.ToInt32(btn.Tag);
+
+                    // Marcar como Libre (Se asume que MainClass.SQl usa SQLite)
+                    string qry = "UPDATE tables SET status = 'Libre' WHERE tid = @tid";
+                    Hashtable ht = new Hashtable { { "@tid", tid } };
+                    MainClass.SQl(qry, ht);
+
+                    mesaSeleccionadaId = -1;
+                    mesasPagadas.Remove(tid);
+                    frmTableSelect_Load(null, null);
+                }
+            );
+
+            IniciarTimerLiberacion();
+            InicializarBotonCheckout();
+        }
 
 
         private void InicializarBotonCheckout()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Data.SQLite;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -31,9 +32,15 @@ namespace popus_pizzeria.Model
             Reference = txtReference.Text.Trim();
 
             // Guardar nuevo o actualizar cliente
-            string qry = "INSERT INTO tblCustomers (Name, Phone, Address, Reference) VALUES (@Name, @Phone, @Address, @Reference); SELECT SCOPE_IDENTITY();";
+            // string qry = "INSERT INTO tblCustomers (Name, Phone, Address, Reference) VALUES (@Name, @Phone, @Address, @Reference); SELECT SCOPE_IDENTITY();";
+           
+            // Guardar nuevo o actualizar cliente
+            // CAMBIAR: Usamos la función de SQLite last_insert_rowid() en lugar de SCOPE_IDENTITY()
+            string qry = "INSERT INTO tblCustomers (Name, Phone, Address, Reference) VALUES (@Name, @Phone, @Address, @Reference); SELECT last_insert_rowid();";
 
-            SqlCommand cmd = new SqlCommand(qry, MainClass.con);
+            //SqlCommand cmd = new SqlCommand(qry, MainClass.con);
+            // CAMBIAR: SqlCommand -> SQLiteCommand
+            SQLiteCommand cmd = new SQLiteCommand(qry, MainClass.con);
             cmd.Parameters.AddWithValue("@Name", CustomerName);
             cmd.Parameters.AddWithValue("@Phone", Phone);
             cmd.Parameters.AddWithValue("@Address", Address);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Data.SQLite;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -49,10 +50,14 @@ namespace popus_pizzeria.Model
             string qry = @"SELECT * FROM tblCustomers
                        WHERE Name LIKE @search OR Phone LIKE @search OR Address LIKE @search";
 
-            SqlCommand cmd = new SqlCommand(qry, MainClass.con);
+            //SqlCommand cmd = new SqlCommand(qry, MainClass.con);
+            // CAMBIAR: SqlCommand -> SQLiteCommand
+            SQLiteCommand cmd = new SQLiteCommand(qry, MainClass.con);
             cmd.Parameters.AddWithValue("@search", "%" + search + "%");
 
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            //SqlDataAdapter da = new SqlDataAdapter(cmd);
+            // CAMBIAR: SqlDataAdapter -> SQLiteDataAdapter
+            SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
             DataTable dt = new DataTable();
             da.Fill(dt);
 

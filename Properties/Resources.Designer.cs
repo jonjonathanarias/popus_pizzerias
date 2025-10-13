@@ -93,6 +93,16 @@ namespace popus_pizzeria.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap home1 {
+            get {
+                object obj = ResourceManager.GetObject("home1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap list_4478580 {
             get {
                 object obj = ResourceManager.GetObject("list_4478580", resourceCulture);
@@ -106,6 +116,106 @@ namespace popus_pizzeria.Properties {
         internal static System.Drawing.Bitmap management_1570139 {
             get {
                 object obj = ResourceManager.GetObject("management_1570139", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap maxi {
+            get {
+                object obj = ResourceManager.GetObject("maxi", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap maxi1 {
+            get {
+                object obj = ResourceManager.GetObject("maxi1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap maxi2 {
+            get {
+                object obj = ResourceManager.GetObject("maxi2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap mini {
+            get {
+                object obj = ResourceManager.GetObject("mini", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap minimixed {
+            get {
+                object obj = ResourceManager.GetObject("minimixed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap minimixed2 {
+            get {
+                object obj = ResourceManager.GetObject("minimixed2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap minimixed21 {
+            get {
+                object obj = ResourceManager.GetObject("minimixed21", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap minimixed22 {
+            get {
+                object obj = ResourceManager.GetObject("minimixed22", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap minimixed23 {
+            get {
+                object obj = ResourceManager.GetObject("minimixed23", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap minimizedOnepng {
+            get {
+                object obj = ResourceManager.GetObject("minimizedOnepng", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -195,7 +305,7 @@ namespace popus_pizzeria.Properties {
         /// </summary>
         internal static System.Drawing.Bitmap power_button {
             get {
-                object obj = ResourceManager.GetObject("power-button", resourceCulture);
+                object obj = ResourceManager.GetObject("power_button", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -235,7 +345,7 @@ namespace popus_pizzeria.Properties {
         /// </summary>
         internal static System.Drawing.Bitmap simbolo_de_interfaz_de_circulo_de_cubiertos_de_tenedor_y_cuchillo_para_restaurante {
             get {
-                object obj = ResourceManager.GetObject("simbolo-de-interfaz-de-circulo-de-cubiertos-de-tenedor-y-cuchillo-para-restaurant" +
+                object obj = ResourceManager.GetObject("simbolo_de_interfaz_de_circulo_de_cubiertos_de_tenedor_y_cuchillo_para_restaurant" +
                         "e", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }

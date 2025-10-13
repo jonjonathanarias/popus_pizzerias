@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SQLite;
 
 namespace popus_pizzeria.Model
 {
@@ -22,9 +23,13 @@ namespace popus_pizzeria.Model
         private void frmWaiterSelect_Load(object sender, EventArgs e)
         {
             string qry = "Select * from staff where sRole Like 'Mozo'";
-            SqlCommand cmd = new SqlCommand(qry, MainClass.con);
+            //SqlCommand cmd = new SqlCommand(qry, MainClass.con);
+            // CAMBIAR: SqlCommand -> SQLiteCommand
+            SQLiteCommand cmd = new SQLiteCommand(qry, MainClass.con);
             DataTable dt = new DataTable();
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            //SqlDataAdapter da = new SqlDataAdapter(cmd);
+            // CAMBIAR: SqlDataAdapter -> SQLiteDataAdapter
+            SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
             da.Fill(dt);
 
             foreach (DataRow row in dt.Rows)

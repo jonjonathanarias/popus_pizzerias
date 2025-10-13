@@ -1,15 +1,18 @@
-﻿using System;
+﻿using Guna.UI2.WinForms;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Data.SQLite;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Guna.UI2.WinForms.Enums;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
@@ -20,7 +23,8 @@ namespace popus_pizzeria.Model
         public frmPOS()
         {
             InitializeComponent();
-            
+
+
         }
 
         public int MainId = 0;
@@ -33,26 +37,27 @@ namespace popus_pizzeria.Model
         private int currentX = 0;
         private int currentY = 0;
 
+
         private void ClearForm()
         {
-            MainId = 0; 
-            CustomerID = 0; 
-            OrderType = ""; 
+            MainId = 0;
+            CustomerID = 0;
+            OrderType = "";
 
-            btnImprimirCuenta.Rows.Clear(); 
-            lblTotal.Text = "0.00"; 
+            btnImprimirCuenta.Rows.Clear();
+            lblTotal.Text = "0.00";
 
-           
+
             lblTable.Text = "";
             lblTable.Visible = false;
             lblWaiter.Text = "";
             lblWaiter.Visible = false;
 
-           
+
             lblCustomer.Text = "";
             lblCustomer.Visible = false;
 
-            txtBuscar.Text = ""; 
+            txtBuscar.Text = "";
 
             foreach (Control control in CategoryPanel.Controls)
             {
@@ -60,8 +65,8 @@ namespace popus_pizzeria.Model
                 {
                     if (btn.Text == "Todas las Categorias")
                     {
-                        btn.Checked = true; 
-                        _Click(btn, EventArgs.Empty); 
+                        btn.Checked = true;
+                        _Click(btn, EventArgs.Empty);
                         break;
                     }
                 }
@@ -85,6 +90,8 @@ namespace popus_pizzeria.Model
 
             ProductPanel.Controls.Clear();
             LoadProduct();
+            originalWidth = this.Width;
+            originalHeight = this.Height;
         }
 
 
@@ -122,8 +129,14 @@ namespace popus_pizzeria.Model
         private void AddCategory()
         {
             string qry = "Select * from category";
-            SqlCommand cmd = new SqlCommand(qry, MainClass.con);
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            //SqlCommand cmd = new SqlCommand(qry, MainClass.con);
+            //SqlDataAdapter da = new SqlDataAdapter(cmd);
+
+            // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
+            SQLiteCommand cmd = new SQLiteCommand(qry, MainClass.con);
+
+            // CAMBIAR: Se reemplaza SqlDataAdapter por SQLiteDataAdapter
+            SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
             DataTable dt = new DataTable();
             da.Fill(dt);
 
@@ -333,8 +346,14 @@ namespace popus_pizzeria.Model
         private void LoadProduct()
         {
             string qry = "Select * From products inner join category on catID = categoryID";
-            SqlCommand cmd = new SqlCommand(qry, MainClass.con);
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            //SqlCommand cmd = new SqlCommand(qry, MainClass.con);
+            //SqlDataAdapter da = new SqlDataAdapter(cmd);
+
+            // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
+            SQLiteCommand cmd = new SQLiteCommand(qry, MainClass.con);
+
+            // CAMBIAR: Se reemplaza SqlDataAdapter por SQLiteDataAdapter
+            SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
             DataTable dt = new DataTable();
             da.Fill(dt);
 
@@ -382,7 +401,7 @@ namespace popus_pizzeria.Model
         }
         private void guna2DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            
+
             if (e.ColumnIndex == btnImprimirCuenta.Columns["dgvDelete"].Index && e.RowIndex >= 0)
             {
                 DataGridViewRow row = btnImprimirCuenta.Rows[e.RowIndex];
@@ -390,25 +409,25 @@ namespace popus_pizzeria.Model
 
                 if (currentQty > 1)
                 {
-                    
+
                     row.Cells["dgvQty"].Value = currentQty - 1;
-                    
+
                     row.Cells["dgvAmount"].Value = (currentQty - 1) * Convert.ToDouble(row.Cells["dgvPrice"].Value);
                 }
                 else
                 {
-                    
+
                     btnImprimirCuenta.Rows.RemoveAt(e.RowIndex);
                 }
 
-                
+
                 GetTotal();
             }
 
-            
+
             if (e.RowIndex >= 0 && btnImprimirCuenta.Columns[e.ColumnIndex].Name == "dgvObs")
             {
-                
+
                 string currentObservation = btnImprimirCuenta.Rows[e.RowIndex].Cells["dgvObs"].Value?.ToString() ?? string.Empty;
 
                 using (frmObservation obsForm = new frmObservation(currentObservation))
@@ -498,7 +517,7 @@ namespace popus_pizzeria.Model
                     lblCustomer.Text = $"CLIENTE: {frm.CustomerName}  TELEFONO: {frm.Phone}";
                 }
             }
-            
+
         }
 
         private void btnTake_Click(object sender, EventArgs e)
@@ -532,16 +551,16 @@ namespace popus_pizzeria.Model
             {
                 frmAddCustomer frm = new frmAddCustomer();
                 frm.orderType = OrderType;
-                
+
                 if (frm.ShowDialog() == DialogResult.OK)
                 {
-                    CustomerID = frm.CustomerID; 
+                    CustomerID = frm.CustomerID;
                     lblCustomer.Visible = true;
                     lblCustomer.Text = $"CLIENTE: {frm.CustomerName}";
 
                 }
             }
-            
+
         }
 
 
@@ -556,7 +575,9 @@ namespace popus_pizzeria.Model
 
                 // 🔴 Marcar la mesa como ocupada
                 string qry = "UPDATE tables SET status = 'Ocupada' WHERE tname = @tname";
-                using (SqlCommand cmd = new SqlCommand(qry, MainClass.con))
+                //using (SqlCommand cmd = new SqlCommand(qry, MainClass.con))
+                // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
+                using (SQLiteCommand cmd = new SQLiteCommand(qry, MainClass.con))
                 {
                     cmd.Parameters.AddWithValue("@tname", frm.TableName);
                     if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
@@ -606,20 +627,27 @@ namespace popus_pizzeria.Model
 
         private void btnKot_Click(object sender, EventArgs e)
         {
-            // 1. Guardar encabezado (La lógica para tblMain sigue siendo la misma)
-            string qryMain = MainId == 0
-                ? @"INSERT INTO tblMain 
-        (aDate, aTime, TableName, WaiterName, status, orderType, total, received, change, CustomerID, discount)
-        VALUES (@aDate, @aTime, @TableName, @WaiterName, @status, @orderType, @total, @received, @change, @CustomerID, 0);
-        SELECT SCOPE_IDENTITY();"
-                : @"UPDATE tblMain SET 
-        status = @status, total = @total, received = @received, change = @change, CustomerID = @CustomerID
-        WHERE MainID = @ID";
+            // 1. Guardar encabezado (La lógica para tblMain)
 
-            SqlCommand cmdMain = new SqlCommand(qryMain, MainClass.con);
+            // IMPORTANTE: Se modifica la consulta de INSERCIÓN para usar LAST_INSERT_ROWID() de SQLite.
+            // La consulta SELECT SCOPE_IDENTITY(); se convierte en la ejecución de ExecuteScalar()
+            // después de la inserción, si MainId es 0.
+            string qryMain = MainId == 0
+                ? @"INSERT INTO tblMain (aDate, aTime, TableName, WaiterName, status, orderType, total, received, change, CustomerID, discount)
+            VALUES (@aDate, @aTime, @TableName, @WaiterName, @status, @orderType, @total, @received, @change, @CustomerID, 0);"
+                : @"UPDATE tblMain SET 
+            status = @status, total = @total, received = @received, change = @change, CustomerID = @CustomerID
+            WHERE MainID = @ID";
+
+            // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
+            SQLiteCommand cmdMain = new SQLiteCommand(qryMain, MainClass.con);
             cmdMain.Parameters.AddWithValue("@ID", MainId);
-            cmdMain.Parameters.AddWithValue("@aDate", DateTime.Now.Date);
+
+            // NOTA: SQLite almacena mejor las fechas y horas como texto simple o Unix epoch.
+            // Para simplificar y seguir el patrón, usamos texto.
+            cmdMain.Parameters.AddWithValue("@aDate", DateTime.Now.Date.ToString("yyyy-MM-dd"));
             cmdMain.Parameters.AddWithValue("@aTime", DateTime.Now.ToShortTimeString());
+
             cmdMain.Parameters.AddWithValue("@TableName", lblTable.Text);
             cmdMain.Parameters.AddWithValue("@WaiterName", lblWaiter.Text);
             cmdMain.Parameters.AddWithValue("@status", "Pendiente");
@@ -633,9 +661,15 @@ namespace popus_pizzeria.Model
             try
             {
                 if (MainId == 0)
-                    MainId = Convert.ToInt32(cmdMain.ExecuteScalar());
+                {
+                    cmdMain.ExecuteNonQuery(); // Ejecuta el INSERT
+
+                    // Obtener el ID de la fila recién insertada con LAST_INSERT_ROWID()
+                    cmdMain.CommandText = "SELECT LAST_INSERT_ROWID();";
+                    MainId = Convert.ToInt32(cmdMain.ExecuteScalar()); // Obtiene el nuevo MainId
+                }
                 else
-                    cmdMain.ExecuteNonQuery();
+                    cmdMain.ExecuteNonQuery(); // Ejecuta el UPDATE
             }
             catch (Exception ex)
             {
@@ -657,28 +691,28 @@ namespace popus_pizzeria.Model
                 if (row.IsNewRow) continue;
 
                 int prodID = Convert.ToInt32(row.Cells["dgvProID"].Value);
-                int currentQtyInGrid = Convert.ToInt32(row.Cells["dgvQty"].Value); // Cantidad total actual de este ítem en la grilla
+                int currentQtyInGrid = Convert.ToInt32(row.Cells["dgvQty"].Value);
                 double price = Convert.ToDouble(row.Cells["dgvPrice"].Value);
                 string observation = row.Cells["dgvObs"].Value?.ToString() ?? "";
 
-                int qtyAlreadySent = Convert.ToInt32(row.Cells["dgvQtyEnviado"].Value ?? 0); // Cantidad de este ítem ya enviada (desde BD o KOTs anteriores)
+                int qtyAlreadySent = Convert.ToInt32(row.Cells["dgvQtyEnviado"].Value ?? 0);
+                int qtyToSend = currentQtyInGrid - qtyAlreadySent;
 
-                int qtyToSend = currentQtyInGrid - qtyAlreadySent; // Esta es la cantidad NUEVA a enviar
-
-                if (qtyToSend <= 0) continue; // Si no hay cantidad nueva (o es negativa), no enviamos nada
+                if (qtyToSend <= 0) continue;
 
                 hayProductosParaEnviar = true;
 
                 // Insertar un nuevo registro en tblDetails para la *cantidad adicional* a enviar
                 string qryDetail = @"INSERT INTO tblDetails
-              (MainID, prodID, qty, price, amount, observation, IsSentToKitchen)
-              VALUES
-              (@MainID, @ProdID, @qty, @price, @amount, @observation, 1);"; // Marcar como enviado inmediatamente al insertar
+            (MainID, prodID, qty, price, amount, observation, IsSentToKitchen)
+            VALUES
+            (@MainID, @ProdID, @qty, @price, @amount, @observation, 1);";
 
-                SqlCommand cmdDetail = new SqlCommand(qryDetail, MainClass.con);
+                // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
+                SQLiteCommand cmdDetail = new SQLiteCommand(qryDetail, MainClass.con);
                 cmdDetail.Parameters.AddWithValue("@MainID", MainId);
                 cmdDetail.Parameters.AddWithValue("@ProdID", prodID);
-                cmdDetail.Parameters.AddWithValue("@qty", qtyToSend); // Enviamos solo la diferencia
+                cmdDetail.Parameters.AddWithValue("@qty", qtyToSend);
                 cmdDetail.Parameters.AddWithValue("@price", price);
                 cmdDetail.Parameters.AddWithValue("@amount", qtyToSend * price);
                 cmdDetail.Parameters.AddWithValue("@observation", observation);
@@ -688,27 +722,24 @@ namespace popus_pizzeria.Model
                 {
                     cmdDetail.ExecuteNonQuery();
 
-                    // Añadir los detalles para la impresión de la comanda (solo los ítems recién enviados)
+                    // Lógica de impresión y actualización de la grilla (sin cambios)
                     tempNewProductDetails.Add($"{qtyToSend} x {row.Cells["dgvPName"].Value}");
                     if (!string.IsNullOrWhiteSpace(observation))
                         tempNewProductDetails.Add($"  -> {observation}");
 
-                    // Actualizar la fila del DataGridView para reflejar la cantidad recién enviada
-                    row.Cells["dgvQtyEnviado"].Value = qtyAlreadySent + qtyToSend; // Suma al total ya enviado
+                    row.Cells["dgvQtyEnviado"].Value = qtyAlreadySent + qtyToSend;
 
-                    // Actualizar el estilo de la fila si toda la cantidad ahora está enviada
                     if (Convert.ToInt32(row.Cells["dgvQtyEnviado"].Value) == currentQtyInGrid)
                     {
-                        row.Cells["dgvIsSent"].Value = true; // Marca como completamente enviado
-                        row.ReadOnly = true; // Hacer la fila de solo lectura
+                        row.Cells["dgvIsSent"].Value = true;
+                        row.ReadOnly = true;
                         row.DefaultCellStyle.ForeColor = Color.Gray;
                         row.DefaultCellStyle.Font = new Font(btnImprimirCuenta.Font, FontStyle.Strikeout);
                     }
                     else
                     {
-                        // Si aún quedan cantidades sin enviar, asegurar que no esté tachado ni gris
-                        row.Cells["dgvIsSent"].Value = false; // Marca como no completamente enviado
-                        row.ReadOnly = false; // Asegurar que la fila sea editable
+                        row.Cells["dgvIsSent"].Value = false;
+                        row.ReadOnly = false;
                         row.DefaultCellStyle.ForeColor = Color.DarkGreen;
                         row.DefaultCellStyle.Font = new Font(btnImprimirCuenta.Font, FontStyle.Bold);
                     }
@@ -733,12 +764,8 @@ namespace popus_pizzeria.Model
 
             // Llama a la función para imprimir solo los ítems nuevos
             string textoComanda = GenerarTextoComandaForNewItems(MainId, tempNewProductDetails);
-            ComandaPrinter.ImprimirTexto(textoComanda);
 
-            // IMPORTANTE: No llamar a ClearForm() aquí si el pedido sigue abierto y se esperan más cambios/pagos.
-            // Esto es lo que estaba borrando el formulario después de cada envío.
-            // MainId = 0; 
-            // ClearForm(); 
+            ComandaPrinter.ImprimirTexto(textoComanda);
         }
 
 
@@ -782,15 +809,19 @@ namespace popus_pizzeria.Model
                                     WHERE m.MainID = @MainId;
 ";
 
-            using (SqlCommand cmd = new SqlCommand(qryMain, MainClass.con))
+            //using (SqlCommand cmd = new SqlCommand(qryMain, MainClass.con))
+            // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
+            using (SQLiteCommand cmd = new SQLiteCommand(qryMain, MainClass.con))
             {
                 cmd.Parameters.AddWithValue("@MainId", MainId);
                 if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
-                using (SqlDataReader dr = cmd.ExecuteReader())
+                //using (SqlDataReader dr = cmd.ExecuteReader())
+                // CAMBIAR: Se reemplaza SqlDataReader por SQLiteDataReader
+                using (SQLiteDataReader dr = cmd.ExecuteReader())
                 {
                     if (dr.Read())
                     {
-                        
+
                         sb.AppendLine("***** COMANDA *****");
                         sb.AppendLine($"Fecha: {Convert.ToDateTime(dr["aDate"]).ToShortDateString()}");
                         sb.AppendLine($"Hora: {dr["aTime"]}");
@@ -821,11 +852,15 @@ namespace popus_pizzeria.Model
                                     WHERE d.MainID = @mainID AND d.IsSentToKitchen = 0
                                     ";
 
-            using (SqlCommand cmd2 = new SqlCommand(qryDetails, MainClass.con))
+            //using (SqlCommand cmd2 = new SqlCommand(qryDetails, MainClass.con))
+            // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
+            using (SQLiteCommand cmd2 = new SQLiteCommand(qryDetails, MainClass.con))
             {
                 cmd2.Parameters.AddWithValue("@mainId", MainId);
                 if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
-                using (SqlDataReader dr = cmd2.ExecuteReader())
+                //using (SqlDataReader dr = cmd2.ExecuteReader())
+                // CAMBIAR: Se reemplaza SqlDataReader por SQLiteDataReader
+                using (SQLiteDataReader dr = cmd2.ExecuteReader())
                 {
                     while (dr.Read())
                     {
@@ -842,34 +877,24 @@ namespace popus_pizzeria.Model
             sb.AppendLine("  ¡Gracias!");
             MessageBox.Show(sb.ToString()); // SOLO PARA DEPURAR
             return sb.ToString();
-
-            string qryDetailupdate = @"UPDATE tblDetails SET IsSentToKitchen = 1 WHERE MainID = @mainID AND IsSentToKitchen = 0";
-
-            using (SqlCommand cmd2 = new SqlCommand(qryDetailupdate, MainClass.con))
-            {
-                cmd2.Parameters.AddWithValue("@mainId", MainId);
-                if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
-                
-                MainClass.con.Close();
-            }
         }
 
-        
+
 
         private void guna2DataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            
+
             if (e.RowIndex >= 0 && btnImprimirCuenta.Columns[e.ColumnIndex].Name == "dgvObs")
             {
-                
+
                 string currentObservation = btnImprimirCuenta.Rows[e.RowIndex].Cells["dgvObs"].Value?.ToString() ?? string.Empty;
 
-                
+
                 using (frmObservation obsForm = new frmObservation(currentObservation))
                 {
                     if (obsForm.ShowDialog() == DialogResult.OK)
                     {
-                     
+
                         btnImprimirCuenta.Rows[e.RowIndex].Cells["dgvObs"].Value = obsForm.Observation;
                     }
                 }
@@ -914,11 +939,15 @@ namespace popus_pizzeria.Model
         GROUP BY d.ProdID, p.pName, d.price, d.observation, m.TableName, m.WaiterName, m.orderType;
     ";
 
-            SqlCommand cmd = new SqlCommand(qry, MainClass.con); // Sintaxis corregida
+            //SqlCommand cmd = new SqlCommand(qry, MainClass.con); // Sintaxis corregida
+            // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
+            SQLiteCommand cmd = new SQLiteCommand(qry, MainClass.con);
             cmd.Parameters.AddWithValue("@MainID", id);
 
             DataTable dt = new DataTable();
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            //SqlDataAdapter da = new SqlDataAdapter(cmd);
+            // CAMBIAR: Se reemplaza SqlDataAdapter por SQLiteDataAdapter
+            SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
             da.Fill(dt);
 
             if (dt.Rows.Count == 0) return;
@@ -983,7 +1012,9 @@ namespace popus_pizzeria.Model
         SET IsSentToKitchen = 1 
         WHERE DetailID = @DetailID";
 
-            SqlCommand cmd = new SqlCommand(qry, MainClass.con);
+            //SqlCommand cmd = new SqlCommand(qry, MainClass.con);
+            // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
+            SQLiteCommand cmd = new SQLiteCommand(qry, MainClass.con);
             cmd.Parameters.AddWithValue("@DetailID", detailID);
 
             if (MainClass.con.State == ConnectionState.Closed)
@@ -1012,7 +1043,9 @@ namespace popus_pizzeria.Model
             if (!string.IsNullOrWhiteSpace(lblTable.Text))
             {
                 string updateStatusQry = "UPDATE tables SET status = 'Libre' WHERE tname = @tableName";
-                using (SqlCommand cmd = new SqlCommand(updateStatusQry, MainClass.con))
+                //using (SqlCommand cmd = new SqlCommand(updateStatusQry, MainClass.con))
+                // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
+                using (SQLiteCommand cmd = new SQLiteCommand(updateStatusQry, MainClass.con))
                 {
                     cmd.Parameters.AddWithValue("@tableName", lblTable.Text.Trim());
 
@@ -1061,7 +1094,7 @@ namespace popus_pizzeria.Model
                 infoHeaders["Cliente"] = lblCustomer.Text.Replace("CUSTOMER: ", "").Replace("PHONE: ", "");
             }
 
-           
+
 
             // Llamar a la clase CuentaPrinter para imprimir el recibo (impresora de 80mm)
             CuentaPrinter.ImprimirCuenta(btnImprimirCuenta, lblTotal.Text, infoHeaders);
@@ -1186,6 +1219,59 @@ namespace popus_pizzeria.Model
             string footer = "--- ¡GRACIAS POR SU VISITA! ---";
             SizeF footerSize = g.MeasureString(footer, fontBody);
             g.DrawString(footer, fontBody, Brushes.Black, leftMargin + (lineWidth - footerSize.Width) / 2, yPos);
+        }
+
+        // Variables de nivel de clase (fuera de cualquier método)
+        private int originalWidth;
+        private int originalHeight;
+        private bool isReduced = false; // Nuevo flag para rastrear el estado reducido (75%)
+
+        // El método Load permanece igual, guarda el tamaño inicial.
+       
+
+        private void btnMaximixed_Click(object sender, EventArgs e)
+        {
+            // Lógica principal: Maximizar/Restaurar/Reducir
+
+            if (this.WindowState == FormWindowState.Normal && !isReduced)
+            {
+                // 1. ESTADO ACTUAL: Normal (tamaño original).
+                // ACCIÓN: Maximizar la ventana.
+                this.WindowState = FormWindowState.Maximized;
+            }
+            else if (this.WindowState == FormWindowState.Maximized)
+            {
+                // 2. ESTADO ACTUAL: Maximizado.
+                // ACCIÓN: Volver al estado Normal y luego reducir al 75%
+                this.WindowState = FormWindowState.Normal;
+
+                // Ejecutamos la reducción al 97%
+                const double factor = 0.97;
+                this.Width = (int)(originalWidth * factor);
+                this.Height = (int)(originalHeight * factor);
+                this.CenterToScreen();
+
+                // Establecer la bandera para indicar que ahora está en el estado reducido.
+                isReduced = true;
+            }
+            else if (this.WindowState == FormWindowState.Normal && isReduced)
+            {
+                // 3. ESTADO ACTUAL: Normal (pero reducido al 75%).
+                // ACCIÓN: Volver al tamaño original completo.
+                this.Width = originalWidth;
+                this.Height = originalHeight;
+                this.CenterToScreen();
+
+                // Limpiar la bandera para indicar que ahora está en el estado Normal/Original.
+                isReduced = false;
+            }
+        }
+
+        private void btnMinimixed_Click(object sender, EventArgs e)
+        {
+            // Sets the form state to minimized, which hides it from the user 
+            // and places it on the taskbar.
+            this.WindowState = FormWindowState.Minimized;
         }
     }
 

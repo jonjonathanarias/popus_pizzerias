@@ -2,12 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+//using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SQLite;
 
 namespace popus_pizzeria
 {
@@ -22,7 +23,9 @@ namespace popus_pizzeria
 
             // Cargar zonas
             string qryZonas = "SELECT * FROM zonas";
-            SqlDataAdapter daZonas = new SqlDataAdapter(qryZonas, MainClass.con);
+            //SqlDataAdapter daZonas = new SqlDataAdapter(qryZonas, MainClass.con);
+            // CAMBIO AQUÍ: SqlDataAdapter -> SQLiteDataAdapter
+            SQLiteDataAdapter daZonas = new SQLiteDataAdapter(qryZonas, MainClass.con);
             DataTable dtZonas = new DataTable();
             daZonas.Fill(dtZonas);
 
@@ -51,7 +54,9 @@ namespace popus_pizzeria
 
             // Cargar mesas
             string qryMesas = "SELECT * FROM tables";
-            SqlDataAdapter daMesas = new SqlDataAdapter(qryMesas, MainClass.con);
+            //SqlDataAdapter daMesas = new SqlDataAdapter(qryMesas, MainClass.con);
+            // CAMBIO AQUÍ: SqlDataAdapter -> SQLiteDataAdapter
+            SQLiteDataAdapter daMesas = new SQLiteDataAdapter(qryMesas, MainClass.con);
             DataTable dtMesas = new DataTable();
             daMesas.Fill(dtMesas);
 

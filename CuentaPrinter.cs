@@ -123,7 +123,7 @@ namespace popus_pizzeria
                 g.DrawString(totalValue, fontTotal, Brushes.Black, rightMargin - totalValueSize.Width, yPos);
 
                 yPos += fontTotal.Height + 5; // Reducción del espacio antes del pie de página a la mitad
-                string footer = "  --- ¡DISFRUTA la VIDA! ---\n--- ¡CON CADA BOCADO! ---";
+                string footer = "  --- ¡DISFRUTA LA VIDA! ---\n--- ¡CON CADA BOCADO! ---";
                 SizeF footerSize = g.MeasureString(footer, fontBody);
                 g.DrawString(footer, fontBody, Brushes.Black, leftMargin + (lineWidth - footerSize.Width) / 2, yPos);
             };

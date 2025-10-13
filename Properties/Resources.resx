@@ -121,64 +121,97 @@
   <data name="popus" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\popus.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="popuss" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\popuss.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="simbolo-de-interfaz-de-circulo-de-cubiertos-de-tenedor-y-cuchillo-para-restaurante1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\simbolo-de-interfaz-de-circulo-de-cubiertos-de-tenedor-y-cuchillo-para-restaurante1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="management_1570139" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\management_1570139.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="list_4478580" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\list_4478580.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="chef_4915884" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\chef_4915884.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="home" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\home.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="nature_13640878" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\nature_13640878.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="recycle-bin-icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\recycle-bin-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="home1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\home1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="minimixed21" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\minimixed2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="maxi" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\maxi.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="minimizedOnepng" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\minimizedOnepng.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="home_738822" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\home_738822.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="simbolo-de-interfaz-de-circulo-de-cubiertos-de-tenedor-y-cuchillo-para-restaurante" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\simbolo-de-interfaz-de-circulo-de-cubiertos-de-tenedor-y-cuchillo-para-restaurante.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="search_4398568" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\search_4398568.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="minimixed22" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\minimixed21.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="settings_3873641" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\settings_3873641.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="home" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\home.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="popusham" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\popusham.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="table_1243684" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\table_1243684.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="pizza_171859921" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\pizza_171859921.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="maxi2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\maxi2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="minimixed23" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\minimixed23.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="table_12436841" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\table_12436841.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="pizza_17185992" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\pizza_17185992.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="simbolo_de_interfaz_de_circulo_de_cubiertos_de_tenedor_y_cuchillo_para_restaurante" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\simbolo-de-interfaz-de-circulo-de-cubiertos-de-tenedor-y-cuchillo-para-restaurante.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="power-button" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="simbolo-de-interfaz-de-circulo-de-cubiertos-de-tenedor-y-cuchillo-para-restaurante1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\simbolo-de-interfaz-de-circulo-de-cubiertos-de-tenedor-y-cuchillo-para-restaurante1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="chef_4915884" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\chef_4915884.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="search_4398568" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\search_4398568.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="power_button" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\power-button.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="popuss" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\popuss.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="list_4478580" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\list_4478580.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="management_1570139" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\management_1570139.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="mini" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\mini.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="maxi1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\maxi1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pizza_171859921" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pizza_171859921.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="minimixed2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\minimixed22.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="popusham" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\popusham.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="popuss1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\popuss1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="pen-tool_4891440" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pen-tool_4891440.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="popuss1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\popuss1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="recycle-bin-icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\recycle-bin-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pizza_17185992" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pizza_17185992.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="minimixed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\minimixed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

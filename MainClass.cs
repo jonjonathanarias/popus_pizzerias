@@ -3,41 +3,44 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Data.SqlClient;
+// using System.Data.SqlClient; // COMENTAR: Ya no se usa para la conexión
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-//using Microsoft.Data.SqlClient;
-
+//using Microsoft.Data.Sqlite; // Si usaste el paquete Microsoft.Data.Sqlite, usa este
+using System.Data.SQLite; // USAR: Este es el proveedor que usaremos (System.Data.SQLite)
 
 namespace popus_pizzeria
 {
     internal class MainClass
     {
-
-        // public static readonly string con_string = "Data Source=DESKTOP-FFIHDBP\\SQLEXPRESS; Initial Catalog=popus_pizzeria; Persist Security Info=True; Trusted_Connection=True;";
-
+        // Se mantiene la cadena de conexión del App.config
         public static readonly string con_string = ConfigurationManager.ConnectionStrings["con_string_bd"].ConnectionString;
 
-        public static SqlConnection con = new SqlConnection(con_string);
+        // CAMBIAR: Se reemplaza SqlConnection por SQLiteConnection
+        public static SQLiteConnection con = new SQLiteConnection(con_string);
 
         // metodo para validacion de usuario
-
         public static bool IsValidUser(string user, string pass)
         {
             bool isValid = false;
 
-            
+            // La sintaxis de la consulta es compatible
             string qry = @"SELECT * FROM users WHERE username = @username AND upass = @upass";
-            SqlCommand cmd = new SqlCommand(qry, con);
 
-            
+            // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
+            SQLiteCommand cmd = new SQLiteCommand(qry, con);
+
+            // Los parámetros son compatibles, solo cambia el objeto
             cmd.Parameters.AddWithValue("@username", user);
             cmd.Parameters.AddWithValue("@upass", pass);
 
             DataTable dt = new DataTable();
-            SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
+
+            // CAMBIAR: Se reemplaza SqlDataAdapter por SQLiteDataAdapter
+            SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter(cmd);
+
             dataAdapter.Fill(dt);
 
             if (dt.Rows.Count > 0)
@@ -50,7 +53,6 @@ namespace popus_pizzeria
         }
 
         //Propiedades del usuario
-
         public static string user;
 
         public static string USER
@@ -61,30 +63,35 @@ namespace popus_pizzeria
         }
 
         //Metodo para operaciones crud
-
         public static int SQl(string qry, Hashtable ht)
         {
             int res = 0;
 
             try
             {
-                SqlCommand cmd = new SqlCommand(qry, con);
+                // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
+                SQLiteCommand cmd = new SQLiteCommand(qry, con);
                 cmd.CommandType = CommandType.Text;
 
-                foreach (DictionaryEntry item in  ht) {
-
+                foreach (DictionaryEntry item in ht)
+                {
+                    // Los parámetros son compatibles
                     cmd.Parameters.AddWithValue(item.Key.ToString(), item.Value);
                 }
-                if(con.State == ConnectionState.Closed) { 
+
+                if (con.State == ConnectionState.Closed)
+                {
                     con.Open();
                 }
+
                 res = cmd.ExecuteNonQuery();
+
                 if (con.State == ConnectionState.Open)
                 {
                     con.Close();
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
                 con.Close();
@@ -93,19 +100,21 @@ namespace popus_pizzeria
         }
 
         //Para la carga de datos en la base de datos
-
         public static void LoadData(string qry, DataGridView gv, ListBox lb)
         {
-
             // sin serial el la gridview
             gv.CellFormatting += new DataGridViewCellFormattingEventHandler(gv_CellFormatting);
             //
 
             try
             {
-                SqlCommand cmd = new SqlCommand(qry, con);
+                // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
+                SQLiteCommand cmd = new SQLiteCommand(qry, con);
                 cmd.CommandType = CommandType.Text;
-                SqlDataAdapter da = new SqlDataAdapter(cmd);
+
+                // CAMBIAR: Se reemplaza SqlDataAdapter por SQLiteDataAdapter
+                SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
+
                 DataTable dt = new DataTable();
                 da.Fill(dt);
 
@@ -130,20 +139,23 @@ namespace popus_pizzeria
             Guna.UI2.WinForms.Guna2DataGridView gv = (Guna.UI2.WinForms.Guna2DataGridView)sender;
             int count = 0;
 
-            foreach (DataGridViewRow row in gv.Rows) {
-
+            foreach (DataGridViewRow row in gv.Rows)
+            {
                 count++;
                 row.Cells[0].Value = count;
             }
         }
 
         //para cb fill categoria
-
-        public static void CBFill(string qry, ComboBox cb) 
+        public static void CBFill(string qry, ComboBox cb)
         {
-            SqlCommand cmd = new SqlCommand(qry, con);
+            // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
+            SQLiteCommand cmd = new SQLiteCommand(qry, con);
             cmd.CommandType = CommandType.Text;
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
+
+            // CAMBIAR: Se reemplaza SqlDataAdapter por SQLiteDataAdapter
+            SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
+
             DataTable dt = new DataTable();
             da.Fill(dt);
 
@@ -152,8 +164,5 @@ namespace popus_pizzeria
             cb.DataSource = dt;
             cb.SelectedIndex = -1;
         }
-
     }
-
-
 }
