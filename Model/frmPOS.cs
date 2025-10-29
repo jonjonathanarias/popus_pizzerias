@@ -627,34 +627,33 @@ namespace popus_pizzeria.Model
 
         private void btnKot_Click(object sender, EventArgs e)
         {
-            // 1. Guardar encabezado (La lógica para tblMain)
+            // 1. Inicializar variables de pago
+            double totalAmount = Convert.ToDouble(lblTotal.Text);
+            double receivedAmount = 0;
+            double changeAmount = 0;
+            string finalStatus = "Pendiente";
+            // 🛑 NUEVA VARIABLE para el método de pago (necesaria para el estatus descriptivo)
+            string paymentMethodUsed = string.Empty;
 
-            // IMPORTANTE: Se modifica la consulta de INSERCIÓN para usar LAST_INSERT_ROWID() de SQLite.
-            // La consulta SELECT SCOPE_IDENTITY(); se convierte en la ejecución de ExecuteScalar()
-            // después de la inserción, si MainId es 0.
+            // 2. Guardar encabezado inicial (o actualizar con status 'Pendiente')
             string qryMain = MainId == 0
                 ? @"INSERT INTO tblMain (aDate, aTime, TableName, WaiterName, status, orderType, total, received, change, CustomerID, discount)
             VALUES (@aDate, @aTime, @TableName, @WaiterName, @status, @orderType, @total, @received, @change, @CustomerID, 0);"
-                : @"UPDATE tblMain SET 
+                : @"UPDATE tblMain SET
             status = @status, total = @total, received = @received, change = @change, CustomerID = @CustomerID
             WHERE MainID = @ID";
 
-            // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
             SQLiteCommand cmdMain = new SQLiteCommand(qryMain, MainClass.con);
             cmdMain.Parameters.AddWithValue("@ID", MainId);
-
-            // NOTA: SQLite almacena mejor las fechas y horas como texto simple o Unix epoch.
-            // Para simplificar y seguir el patrón, usamos texto.
             cmdMain.Parameters.AddWithValue("@aDate", DateTime.Now.Date.ToString("yyyy-MM-dd"));
             cmdMain.Parameters.AddWithValue("@aTime", DateTime.Now.ToShortTimeString());
-
             cmdMain.Parameters.AddWithValue("@TableName", lblTable.Text);
             cmdMain.Parameters.AddWithValue("@WaiterName", lblWaiter.Text);
-            cmdMain.Parameters.AddWithValue("@status", "Pendiente");
+            cmdMain.Parameters.AddWithValue("@status", finalStatus); // Status inicial: Pendiente
             cmdMain.Parameters.AddWithValue("@orderType", OrderType);
-            cmdMain.Parameters.AddWithValue("@total", Convert.ToDouble(lblTotal.Text));
-            cmdMain.Parameters.AddWithValue("@received", 0);
-            cmdMain.Parameters.AddWithValue("@change", 0);
+            cmdMain.Parameters.AddWithValue("@total", totalAmount);
+            cmdMain.Parameters.AddWithValue("@received", receivedAmount);
+            cmdMain.Parameters.AddWithValue("@change", changeAmount);
             cmdMain.Parameters.AddWithValue("@CustomerID", CustomerID);
 
             if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
@@ -662,14 +661,12 @@ namespace popus_pizzeria.Model
             {
                 if (MainId == 0)
                 {
-                    cmdMain.ExecuteNonQuery(); // Ejecuta el INSERT
-
-                    // Obtener el ID de la fila recién insertada con LAST_INSERT_ROWID()
+                    cmdMain.ExecuteNonQuery();
                     cmdMain.CommandText = "SELECT LAST_INSERT_ROWID();";
                     MainId = Convert.ToInt32(cmdMain.ExecuteScalar()); // Obtiene el nuevo MainId
                 }
                 else
-                    cmdMain.ExecuteNonQuery(); // Ejecuta el UPDATE
+                    cmdMain.ExecuteNonQuery();
             }
             catch (Exception ex)
             {
@@ -682,33 +679,92 @@ namespace popus_pizzeria.Model
                 MainClass.con.Close();
             }
 
-            // 2. Procesar productos (Lógica modificada para enviar solo lo pendiente)
+            // 3. Lógica de Pago Condicional y Construcción del Estatus Descriptivo
+            bool isDeliveryOrTakeAway = (OrderType.ToLower() == "delivery" || OrderType.ToLower().Contains("take"));
+
+            if (totalAmount > 0 && isDeliveryOrTakeAway)
+            {
+                using (popus_pizzeria.Model.Paymentform paymentForm = new popus_pizzeria.Model.Paymentform(totalAmount))
+                {
+                    if (paymentForm.ShowDialog() == DialogResult.OK)
+                    {
+                        receivedAmount = paymentForm.Recibido;
+                        changeAmount = paymentForm.Cambio;
+                        paymentMethodUsed = paymentForm.MetodoPago; // Capturamos el método
+
+                        // 🛑 LÓGICA REFACTORIZADA PARA EL ESTATUS DESCRIPTIVO 🛑
+                        if (paymentMethodUsed == "Efectivo")
+                        {
+                            // Si es efectivo y el cambio es >= 0, está "Pagado en Efectivo"
+                            finalStatus = (changeAmount >= 0) ? "Pagado en Efectivo" : "Pendiente";
+                        }
+                        else
+                        {
+                            // Si es cualquier método electrónico, asumimos que fue exitoso
+                            // y usamos el método para el estatus (Ej: "Pagado con Transferencia")
+                            finalStatus = "Pagado con " + paymentMethodUsed;
+                        }
+                    }
+                    // Si el usuario cancela (DialogResult.Cancel), finalStatus permanece como "Pendiente"
+                }
+            }
+
+            // 4. Actualizar el encabezado con el Estatus y los datos de Pago (si se modificaron)
+            // Usaremos solo la parte principal del estatus ("Pagado" o "Pendiente") para la DB si es necesario,
+            // o el estatus completo si la columna 'status' en tblMain es lo suficientemente grande.
+            // Usaremos el estatus COMPLETO para la comanda.
+
+            // Solo actualizamos la DB si el estado cambió o si hay montos recibidos que guardar.
+            if (MainId > 0 && (finalStatus != "Pendiente" || receivedAmount > 0))
+            {
+                string qryUpdatePayment = @"UPDATE tblMain SET
+            status = @status, received = @received, change = @change
+            WHERE MainID = @ID";
+
+                SQLiteCommand cmdUpdate = new SQLiteCommand(qryUpdatePayment, MainClass.con);
+                cmdUpdate.Parameters.AddWithValue("@ID", MainId);
+                // NOTA: Si tu columna 'status' en tblMain es corta, considera guardar solo "Pagado" o "Pendiente".
+                // Si es lo suficientemente grande (ej: 50 caracteres), guarda el estatus completo.
+                cmdUpdate.Parameters.AddWithValue("@status", finalStatus);
+                cmdUpdate.Parameters.AddWithValue("@received", receivedAmount);
+                cmdUpdate.Parameters.AddWithValue("@change", changeAmount);
+
+                if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
+                try
+                {
+                    cmdUpdate.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error al actualizar datos de pago/estatus: " + ex.Message);
+                }
+                finally
+                {
+                    MainClass.con.Close();
+                }
+            }
+
+            // 5. Procesar productos y detalles (Lógica para tblDetails, sin cambios)
             List<string> tempNewProductDetails = new List<string>();
             bool hayProductosParaEnviar = false;
 
+            // ... (Tu bucle 'foreach' para guardar tblDetails va aquí, sin cambios) ...
             foreach (DataGridViewRow row in btnImprimirCuenta.Rows)
             {
                 if (row.IsNewRow) continue;
-
                 int prodID = Convert.ToInt32(row.Cells["dgvProID"].Value);
                 int currentQtyInGrid = Convert.ToInt32(row.Cells["dgvQty"].Value);
                 double price = Convert.ToDouble(row.Cells["dgvPrice"].Value);
                 string observation = row.Cells["dgvObs"].Value?.ToString() ?? "";
-
                 int qtyAlreadySent = Convert.ToInt32(row.Cells["dgvQtyEnviado"].Value ?? 0);
                 int qtyToSend = currentQtyInGrid - qtyAlreadySent;
-
                 if (qtyToSend <= 0) continue;
 
                 hayProductosParaEnviar = true;
-
-                // Insertar un nuevo registro en tblDetails para la *cantidad adicional* a enviar
                 string qryDetail = @"INSERT INTO tblDetails
             (MainID, prodID, qty, price, amount, observation, IsSentToKitchen)
-            VALUES
-            (@MainID, @ProdID, @qty, @price, @amount, @observation, 1);";
+            VALUES (@MainID, @ProdID, @qty, @price, @amount, @observation, 1);";
 
-                // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
                 SQLiteCommand cmdDetail = new SQLiteCommand(qryDetail, MainClass.con);
                 cmdDetail.Parameters.AddWithValue("@MainID", MainId);
                 cmdDetail.Parameters.AddWithValue("@ProdID", prodID);
@@ -721,14 +777,12 @@ namespace popus_pizzeria.Model
                 try
                 {
                     cmdDetail.ExecuteNonQuery();
-
-                    // Lógica de impresión y actualización de la grilla (sin cambios)
                     tempNewProductDetails.Add($"{qtyToSend} x {row.Cells["dgvPName"].Value}");
                     if (!string.IsNullOrWhiteSpace(observation))
-                        tempNewProductDetails.Add($"  -> {observation}");
+                        tempNewProductDetails.Add($"  -> {observation}");
 
                     row.Cells["dgvQtyEnviado"].Value = qtyAlreadySent + qtyToSend;
-
+                    // Lógica de grilla (ReadOnly, Color, etc.)
                     if (Convert.ToInt32(row.Cells["dgvQtyEnviado"].Value) == currentQtyInGrid)
                     {
                         row.Cells["dgvIsSent"].Value = true;
@@ -753,6 +807,8 @@ namespace popus_pizzeria.Model
                     MainClass.con.Close();
                 }
             }
+            // ... (Fin del bucle 'foreach') ...
+
 
             if (!hayProductosParaEnviar)
             {
@@ -762,8 +818,15 @@ namespace popus_pizzeria.Model
 
             guna2MessageDialog1.Show("Pedido enviado a cocina correctamente");
 
-            // Llama a la función para imprimir solo los ítems nuevos
-            string textoComanda = GenerarTextoComandaForNewItems(MainId, tempNewProductDetails);
+            // 6. Llama a la función para imprimir, pasando el estatus descriptivo.
+            string textoComanda = GenerarTextoComandaForNewItems(
+                MainId,
+                tempNewProductDetails,
+                totalAmount,
+                receivedAmount,
+                changeAmount,
+                finalStatus // 👈 Se pasa el estatus completo (Ej: "Pagado con Transferencia")
+            );
 
             ComandaPrinter.ImprimirTexto(textoComanda);
         }
@@ -777,7 +840,472 @@ namespace popus_pizzeria.Model
 
         // --- NEW METHOD FOR GENERATING KOT FOR ONLY NEWLY SENT ITEMS ---
         // Ejemplo de cómo podría ser tu GenerarTextoComandaForNewItems
-        public string GenerarTextoComandaForNewItems(int mainId, List<string> newItemsDetails)
+         public string GenerarTextoComandaForNewItems(
+                 int mainId,
+                 List<string> newItemsDetails,
+                 // 🛑 NUEVOS PARÁMETROS DE PAGO AGREGADOS 🛑
+                 double total,
+                 double received,
+                 double change,
+                 string status
+             )
+         {
+             StringBuilder comanda = new StringBuilder();
+             string tableName = "N/A";
+             string waiterName = "N/A";
+             string orderType = "N/A";
+
+             // --- Consulta para obtener detalles de encabezado y cliente ---
+             string qryMain = @"SELECT m.aDate, m.aTime, m.TableName, m.WaiterName, m.orderType, c.Name AS CustomerName, 
+                          c.Address, c.Phone, c.Reference
+                       FROM tblMain m
+                       LEFT JOIN tblCustomers c ON m.CustomerID = c.CustomerID
+                       WHERE m.MainID = @MainId;";
+
+             // CAMBIAR: Usar SQLiteCommand
+             using (SQLiteCommand cmd = new SQLiteCommand(qryMain, MainClass.con))
+             {
+                 cmd.Parameters.AddWithValue("@MainId", mainId);
+                 if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
+
+                 try
+                 {
+                     using (SQLiteDataReader dr = cmd.ExecuteReader())
+                     {
+                         if (dr.Read())
+                         {
+                             // Actualizar las variables con los datos de la DB
+                             tableName = dr["TableName"]?.ToString() ?? "N/A";
+                             waiterName = dr["WaiterName"]?.ToString() ?? "N/A";
+                             orderType = dr["orderType"]?.ToString() ?? "N/A";
+
+                             comanda.AppendLine("******** COMANDA Nº " + mainId + " ********");
+                             comanda.AppendLine("Fecha: " + Convert.ToDateTime(dr["aDate"]).ToShortDateString());
+                             comanda.AppendLine("Hora: " + dr["aTime"]);
+                             comanda.AppendLine("Mesa/Orden: " + tableName);
+                             comanda.AppendLine("Mozo: " + waiterName);
+                             comanda.AppendLine("Tipo: " + orderType);
+                             comanda.AppendLine("========================================="); // Separador más grande
+
+                             // Lógica para AÑADIR DATOS DEL CLIENTE DE DELIVERY
+                             string customerName = dr["CustomerName"]?.ToString();
+                             string phone = dr["Phone"]?.ToString() ?? "N/A";
+                             string address = dr["Address"]?.ToString() ?? "N/A";
+                             string reference = dr["Reference"]?.ToString() ?? "N/A";
+                            if (orderType.ToLower() == "delivery" || !string.IsNullOrEmpty(customerName))
+                            {
+                                comanda.AppendLine("--- DATOS DE ENTREGA ---");
+
+                                // Estos campos no suelen ser muy largos y pueden ir en la misma línea que su etiqueta.
+                                comanda.AppendLine($"Cliente: {customerName ?? "N/A"}");
+                                comanda.AppendLine($"Telefono: {phone}");
+
+                                // **DIRECCIÓN (Salto de línea garantizado)**
+                                // Imprimimos la etiqueta, luego el valor en la siguiente línea.
+                                comanda.AppendLine("Direccion:");
+                                comanda.AppendLine($"{address}"); // El valor de 'address' ocupa toda la línea que necesite.
+
+                                // **REFERENCIA (Salto de línea garantizado)**
+                                // Imprimimos la etiqueta, luego el valor en la siguiente línea.
+                                comanda.AppendLine("Referencia:");
+                                comanda.AppendLine($"{reference}"); // El valor de 'reference' ocupa toda la línea que necesite.
+
+                                comanda.AppendLine("-----------------------------------------");
+                            }
+                         }
+                     }
+                 }
+                 catch (Exception ex)
+                 {
+                     comanda.AppendLine($"*** ERROR al leer encabezado ({ex.Message}) ***");
+                 }
+                 finally
+                 {
+                     MainClass.con.Close();
+                 }
+             }
+
+             // Si la comanda está vacía (por error de conexión), al menos pone los datos de la UI
+             if (comanda.Length == 0)
+             {
+                 comanda.AppendLine("b**** COMANDA Nº " + mainId + " ****");
+                 comanda.AppendLine("Fecha: " + DateTime.Now.ToShortDateString());
+                 comanda.AppendLine("Hora: " + DateTime.Now.ToShortTimeString());
+                 comanda.AppendLine("Mesa/Orden: " + tableName);
+                 comanda.AppendLine("Mozo: " + waiterName);
+                 comanda.AppendLine("Tipo: " + orderType);
+                 comanda.AppendLine("=========================================");
+             }
+
+             // 🛑 Lógica para añadir los productos nuevos - MÁS DETALLADA Y GRANDE 🛑
+             comanda.AppendLine(">>> PRODUCTOS NUEVOS <<<");
+             comanda.AppendLine("=========================================");
+
+             foreach (string itemDetail in newItemsDetails)
+             {
+                 // Dividimos el string para resaltar la cantidad y el nombre
+                 // Se asume el formato generado en btnKot_Click: "QTY x PROD_NAME" y " -> OBSERVATION"
+                 if (itemDetail.Contains(" x "))
+                 {
+                     string[] parts = itemDetail.Split(new string[] { " x " }, StringSplitOptions.None);
+                     if (parts.Length == 2)
+                     {
+                         // Resalta la cantidad con asteriscos o espacios para simular mayor tamaño
+                         // La impresora térmica interpretará esto como un bloque más notable.
+                         comanda.AppendLine($" {parts[0].Trim()} {parts[1].Trim().ToUpper()}");
+                     }
+                     else
+                     {
+                         comanda.AppendLine(itemDetail.ToUpper()); // Fallback
+                     }
+                 }
+                 else if (itemDetail.StartsWith(" -> "))
+                 {
+                     // Resalta las observaciones con indentación y mayúsculas
+                     comanda.AppendLine($"     OBSERVACIÓN: {itemDetail.Substring(4).Trim()}");
+                     comanda.AppendLine("-----------------------------------------");
+                 }
+                 else
+                 {
+                     comanda.AppendLine(itemDetail.ToUpper());
+                     comanda.AppendLine("-----------------------------------------");
+                 }
+             }
+
+             comanda.AppendLine("=========================================");
+
+             // 🛑 LÓGICA: DETALLE DE PAGO 🛑
+             comanda.AppendLine("--- RESUMEN DE PAGO ---");
+             comanda.AppendLine($"TOTAL: {total.ToString("C")}");
+             comanda.AppendLine($"RECIBIDO: {received.ToString("C")}");
+             comanda.AppendLine($"CAMBIO: {change.ToString("C")}");
+             comanda.AppendLine($"ESTADO: {status.ToUpper()}");
+             comanda.AppendLine("-----------------------------------------");
+
+             comanda.AppendLine("¡Gracias!");
+             return comanda.ToString();
+         }
+
+        // Se asume que WrapText existe y está disponible.
+
+      /*  public string GenerarTextoComandaForNewItems(
+            int mainId,
+            List<string> newItemsDetails,
+            double total,
+            double received,
+            double change,
+            string status
+        )
+        {
+            // ANCHO MÁXIMO DEFINIDO PARA 58MM
+            const int MaxWidth = 30;
+            const string Separator = "------------------------------";
+            const string BoldSeparator = "==============================";
+
+            StringBuilder comanda = new StringBuilder();
+            string tableName = "N/A";
+            string waiterName = "N/A";
+            string orderType = "N/A";
+
+            // Bandera para gestionar el separador en el bucle de productos
+            bool lastItemWasObservation = false;
+
+            // --- Consulta para obtener detalles de encabezado y cliente (Se mantiene igual) ---
+            // ... (Se mantiene la sección de consulta a la DB para obtener datos) ...
+            // Asegúrate de que tu función WrapText usa ' ' (espacio) en lugar de ' ' (non-breaking space) si lo copiaste del ejemplo anterior.
+
+            string qryMain = @"SELECT m.aDate, m.aTime, m.TableName, m.WaiterName, m.orderType, c.Name AS CustomerName, 
+                         c.Address, c.Phone, c.Reference
+                       FROM tblMain m
+                       LEFT JOIN tblCustomers c ON m.CustomerID = c.CustomerID
+                       WHERE m.MainID = @MainId;";
+
+            // Se asume que MainClass.con y SQLiteCommand están disponibles
+            using (SQLiteCommand cmd = new SQLiteCommand(qryMain, MainClass.con))
+            {
+                cmd.Parameters.AddWithValue("@MainId", mainId);
+                if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
+
+                try
+                {
+                    using (SQLiteDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (dr.Read())
+                        {
+                            // Actualizar las variables con los datos de la DB
+                            tableName = dr["TableName"]?.ToString() ?? "N/A";
+                            waiterName = dr["WaiterName"]?.ToString() ?? "N/A";
+                            orderType = dr["orderType"]?.ToString() ?? "N/A";
+                            string customerName = dr["CustomerName"]?.ToString();
+
+                            // 1. ENCABEZADO Y DATOS BÁSICOS
+                            comanda.AppendLine("**** COMANDA Nro. " + mainId + " ****");
+                            comanda.AppendLine(Separator);
+                            comanda.AppendLine("Fecha: " + Convert.ToDateTime(dr["aDate"]).ToShortDateString());
+                            comanda.AppendLine("Hora: " + dr["aTime"]);
+                            comanda.AppendLine("Mesa/Orden: " + tableName);
+                            comanda.AppendLine("Mozo: " + waiterName);
+                            comanda.AppendLine("TIPO DE ORDEN: " + orderType.ToUpper());
+                            comanda.AppendLine(BoldSeparator);
+
+                            // 2. DATOS DEL CLIENTE DE DELIVERY/TAKE AWAY
+                            if (orderType.ToLower() == "delivery" || orderType.ToLower().Contains("take") || !string.IsNullOrEmpty(customerName))
+                            {
+                                comanda.AppendLine("--- DATOS DE ENTREGA ---");
+                                comanda.AppendLine($"CLIENTE: {customerName ?? "N/A"}");
+
+                                // Teléfono
+                                string phone = dr["Phone"]?.ToString() ?? "N/A";
+                                comanda.AppendLine($"TELEFONO: {phone}");
+
+                                // Dirección con WrapText
+                                string address = dr["Address"]?.ToString() ?? "N/A";
+                                comanda.AppendLine("DIRECCION:");
+                                // Usar solo espacios, no caracteres non-breaking: "  > "
+                                comanda.Append(WrapText(address.ToUpper(), MaxWidth, "  > "));
+
+                                // Referencia con WrapText
+                                string reference = dr["Reference"]?.ToString() ?? "N/A";
+                                comanda.AppendLine("REFERENCIA:");
+                                // Usar solo espacios, no caracteres non-breaking: "  > "
+                                comanda.Append(WrapText(reference.ToUpper(), MaxWidth, "  > "));
+
+                                comanda.AppendLine(Separator);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    comanda.AppendLine($"** ERROR EN DB: {ex.Message.Substring(0, Math.Min(ex.Message.Length, MaxWidth - 10))}...");
+                }
+                finally
+                {
+                    MainClass.con.Close();
+                }
+            }
+
+            // 3. DETALLE DE PRODUCTOS (CORREGIDO)
+            comanda.AppendLine(">>> PRODUCTOS NUEVOS <<<");
+            comanda.AppendLine(BoldSeparator);
+
+            foreach (string itemDetail in newItemsDetails)
+            {
+                if (itemDetail.Contains(" x "))
+                {
+                    // Si el ítem anterior fue una observación, ya tiene un separador.
+                    if (!lastItemWasObservation)
+                    {
+                        comanda.AppendLine(Separator); // Separador entre productos sin observaciones
+                    }
+
+                    string[] parts = itemDetail.Split(new string[] { " x " }, StringSplitOptions.None);
+                    if (parts.Length == 2)
+                    {
+                        string qty = parts[0].Trim();
+                        string name = parts[1].Trim().ToUpper();
+
+                        // Formato de producto (resaltado)
+                        comanda.AppendLine();
+                        // Usar solo espacios: "      "
+                        comanda.AppendLine($"** {qty} ** {WrapText(name, MaxWidth, "      ").Trim()}");
+                        comanda.AppendLine();
+                    }
+                    lastItemWasObservation = false; // Reset la bandera
+                }
+                else if (itemDetail.StartsWith(" -> ")) // 🛑 Verificación de prefijo con espacio normal
+                {
+                    // Lógica que se ejecuta si se encuentra la observación
+                    string observation = itemDetail.Substring(4).Trim();
+
+                    comanda.AppendLine("  > OBSERVACION:");
+
+                    // 🛑 Asegúrate de que los prefijos de WrapText también usen espacio normal
+                    comanda.Append(WrapText(observation.ToUpper(), MaxWidth, "    - "));
+
+                    comanda.AppendLine(Separator);
+                    lastItemWasObservation = true;
+                }
+                else if (itemDetail.StartsWith("->")) // Sin el espacio inicial
+                {
+                    // También funcionaría si eliminas el espacio en el Substring:
+                    string observation = itemDetail.Substring(2).Trim();
+                }
+            }
+
+            // Asegurarse de poner un separador después del último producto si no hubo observación
+            if (!lastItemWasObservation)
+            {
+                comanda.AppendLine(Separator);
+            }
+
+            comanda.AppendLine(BoldSeparator);
+
+            // 4. RESUMEN DE PAGO (Se mantiene igual, la alineación es correcta)
+            comanda.AppendLine("--- RESUMEN DE PAGO ---");
+
+            string totalFormatted = total.ToString("C");
+            comanda.AppendLine($"TOTAL:{totalFormatted.PadLeft(MaxWidth - 6)}");
+
+            string receivedFormatted = received.ToString("C");
+            comanda.AppendLine($"RECIBIDO:{receivedFormatted.PadLeft(MaxWidth - 9)}");
+
+            string changeFormatted = change.ToString("C");
+            comanda.AppendLine($"CAMBIO:{changeFormatted.PadLeft(MaxWidth - 7)}");
+
+            comanda.AppendLine("ESTADO:");
+            comanda.Append(WrapText(status.ToUpper(), MaxWidth, "  "));
+
+            comanda.AppendLine(Separator);
+
+            comanda.AppendLine("      ¡GRACIAS!");
+            return comanda.ToString();
+        }
+        private static string WrapText(string text, int maxWidth, string prefix = "")
+        {
+            // ... (Mantener la implementación de WrapText, se asume que existe) ...
+            if (string.IsNullOrEmpty(text))
+                return string.Empty;
+
+            StringBuilder wrappedText = new StringBuilder();
+            string[] words = text.Split(' ');
+            StringBuilder currentLine = new StringBuilder(prefix);
+
+            int effectiveWidth = maxWidth - prefix.Length;
+            if (effectiveWidth < 1) effectiveWidth = 1;
+
+            foreach (string word in words)
+            {
+                // Revisa si la palabra sola es más larga que el ancho disponible sin prefijo
+                if (word.Length > effectiveWidth && effectiveWidth > 0)
+                {
+                    // Si la palabra es muy larga, la corta con un guion si es necesario.
+                    // Para impresoras termicas, simplemente la agregaremos y dejaremos que se rompa,
+                    // o la dividimos manualmente. Aquí usaremos un enfoque simple:
+                    // Si el buffer de la línea está vacío, la agrega, sabiendo que se desbordará.
+                    if (currentLine.Length == prefix.Length)
+                    {
+                        currentLine.Append(word);
+                    }
+                    // Si no, salta de línea.
+                    else
+                    {
+                        wrappedText.AppendLine(currentLine.ToString().TrimEnd());
+                        currentLine.Clear();
+                        currentLine.Append(prefix);
+                        currentLine.Append(word + " ");
+                    }
+                }
+                else if (currentLine.Length + 1 + word.Length > maxWidth && currentLine.Length > prefix.Length)
+                {
+                    wrappedText.AppendLine(currentLine.ToString().TrimEnd());
+                    currentLine.Clear();
+                    currentLine.Append(prefix);
+                    currentLine.Append(word + " ");
+                }
+                else
+                {
+                    currentLine.Append(word + " ");
+                }
+            }
+
+            if (currentLine.Length > prefix.Length)
+            {
+                wrappedText.AppendLine(currentLine.ToString().TrimEnd());
+            }
+
+            return wrappedText.ToString();
+        }
+        private void btnPreviewKot_Click(object sender, EventArgs e)
+        {
+            // 1. Verificación Inicial
+            if (btnImprimirCuenta.Rows.Count == 0)
+            {
+                guna2MessageDialog1.Show("No hay productos en la cuenta para previsualizar.");
+                return;
+            }
+
+            // --- SIMULACIÓN DE DATOS (Necesarios para llamar a GenerarTextoComandaForNewItems) ---
+            int mainId = MainId == 0 ? 99999 : MainId;
+            double totalAmount = Convert.ToDouble(lblTotal.Text);
+            double receivedAmount = 0;
+            double changeAmount = 0;
+            string finalStatus = "Pendiente (SIMULACIÓN DE PAGO)";
+
+            // 2. Simular la obtención de los ítems a enviar
+            List<string> tempNewProductDetails = new List<string>();
+            bool hayProductosParaEnviar = false;
+
+            foreach (DataGridViewRow row in btnImprimirCuenta.Rows)
+            {
+                if (row.IsNewRow) continue;
+
+                int currentQtyInGrid = Convert.ToInt32(row.Cells["dgvQty"].Value);
+                string observation = row.Cells["dgvObs"].Value?.ToString() ?? "";
+                int qtyAlreadySent = Convert.ToInt32(row.Cells["dgvQtyEnviado"].Value ?? 0);
+                int qtyToSend = currentQtyInGrid - qtyAlreadySent;
+
+                if (qtyToSend <= 0) continue;
+
+                hayProductosParaEnviar = true;
+
+                tempNewProductDetails.Add($"{qtyToSend} x {row.Cells["dgvPName"].Value}");
+                if (!string.IsNullOrWhiteSpace(observation))
+                    tempNewProductDetails.Add($" -> {observation}");
+            }
+
+            if (!hayProductosParaEnviar)
+            {
+                guna2MessageDialog1.Show("No hay productos nuevos para previsualizar.");
+                return;
+            }
+
+            // 3. Generar el texto de la comanda con el formato de 58mm (30 caracteres)
+            string textoComanda = GenerarTextoComandaForNewItems(
+                mainId,
+                tempNewProductDetails,
+                totalAmount,
+                receivedAmount,
+                changeAmount,
+                finalStatus
+            );
+
+            // 4. Mostrar la previsualización en una ventana simulando el tamaño real (ShowDialog)
+            ShowComandaPreview(textoComanda);
+        }
+
+
+        // --- Método auxiliar para mostrar la vista previa simulada (SIMULACIÓN DE 58MM) ---
+        private void ShowComandaPreview(string text)
+        {
+            using (Form previewForm = new Form())
+            {
+                previewForm.Text = "Previsualización Comanda (58mm - 30 Char. Ancho)";
+
+                // Ajuste de ancho para simular el papel de 58mm (Aprox. 200 píxeles de ancho real para 30 caracteres)
+                previewForm.Width = 220; // Ancho ajustado para que el TextBox quepa y mantenga el formato
+                previewForm.Height = 500; // La altura será variable, pero 500px debería ser suficiente.
+                previewForm.StartPosition = FormStartPosition.CenterScreen;
+                previewForm.MinimizeBox = false;
+                previewForm.MaximizeBox = false;
+                previewForm.FormBorderStyle = FormBorderStyle.FixedDialog; // Bloquea el redimensionamiento
+
+                TextBox txtPreview = new TextBox();
+                txtPreview.Multiline = true;
+                txtPreview.ReadOnly = true;
+                txtPreview.ScrollBars = ScrollBars.Vertical;
+
+                // Es esencial usar una fuente monoespaciada (como Consolas o Courier New)
+                // para que la simulación de los 30 caracteres sea precisa.
+                txtPreview.Font = new Font("Consolas", 10, FontStyle.Regular);
+                txtPreview.Text = text;
+                txtPreview.Dock = DockStyle.Fill;
+
+                previewForm.Controls.Add(txtPreview);
+                previewForm.ShowDialog(); // Muestra el diálogo modal
+            }
+        }*/
+        /*public string GenerarTextoComandaForNewItems(int mainId, List<string> newItemsDetails)
         {
             StringBuilder comanda = new StringBuilder();
             // ... (obtener datos de mesa, mozo, etc. usando mainId si es necesario)
@@ -796,7 +1324,7 @@ namespace popus_pizzeria.Model
             comanda.AppendLine("-----------------------------------");
             comanda.AppendLine("¡Gracias!");
             return comanda.ToString();
-        }
+        }*/
 
         private string GenerarTextoComanda(int MainId)
         {
@@ -922,22 +1450,22 @@ namespace popus_pizzeria.Model
             // Esta consulta ahora agrupa por ProdID, nombre del producto, precio y observación
             // para obtener las cantidades totales y las cantidades ya enviadas de forma AGREGADA.
             string qry = @"
-        SELECT
-            d.ProdID,
-            p.pName,
-            SUM(d.qty) AS TotalQty, -- Suma la cantidad total del producto con esa observación
-            d.price,                -- Asumimos que el precio es consistente para un producto
-            d.observation,
-            SUM(CASE WHEN d.IsSentToKitchen = 1 THEN d.qty ELSE 0 END) AS TotalQtyEnviado, -- Suma las cantidades YA ENVIADAS
-            m.TableName,
-            m.WaiterName,
-            m.orderType
-        FROM tblMain m
-        INNER JOIN tblDetails d ON m.MainID = d.MainID
-        INNER JOIN products p ON p.pID = d.ProdID
-        WHERE m.MainID = @MainID
-        GROUP BY d.ProdID, p.pName, d.price, d.observation, m.TableName, m.WaiterName, m.orderType;
-    ";
+                            SELECT
+                                d.ProdID,
+                                p.pName,
+                                SUM(d.qty) AS TotalQty, -- Suma la cantidad total del producto con esa observación
+                                d.price,                -- Asumimos que el precio es consistente para un producto
+                                d.observation,
+                                SUM(CASE WHEN d.IsSentToKitchen = 1 THEN d.qty ELSE 0 END) AS TotalQtyEnviado, -- Suma las cantidades YA ENVIADAS
+                                m.TableName,
+                                m.WaiterName,
+                                m.orderType
+                            FROM tblMain m
+                            INNER JOIN tblDetails d ON m.MainID = d.MainID
+                            INNER JOIN products p ON p.pID = d.ProdID
+                            WHERE m.MainID = @MainID
+                            GROUP BY d.ProdID, p.pName, d.price, d.observation, m.TableName, m.WaiterName, m.orderType;
+                        ";
 
             //SqlCommand cmd = new SqlCommand(qry, MainClass.con); // Sintaxis corregida
             // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
@@ -1081,23 +1609,116 @@ namespace popus_pizzeria.Model
                 return;
             }
 
-            // Crear un diccionario con la información de la cabecera
+            // Asegúrate de que MainId esté disponible y sea > 0
+            if (MainId == 0)
+            {
+                guna2MessageDialog1.Show("Error: La orden no ha sido guardada. Guarde la orden primero.");
+                return;
+            }
+
+            // 1. Obtener todos los detalles (cliente, pago) de la base de datos
+            // Esta función retornará un diccionario con todos los datos extra
+            var dbDetails = GetOrderDetailsFromDB(MainId);
+
+            // 2. Crear un diccionario con la información de la cabecera e inicializar variables
+            string orderType = dbDetails.ContainsKey("OrderType") ? dbDetails["OrderType"] : "Mesa";
+
             var infoHeaders = new Dictionary<string, string>
     {
-                { "Mesa", lblTable.Text },
-                { "Mozo", lblWaiter.Text }
+        { "Mesa", lblTable.Text },
+        { "Mozo", lblWaiter.Text },
+        { "TipoOrden", orderType } // Añadimos el tipo de orden
     };
 
-            // Si el cliente está visible, añadir su nombre
+            // Si el cliente está visible, añadir su nombre (siempre es bueno tenerlo)
             if (lblCustomer.Visible && !string.IsNullOrWhiteSpace(lblCustomer.Text))
             {
                 infoHeaders["Cliente"] = lblCustomer.Text.Replace("CUSTOMER: ", "").Replace("PHONE: ", "");
             }
 
+            // 3. 🛑 AÑADIR DETALLES DE DELIVERY/TAKE AWAY Y PAGO 🛑
+            bool isDeliveryOrTakeAway = orderType.ToLower() == "delivery" || orderType.ToLower().Contains("take");
 
+            if (isDeliveryOrTakeAway)
+            {
+                // Agregar datos de cliente/entrega si existen
+                if (dbDetails.ContainsKey("CustomerName") && !string.IsNullOrWhiteSpace(dbDetails["CustomerName"]))
+                {
+                    infoHeaders["Cliente"] = dbDetails["CustomerName"];
+                    infoHeaders["Telefono"] = dbDetails.ContainsKey("Phone") ? dbDetails["Phone"] : "N/A";
+                    infoHeaders["Direccion"] = dbDetails.ContainsKey("Address") ? dbDetails["Address"] : "N/A";
+                    infoHeaders["Referencia"] = dbDetails.ContainsKey("Reference") ? dbDetails["Reference"] : "N/A";
+                }
+
+                // Agregar detalles de pago
+                infoHeaders["Total"] = dbDetails.ContainsKey("Total") ? dbDetails["Total"] : lblTotal.Text;
+                infoHeaders["Recibido"] = dbDetails.ContainsKey("Received") ? dbDetails["Received"] : "0";
+                infoHeaders["Cambio"] = dbDetails.ContainsKey("Change") ? dbDetails["Change"] : "0";
+                infoHeaders["EstatusPago"] = dbDetails.ContainsKey("Status") ? dbDetails["Status"] : "Pendiente";
+            }
+            // Si no es delivery, al menos pasamos el total y el estatus para que la cuenta lo incluya
+            else
+            {
+                infoHeaders["Total"] = lblTotal.Text; // Usar el total de la UI
+                infoHeaders["EstatusPago"] = dbDetails.ContainsKey("Status") ? dbDetails["Status"] : "Pendiente";
+            }
 
             // Llamar a la clase CuentaPrinter para imprimir el recibo (impresora de 80mm)
             CuentaPrinter.ImprimirCuenta(btnImprimirCuenta, lblTotal.Text, infoHeaders);
+        }
+
+
+        // =========================================================================================
+
+        /// <summary>
+        /// Obtiene el encabezado de la orden y los detalles del cliente de la base de datos.
+        /// </summary>
+        private Dictionary<string, string> GetOrderDetailsFromDB(int mainId)
+        {
+            var details = new Dictionary<string, string>();
+
+            string qryMain = @"SELECT 
+                         m.orderType, m.total, m.received, m.change, m.status, 
+                         c.Name AS CustomerName, c.Address, c.Phone, c.Reference
+                       FROM tblMain m
+                       LEFT JOIN tblCustomers c ON m.CustomerID = c.CustomerID
+                       WHERE m.MainID = @MainId;";
+
+            using (SQLiteCommand cmd = new SQLiteCommand(qryMain, MainClass.con))
+            {
+                cmd.Parameters.AddWithValue("@MainId", mainId);
+                if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
+
+                try
+                {
+                    using (SQLiteDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (dr.Read())
+                        {
+                            // Almacenar los resultados en el diccionario
+                            details["OrderType"] = dr["orderType"]?.ToString();
+                            details["Total"] = dr["total"]?.ToString();
+                            details["Received"] = dr["received"]?.ToString();
+                            details["Change"] = dr["change"]?.ToString();
+                            details["Status"] = dr["status"]?.ToString();
+                            details["CustomerName"] = dr["CustomerName"]?.ToString();
+                            details["Address"] = dr["Address"]?.ToString();
+                            details["Phone"] = dr["Phone"]?.ToString();
+                            details["Reference"] = dr["Reference"]?.ToString();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error al obtener datos de la orden para imprimir: " + ex.Message);
+                }
+                finally
+                {
+                    MainClass.con.Close();
+                }
+            }
+
+            return details;
         }
 
         /// <summary>

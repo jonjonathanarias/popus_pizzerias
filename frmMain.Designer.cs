@@ -227,7 +227,7 @@
             this.btnPos.Name = "btnPos";
             this.btnPos.Size = new System.Drawing.Size(210, 56);
             this.btnPos.TabIndex = 2;
-            this.btnPos.Text = "POS";
+            this.btnPos.Text = "Punto de Venta";
             this.btnPos.Click += new System.EventHandler(this.btnPos_Click);
             // 
             // btnMesas

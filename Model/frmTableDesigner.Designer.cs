@@ -40,7 +40,7 @@
             this.panelPlano.BackColor = System.Drawing.Color.White;
             this.panelPlano.Location = new System.Drawing.Point(0, 0);
             this.panelPlano.Name = "panelPlano";
-            this.panelPlano.Size = new System.Drawing.Size(1404, 532);
+            this.panelPlano.Size = new System.Drawing.Size(1404, 499);
             this.panelPlano.TabIndex = 0;
             // 
             // btnAgregarMesa
@@ -56,7 +56,7 @@
             this.btnAgregarMesa.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(194)))), ((int)(((byte)(96)))));
             this.btnAgregarMesa.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnAgregarMesa.ForeColor = System.Drawing.Color.White;
-            this.btnAgregarMesa.Location = new System.Drawing.Point(321, 538);
+            this.btnAgregarMesa.Location = new System.Drawing.Point(321, 512);
             this.btnAgregarMesa.Name = "btnAgregarMesa";
             this.btnAgregarMesa.Size = new System.Drawing.Size(160, 45);
             this.btnAgregarMesa.TabIndex = 2;
@@ -76,7 +76,7 @@
             this.btnGuardarPosiciones.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(246)))), ((int)(((byte)(169)))), ((int)(((byte)(43)))));
             this.btnGuardarPosiciones.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnGuardarPosiciones.ForeColor = System.Drawing.Color.White;
-            this.btnGuardarPosiciones.Location = new System.Drawing.Point(653, 538);
+            this.btnGuardarPosiciones.Location = new System.Drawing.Point(653, 514);
             this.btnGuardarPosiciones.Name = "btnGuardarPosiciones";
             this.btnGuardarPosiciones.Size = new System.Drawing.Size(160, 45);
             this.btnGuardarPosiciones.TabIndex = 3;
@@ -96,7 +96,7 @@
             this.btnEliminarMesa.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(50)))), ((int)(((byte)(55)))));
             this.btnEliminarMesa.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnEliminarMesa.ForeColor = System.Drawing.Color.White;
-            this.btnEliminarMesa.Location = new System.Drawing.Point(487, 538);
+            this.btnEliminarMesa.Location = new System.Drawing.Point(487, 514);
             this.btnEliminarMesa.Name = "btnEliminarMesa";
             this.btnEliminarMesa.Size = new System.Drawing.Size(160, 45);
             this.btnEliminarMesa.TabIndex = 2;
@@ -116,7 +116,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1254, 569);
+            this.ClientSize = new System.Drawing.Size(1263, 634);
             this.Controls.Add(this.btnEliminarMesa);
             this.Controls.Add(this.btnAgregarMesa);
             this.Controls.Add(this.btnGuardarPosiciones);

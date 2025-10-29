@@ -342,7 +342,7 @@
             this.btnPrintCuenta.FillColor = System.Drawing.Color.CornflowerBlue;
             this.btnPrintCuenta.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnPrintCuenta.ForeColor = System.Drawing.Color.White;
-            this.btnPrintCuenta.Location = new System.Drawing.Point(932, 30);
+            this.btnPrintCuenta.Location = new System.Drawing.Point(637, 30);
             this.btnPrintCuenta.Name = "btnPrintCuenta";
             this.btnPrintCuenta.Size = new System.Drawing.Size(160, 45);
             this.btnPrintCuenta.TabIndex = 3;
@@ -362,7 +362,7 @@
             this.btnCheckout.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(194)))), ((int)(((byte)(96)))));
             this.btnCheckout.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnCheckout.ForeColor = System.Drawing.Color.White;
-            this.btnCheckout.Location = new System.Drawing.Point(1107, 30);
+            this.btnCheckout.Location = new System.Drawing.Point(803, 30);
             this.btnCheckout.Name = "btnCheckout";
             this.btnCheckout.Size = new System.Drawing.Size(160, 45);
             this.btnCheckout.TabIndex = 3;
@@ -375,7 +375,7 @@
             this.lblTotal.BackColor = System.Drawing.Color.Transparent;
             this.lblTotal.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTotal.ForeColor = System.Drawing.Color.White;
-            this.lblTotal.Location = new System.Drawing.Point(1428, 47);
+            this.lblTotal.Location = new System.Drawing.Point(1117, 30);
             this.lblTotal.Name = "lblTotal";
             this.lblTotal.Size = new System.Drawing.Size(49, 28);
             this.lblTotal.TabIndex = 2;
@@ -387,7 +387,7 @@
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(1313, 47);
+            this.label2.Location = new System.Drawing.Point(1011, 30);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(66, 28);
             this.label2.TabIndex = 2;
@@ -573,7 +573,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ProductPanel.AutoScroll = true;
-            this.ProductPanel.Location = new System.Drawing.Point(261, 168);
+            this.ProductPanel.Location = new System.Drawing.Point(261, 166);
             this.ProductPanel.Name = "ProductPanel";
             this.ProductPanel.Size = new System.Drawing.Size(855, 552);
             this.ProductPanel.TabIndex = 1;
