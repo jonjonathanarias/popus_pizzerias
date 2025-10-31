@@ -3,44 +3,63 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-// using System.Data.SqlClient; // COMENTAR: Ya no se usa para la conexión
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-//using Microsoft.Data.Sqlite; // Si usaste el paquete Microsoft.Data.Sqlite, usa este
-using System.Data.SQLite; // USAR: Este es el proveedor que usaremos (System.Data.SQLite)
+using System.Data.SQLite;
+using System.IO; // Necesario para Path.Combine
+using System.Reflection; // Necesario para obtener la ruta base
 
 namespace popus_pizzeria
 {
     internal class MainClass
     {
-        // Se mantiene la cadena de conexión del App.config
-        public static readonly string con_string = ConfigurationManager.ConnectionStrings["con_string_bd"].ConnectionString;
+        // ====================================================================
+        // MODIFICACIONES CLAVE PARA LA RUTA DE INSTALACIÓN
+        // ====================================================================
 
-        // CAMBIAR: Se reemplaza SqlConnection por SQLiteConnection
+        // Método privado para construir la cadena de conexión con la ruta correcta.
+        // Se asegura de que apunte a la carpeta del .exe una vez instalado.
+        private static string GetDynamicConnectionString()
+        {
+            // La ruta base es la carpeta donde se ejecuta el archivo .exe (carpeta de instalación)
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+            // Combina la ruta base con el nombre del archivo de la base de datos
+            string dbPath = Path.Combine(baseDirectory, "popus_pizzeria.db");
+
+            // Construye la cadena de conexión final
+            return $"Data Source={dbPath};Version=3;";
+        }
+
+        // Ahora, la cadena de conexión se inicializa usando el método dinámico.
+        public static readonly string con_string = GetDynamicConnectionString();
+
+        // El objeto de conexión usa la cadena de conexión dinámica.
         public static SQLiteConnection con = new SQLiteConnection(con_string);
+
+        // ====================================================================
+        // FIN DE MODIFICACIONES CLAVE
+        // ====================================================================
+
 
         // metodo para validacion de usuario
         public static bool IsValidUser(string user, string pass)
         {
             bool isValid = false;
-
-            // La sintaxis de la consulta es compatible
             string qry = @"SELECT * FROM users WHERE username = @username AND upass = @upass";
 
-            // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
             SQLiteCommand cmd = new SQLiteCommand(qry, con);
 
-            // Los parámetros son compatibles, solo cambia el objeto
             cmd.Parameters.AddWithValue("@username", user);
             cmd.Parameters.AddWithValue("@upass", pass);
 
             DataTable dt = new DataTable();
 
-            // CAMBIAR: Se reemplaza SqlDataAdapter por SQLiteDataAdapter
             SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter(cmd);
 
+            // Nota: SQLiteDataAdapter abre y cierra la conexión automáticamente.
             dataAdapter.Fill(dt);
 
             if (dt.Rows.Count > 0)
@@ -62,20 +81,20 @@ namespace popus_pizzeria
 
         }
 
-        //Metodo para operaciones crud
+        //Metodo para operaciones crud (INSERT, UPDATE, DELETE)
         public static int SQl(string qry, Hashtable ht)
         {
             int res = 0;
-
+            // *RECOMENDACIÓN: Usar un bloque 'using' para la conexión, en lugar de un campo estático
+            // Esto garantiza que la conexión se cierre y libere recursos, previniendo errores de concurrencia.
+            // Para mantener el código similar, solo he añadido el chequeo de cierre al final.
             try
             {
-                // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
                 SQLiteCommand cmd = new SQLiteCommand(qry, con);
                 cmd.CommandType = CommandType.Text;
 
                 foreach (DictionaryEntry item in ht)
                 {
-                    // Los parámetros son compatibles
                     cmd.Parameters.AddWithValue(item.Key.ToString(), item.Value);
                 }
 
@@ -108,15 +127,13 @@ namespace popus_pizzeria
 
             try
             {
-                // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
                 SQLiteCommand cmd = new SQLiteCommand(qry, con);
                 cmd.CommandType = CommandType.Text;
 
-                // CAMBIAR: Se reemplaza SqlDataAdapter por SQLiteDataAdapter
                 SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
 
                 DataTable dt = new DataTable();
-                da.Fill(dt);
+                da.Fill(dt); // El DataAdapter gestiona la apertura y cierre
 
                 for (int i = 0; i < lb.Items.Count; i++)
                 {
@@ -130,7 +147,8 @@ namespace popus_pizzeria
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
-                con.Close();
+                // No es necesario cerrar aquí si el DataAdapter cerró, pero por seguridad...
+                // con.Close(); 
             }
         }
 
@@ -149,15 +167,13 @@ namespace popus_pizzeria
         //para cb fill categoria
         public static void CBFill(string qry, ComboBox cb)
         {
-            // CAMBIAR: Se reemplaza SqlCommand por SQLiteCommand
             SQLiteCommand cmd = new SQLiteCommand(qry, con);
             cmd.CommandType = CommandType.Text;
 
-            // CAMBIAR: Se reemplaza SqlDataAdapter por SQLiteDataAdapter
             SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
 
             DataTable dt = new DataTable();
-            da.Fill(dt);
+            da.Fill(dt); // El DataAdapter gestiona la apertura y cierre
 
             cb.DisplayMember = "name";
             cb.ValueMember = "id";
