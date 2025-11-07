@@ -24,36 +24,63 @@ namespace popus_pizzeria.Model
 
         public string CustomerName = "", Phone = "", Address = "", Reference = "";
 
+        // EN CLASE: frmAddCustomer.cs
+
         private void btnGuardar_Click(object sender, EventArgs e)
         {
-            CustomerName = txtName.Text.Trim();
-            Phone = txtPhone.Text.Trim();
-            Address = txtAddress.Text.Trim();
-            Reference = txtReference.Text.Trim();
+            string qry = "";
 
-            // Guardar nuevo o actualizar cliente
-            // string qry = "INSERT INTO tblCustomers (Name, Phone, Address, Reference) VALUES (@Name, @Phone, @Address, @Reference); SELECT SCOPE_IDENTITY();";
-           
-            // Guardar nuevo o actualizar cliente
-            // CAMBIAR: Usamos la función de SQLite last_insert_rowid() en lugar de SCOPE_IDENTITY()
-            string qry = "INSERT INTO tblCustomers (Name, Phone, Address, Reference) VALUES (@Name, @Phone, @Address, @Reference); SELECT last_insert_rowid();";
+            // **CLAVE:** Determinar si es una EDICIÓN (UPDATE) o un NUEVO REGISTRO (INSERT)
+            if (CustomerID == 0)
+            {
+                // --- MODO AGREGAR: Ejecutar INSERT ---
+                qry = @"INSERT INTO tblCustomers (Name, Phone, Address, Reference) 
+                VALUES (@Name, @Phone, @Address, @Reference)";
+            }
+            else
+            {
+                // --- MODO EDITAR: Ejecutar UPDATE ---
+                qry = @"UPDATE tblCustomers 
+                SET Name = @Name, Phone = @Phone, Address = @Address, Reference = @Reference 
+                WHERE CustomerID = @ID";
+            }
 
-            //SqlCommand cmd = new SqlCommand(qry, MainClass.con);
-            // CAMBIAR: SqlCommand -> SQLiteCommand
+            // 1. Configurar los parámetros comunes
             SQLiteCommand cmd = new SQLiteCommand(qry, MainClass.con);
-            cmd.Parameters.AddWithValue("@Name", CustomerName);
-            cmd.Parameters.AddWithValue("@Phone", Phone);
-            cmd.Parameters.AddWithValue("@Address", Address);
-            cmd.Parameters.AddWithValue("@Reference", Reference);
+            cmd.Parameters.AddWithValue("@Name", txtName.Text.Trim()); // Asegúrate de usar los nombres de TextBoxes correctos
+            cmd.Parameters.AddWithValue("@Phone", txtPhone.Text.Trim());
+            cmd.Parameters.AddWithValue("@Address", txtAddress.Text.Trim());
+            cmd.Parameters.AddWithValue("@Reference", txtReference.Text.Trim());
 
-            if (MainClass.con.State == ConnectionState.Closed) MainClass.con.Open();
-            CustomerID = Convert.ToInt32(cmd.ExecuteScalar());
-            if (MainClass.con.State == ConnectionState.Open) MainClass.con.Close();
+            // 2. Añadir el parámetro @ID solo si es una EDICIÓN
+            if (CustomerID > 0)
+            {
+                cmd.Parameters.AddWithValue("@ID", CustomerID);
+            }
 
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            // 3. Ejecutar la consulta
+            try
+            {
+                if (MainClass.con.State != ConnectionState.Open) MainClass.con.Open();
+
+                cmd.ExecuteNonQuery();
+
+                if (CustomerID == 0)
+                {
+                    // Si fue un INSERT, recuperamos el nuevo ID para pasarlo de vuelta al formulario principal (opcional)
+                    CustomerID = (int)MainClass.con.LastInsertRowId;
+                }
+
+                MainClass.con.Close();
+                MessageBox.Show("Datos guardados exitosamente.");
+                this.DialogResult = DialogResult.OK; // Esto cierra el formulario y recarga la lista en frmSearchCustomer
+            }
+            catch (Exception ex)
+            {
+                if (MainClass.con.State == ConnectionState.Open) MainClass.con.Close();
+                MessageBox.Show($"Error al guardar los datos del cliente: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-    
 
         private void frmAddCustomer_Load(object sender, EventArgs e)
         {
